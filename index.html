@@ -262,37 +262,14 @@ header h1{color:#fff;font-size:16px;font-weight:600;flex:1;}
 
     <div class="form-group">
       <div class="form-label">Bilde <span class="opt">(valgfritt)</span></div>
-      <div class="bilde-area" id="bilde-area" onclick="openBildeChoice()">
+      <div class="bilde-area" id="bilde-area" onclick="document.getElementById('f-bilde').click()">
         <div class="bilde-placeholder" id="bilde-placeholder">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:28px;height:28px;color:var(--gray-300);display:block;margin:0 auto 8px;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
           <p style="font-size:13px;font-weight:500;color:var(--blue);">Legg til bilde</p>
           <p style="font-size:11px;color:var(--gray-300);margin-top:4px;">Trykk for å velge</p>
         </div>
         <img id="bilde-preview-img" class="bilde-preview-img" onclick="event.stopPropagation();openFullscreen(this.src)" style="cursor:pointer;"/>
-        <input type="file" id="f-bilde" accept="image/*" capture="environment" onchange="previewBilde(this)" style="display:none;"/>
-        <input type="file" id="f-bilde-galleri" accept="image/*" onchange="previewBilde(this)" style="display:none;"/>
-      </div>
-
-      <!-- Bilde choice panel -->
-      <div class="bilde-choice-overlay" id="bilde-choice-overlay" onclick="closeBildeChoice()">
-        <div class="bilde-choice-panel" onclick="event.stopPropagation()">
-          <div class="bilde-choice-title">Legg til bilde av nøkkelboksen</div>
-          <button class="bilde-choice-btn" onclick="closeBildeChoice();document.getElementById('f-bilde').click()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-            <div>
-              <div>Ta bilde</div>
-              <div style="font-size:11px;font-weight:400;color:var(--gray-500);">Åpner kameraet ditt</div>
-            </div>
-          </button>
-          <button class="bilde-choice-btn" onclick="closeBildeChoice();document.getElementById('f-bilde-galleri').click()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-            <div>
-              <div>Velg fra galleri</div>
-              <div style="font-size:11px;font-weight:400;color:var(--gray-500);">Velg et eksisterende bilde</div>
-            </div>
-          </button>
-          <button class="bilde-choice-cancel" onclick="closeBildeChoice()">Avbryt</button>
-        </div>
+        <input type="file" id="f-bilde" accept="image/*" onchange="previewBilde(this)" style="display:none;"/>
       </div>
     </div>
 
@@ -606,12 +583,11 @@ function velgAdresse(navn,lat,lng){
 function previewBilde(input){
   const file=input.files[0];
   if(!file)return;
+  window._bildeFile=file;
   const img=document.getElementById('bilde-preview-img');
   img.src=URL.createObjectURL(file);
   img.style.display='block';
   document.getElementById('bilde-placeholder').style.display='none';
-  // sync the other input so saveData picks up correct file
-  window._bildeFile=file;
 }
 
 function openModal(){document.getElementById('modal-overlay').classList.add('visible');}
@@ -620,7 +596,6 @@ function closeModal(){
   ['f-navn','f-adresse','f-beskrivelse','f-merknader'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('f-avdeling').value='';
   document.getElementById('f-bilde').value='';
-  document.getElementById('f-bilde-galleri').value='';
   window._bildeFile=null;
   document.getElementById('bilde-preview-img').style.display='none';
   document.getElementById('bilde-placeholder').style.display='block';
@@ -661,7 +636,7 @@ async function submitForm(){
   const avdeling=document.getElementById('f-avdeling').value;
   const beskrivelse=document.getElementById('f-beskrivelse').value.trim();
   const merknader=document.getElementById('f-merknader').value.trim();
-  const bildeFile=window._bildeFile||document.getElementById('f-bilde').files[0]||document.getElementById('f-bilde-galleri').files[0];
+  const bildeFile=window._bildeFile||document.getElementById('f-bilde').files[0];
   if(!navn||!adresse||!avdeling||!beskrivelse){showToast('Fyll ut alle obligatoriske felt');return;}
   if(!currentLat||!currentLng){showToast('Velg en adresse fra forslagslisten');return;}
   const btn=document.getElementById('submit-btn');
@@ -722,6 +697,8 @@ function openEditModal(id){
   if(!item)return;
   editingId=id;
   window._editBildeFile=null;
+  document.getElementById('e-adresse').value=item.adresse||'';
+  document.getElementById('e-avdeling').value=item.avdeling||'';
   document.getElementById('e-beskrivelse').value=item.beskrivelse||'';
   document.getElementById('e-merknader').value=item.merknader||'';
   const prev=document.getElementById('e-bilde-preview');
@@ -739,7 +716,6 @@ function closeEditModal(){
   document.getElementById('edit-modal-overlay').classList.remove('visible');
   editingId=null;window._editBildeFile=null;
   document.getElementById('e-bilde').value='';
-  document.getElementById('e-bilde-galleri').value='';
 }
 function closeEditOutside(e){if(e.target===document.getElementById('edit-modal-overlay'))closeEditModal();}
 
@@ -750,13 +726,13 @@ function previewEditBilde(input){
   prev.src=URL.createObjectURL(file);prev.style.display='block';
   document.getElementById('e-bilde-placeholder').style.display='none';
 }
-function openEditBildeChoice(){document.getElementById('edit-bilde-choice-overlay').classList.add('visible');}
-function closeEditBildeChoice(){document.getElementById('edit-bilde-choice-overlay').classList.remove('visible');}
 
 async function submitEdit(){
   if(!editingId)return;
   const btn=document.getElementById('edit-submit-btn');
   btn.disabled=true;btn.textContent='Lagrer...';
+  const adresse=document.getElementById('e-adresse').value.trim();
+  const avdeling=document.getElementById('e-avdeling').value;
   const beskrivelse=document.getElementById('e-beskrivelse').value.trim();
   const merknader=document.getElementById('e-merknader').value.trim();
   let bilde_url=undefined;
@@ -764,7 +740,7 @@ async function submitEdit(){
     try{bilde_url=await uploadBilde(window._editBildeFile);}
     catch(e){showToast('Bilde feilet, lagrer uten');}
   }
-  const patch={beskrivelse,merknader};
+  const patch={adresse,avdeling,beskrivelse,merknader};
   if(bilde_url!==undefined)patch.bilde_url=bilde_url;
   try{
     const r=await sbFetch(`${SB_TABLE}?id=eq.${editingId}`,{
@@ -867,6 +843,18 @@ init();
       </button>
     </div>
     <div class="form-group">
+      <div class="form-label">Adresse</div>
+      <input type="text" id="e-adresse" style="width:100%;padding:10px 12px;border:1.5px solid var(--gray-100);border-radius:8px;font-family:var(--font);font-size:14px;background:var(--gray-50);outline:none;"/>
+    </div>
+    <div class="form-group">
+      <div class="form-label">Avdeling</div>
+      <select id="e-avdeling" style="width:100%;padding:10px 12px;border:1.5px solid var(--gray-100);border-radius:8px;font-family:var(--font);font-size:14px;background:var(--gray-50);outline:none;">
+        <option>Demenslaget</option><option>Nattpatruljen</option><option>Nord</option>
+        <option>Sentrum 3</option><option>Sør</option><option>Vest 1</option>
+        <option>Vest 3</option><option>Øst 1</option><option>Innsatsteamet</option><option>Annet</option>
+      </select>
+    </div>
+    <div class="form-group">
       <div class="form-label">Beskrivelse</div>
       <textarea id="e-beskrivelse" style="height:80px;resize:none;width:100%;padding:10px 12px;border:1.5px solid var(--gray-100);border-radius:8px;font-family:var(--font);font-size:14px;background:var(--gray-50);outline:none;"></textarea>
     </div>
@@ -876,33 +864,16 @@ init();
     </div>
     <div class="form-group">
       <div class="form-label">Bilde <span class="opt">(valgfritt)</span></div>
-      <div class="bilde-area" onclick="openEditBildeChoice()">
+      <div class="bilde-area" onclick="document.getElementById('e-bilde').click()">
         <div class="bilde-placeholder" id="e-bilde-placeholder">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:24px;height:24px;color:var(--gray-300);display:block;margin:0 auto 6px;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-          <p style="font-size:13px;font-weight:500;color:var(--blue);">Bytt bilde</p>
+          <p style="font-size:13px;font-weight:500;color:var(--blue);">Legg til / bytt bilde</p>
         </div>
-        <img id="e-bilde-preview" style="width:100%;height:120px;object-fit:cover;display:none;cursor:pointer;" onclick="event.stopPropagation();openFullscreen(this.src)"/>
-        <input type="file" id="e-bilde" accept="image/*" capture="environment" onchange="previewEditBilde(this)" style="display:none;"/>
-        <input type="file" id="e-bilde-galleri" accept="image/*" onchange="previewEditBilde(this)" style="display:none;"/>
+        <img id="e-bilde-preview" style="width:100%;height:120px;object-fit:cover;display:none;cursor:pointer;border-radius:8px;" onclick="event.stopPropagation();openFullscreen(this.src)"/>
+        <input type="file" id="e-bilde" accept="image/*" onchange="previewEditBilde(this)" style="display:none;"/>
       </div>
     </div>
     <button class="submit-btn" id="edit-submit-btn" onclick="submitEdit()">Lagre endringer</button>
-
-    <!-- Edit bilde choice panel -->
-    <div class="bilde-choice-overlay" id="edit-bilde-choice-overlay" onclick="closeEditBildeChoice()">
-      <div class="bilde-choice-panel" onclick="event.stopPropagation()">
-        <div class="bilde-choice-title">Bytt bilde</div>
-        <button class="bilde-choice-btn" onclick="closeEditBildeChoice();document.getElementById('e-bilde').click()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-          <div><div>Ta bilde</div><div style="font-size:11px;font-weight:400;color:var(--gray-500);">Åpner kameraet ditt</div></div>
-        </button>
-        <button class="bilde-choice-btn" onclick="closeEditBildeChoice();document.getElementById('e-bilde-galleri').click()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-          <div><div>Velg fra galleri</div><div style="font-size:11px;font-weight:400;color:var(--gray-500);">Velg et eksisterende bilde</div></div>
-        </button>
-        <button class="bilde-choice-cancel" onclick="closeEditBildeChoice()">Avbryt</button>
-      </div>
-    </div>
   </div>
 </div>
 
