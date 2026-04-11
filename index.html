@@ -7,97 +7,142 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  *{box-sizing:border-box;margin:0;padding:0;}
-  :root{
-    --blue:#1a56a0;--blue-dark:#0f3d7a;--blue-light:#e8f0fb;
-    --red:#b03030;--red-light:#fbeaea;
-    --gray-50:#f7f7f7;--gray-100:#ebebeb;--gray-300:#c0c0c0;
-    --gray-500:#888;--gray-700:#444;--gray-900:#1a1a1a;
-    --white:#fff;--shadow:0 2px 12px rgba(0,0,0,0.12);
-    --radius:10px;--font:'IBM Plex Sans',sans-serif;
-  }
-  html,body{height:100%;font-family:var(--font);background:var(--gray-50);color:var(--gray-900);}
-  header{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--blue);height:56px;display:flex;align-items:center;padding:0 16px;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,0.2);}
-  .header-logo{width:32px;height:32px;background:rgba(255,255,255,0.15);border-radius:8px;display:flex;align-items:center;justify-content:center;}
-  .header-logo svg{width:18px;height:18px;}
-  header h1{color:#fff;font-size:16px;font-weight:600;flex:1;}
-  .header-count{background:rgba(255,255,255,0.2);color:#fff;font-size:12px;padding:3px 10px;border-radius:20px;}
-  .search-bar{position:fixed;top:68px;left:50%;transform:translateX(-50%);z-index:900;width:calc(100% - 32px);max-width:480px;}
-  .search-wrap{position:relative;}
-  .search-wrap input{width:100%;padding:11px 16px 11px 42px;border:none;border-radius:var(--radius);background:var(--white);font-family:var(--font);font-size:14px;color:var(--gray-900);box-shadow:var(--shadow);outline:none;}
-  .search-wrap input::placeholder{color:var(--gray-500);}
-  .search-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--gray-500);}
-  .search-icon svg{width:16px;height:16px;}
-  .search-results{background:var(--white);border-radius:var(--radius);margin-top:6px;box-shadow:var(--shadow);overflow:hidden;display:none;}
-  .search-results.visible{display:block;}
-  .search-result-item{padding:10px 16px;font-size:13px;cursor:pointer;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;gap:10px;}
-  .search-result-item:last-child{border-bottom:none;}
-  .search-result-item:hover{background:var(--blue-light);}
-  .search-result-addr{font-weight:500;}
-  .search-result-avd{font-size:11px;color:var(--gray-500);margin-top:1px;}
-  .filter-bar{position:fixed;top:120px;left:0;right:0;z-index:800;padding:0 16px;overflow-x:auto;white-space:nowrap;display:flex;gap:6px;scrollbar-width:none;}
-  .filter-bar::-webkit-scrollbar{display:none;}
-  .filter-chip{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1.5px solid transparent;background:var(--white);color:var(--gray-700);box-shadow:0 1px 4px rgba(0,0,0,0.08);transition:all 0.15s;white-space:nowrap;font-family:var(--font);}
-  .filter-chip.active{color:#fff;}
-  .chip-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
-  #map{position:fixed;top:56px;left:0;right:0;bottom:64px;}
-  .bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:1000;background:var(--white);border-top:1px solid var(--gray-100);height:64px;display:flex;box-shadow:0 -2px 8px rgba(0,0,0,0.08);}
-  .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:none;cursor:pointer;font-family:var(--font);font-size:11px;font-weight:500;color:var(--gray-500);}
-  .nav-btn.active{color:var(--blue);}
-  .nav-btn svg{width:22px;height:22px;}
-  .add-btn-inner{width:48px;height:48px;background:var(--blue);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(26,86,160,0.4);margin-bottom:2px;}
-  .add-btn-inner svg{width:24px;height:24px;}
-  .leaflet-popup-content-wrapper{border-radius:var(--radius);box-shadow:var(--shadow);border:none;padding:0;overflow:hidden;}
-  .leaflet-popup-content{margin:0;width:270px!important;}
-  .leaflet-popup-tip-container{display:none;}
-  .popup-inner{padding:14px;}
-  .popup-img{width:100%;height:140px;object-fit:cover;display:block;}
-  .popup-avd-badge{display:inline-block;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:600;margin-bottom:8px;font-family:var(--font);}
-  .popup-addr{font-size:15px;font-weight:600;margin-bottom:4px;color:var(--gray-900);}
-  .popup-desc{font-size:12px;color:var(--gray-500);margin-bottom:8px;line-height:1.5;}
-  .popup-row{display:flex;gap:6px;font-size:12px;margin-bottom:4px;}
-  .popup-key{color:var(--gray-500);min-width:70px;}
-  .popup-val{color:var(--gray-700);font-weight:500;}
-  .modal-overlay{position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,0.45);display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s;}
-  .modal-overlay.visible{opacity:1;pointer-events:all;}
-  .modal{background:var(--white);border-radius:16px 16px 0 0;width:100%;max-width:540px;padding:20px 20px 32px;transform:translateY(30px);transition:transform 0.2s;max-height:90vh;overflow-y:auto;}
-  .modal-overlay.visible .modal{transform:translateY(0);}
-  .modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
-  .modal-title{font-size:17px;font-weight:600;}
-  .modal-close{background:var(--gray-100);border:none;cursor:pointer;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
-  .modal-close svg{width:16px;height:16px;}
-  .form-group{margin-bottom:16px;position:relative;}
-  .form-label{font-size:12px;font-weight:600;color:var(--gray-500);margin-bottom:6px;display:flex;align-items:center;gap:4px;text-transform:uppercase;letter-spacing:0.04em;}
-  .req{color:var(--red);}
-  .form-group input,.form-group textarea,.form-group select{width:100%;padding:10px 12px;border:1.5px solid var(--gray-100);border-radius:8px;font-family:var(--font);font-size:14px;color:var(--gray-900);background:var(--gray-50);outline:none;transition:border-color 0.15s;}
-  .form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--blue);background:#fff;}
-  .form-group textarea{height:80px;resize:none;}
-  .autocomplete-list{position:absolute;top:100%;left:0;right:0;background:var(--white);border-radius:8px;box-shadow:var(--shadow);z-index:100;overflow:hidden;display:none;}
-  .autocomplete-list.visible{display:block;}
-  .autocomplete-item{padding:10px 12px;font-size:13px;cursor:pointer;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;gap:8px;}
-  .autocomplete-item:last-child{border-bottom:none;}
-  .autocomplete-item:hover{background:var(--blue-light);}
-  .autocomplete-item svg{width:13px;height:13px;color:var(--gray-500);flex-shrink:0;}
-  .submit-btn{width:100%;padding:13px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius);font-size:15px;font-weight:600;cursor:pointer;font-family:var(--font);}
-  .submit-btn:disabled{background:var(--gray-300);cursor:not-allowed;}
-  .gps-row{display:flex;gap:8px;align-items:flex-start;}
-  .gps-row .form-group{flex:1;margin-bottom:0;}
-  .gps-btn{padding:10px 12px;background:var(--blue-light);color:var(--blue);border:1.5px solid var(--blue);border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;white-space:nowrap;font-family:var(--font);display:flex;align-items:center;gap:5px;height:42px;margin-top:0;flex-shrink:0;}
-  .gps-btn svg{width:14px;height:14px;}
-  .upload-box{border:1.5px dashed var(--gray-300);border-radius:8px;padding:20px;text-align:center;cursor:pointer;background:var(--gray-50);transition:border-color 0.15s;}
-  .upload-box:hover{border-color:var(--blue);}
-  .upload-box input{display:none;}
-  .upload-box p{font-size:12px;color:var(--gray-500);margin-top:6px;}
-  .upload-preview{width:100%;height:140px;object-fit:cover;border-radius:8px;display:none;margin-top:8px;}
-  .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--gray-900);color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:500;z-index:3000;opacity:0;transition:all 0.2s;pointer-events:none;white-space:nowrap;}
-  .toast.visible{opacity:1;transform:translateX(-50%) translateY(0);}
-  .loading{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:500;text-align:center;}
-  .loading-spinner{width:36px;height:36px;border:3px solid var(--gray-100);border-top-color:var(--blue);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px;}
-  @keyframes spin{to{transform:rotate(360deg);}}
-  .loading p{font-size:13px;color:var(--gray-500);}
-  .liste-search{padding:12px 12px 0;position:sticky;top:0;background:var(--gray-50);z-index:10;}
-  .liste-search input{width:100%;padding:10px 14px;border:1.5px solid var(--gray-100);border-radius:var(--radius);font-family:var(--font);font-size:14px;background:var(--white);outline:none;}
-  .liste-search input:focus{border-color:var(--blue);}
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --blue:#1a56a0;--blue-dark:#0f3d7a;--blue-light:#e8f0fb;
+  --red:#b03030;--red-light:#fbeaea;
+  --gray-50:#f7f7f7;--gray-100:#ebebeb;--gray-300:#c0c0c0;
+  --gray-500:#888;--gray-700:#444;--gray-900:#1a1a1a;
+  --white:#fff;--shadow:0 2px 12px rgba(0,0,0,0.12);
+  --radius:10px;--font:'IBM Plex Sans',sans-serif;
+}
+html,body{height:100%;font-family:var(--font);background:var(--gray-50);color:var(--gray-900);}
+
+/* HEADER */
+header{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--blue);height:56px;display:flex;align-items:center;padding:0 16px;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,0.2);}
+.header-logo{width:32px;height:32px;background:rgba(255,255,255,0.15);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.header-logo svg{width:18px;height:18px;}
+header h1{color:#fff;font-size:16px;font-weight:600;flex:1;}
+.header-count{background:rgba(255,255,255,0.2);color:#fff;font-size:12px;padding:3px 10px;border-radius:20px;}
+.filter-toggle{background:rgba(255,255,255,0.15);border:none;cursor:pointer;width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;}
+.filter-toggle svg{width:18px;height:18px;stroke:#fff;}
+.filter-dot{position:absolute;top:6px;right:6px;width:7px;height:7px;background:#EF9F27;border-radius:50%;display:none;}
+.filter-dot.visible{display:block;}
+
+/* SEARCH */
+.search-bar{position:fixed;top:68px;left:50%;transform:translateX(-50%);z-index:900;width:calc(100% - 32px);max-width:480px;}
+.search-wrap{position:relative;}
+.search-wrap input{width:100%;padding:11px 16px 11px 42px;border:none;border-radius:var(--radius);background:var(--white);font-family:var(--font);font-size:14px;color:var(--gray-900);box-shadow:var(--shadow);outline:none;}
+.search-wrap input::placeholder{color:var(--gray-500);}
+.search-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--gray-500);}
+.search-icon svg{width:16px;height:16px;}
+.search-clear{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:var(--gray-300);border:none;cursor:pointer;width:18px;height:18px;border-radius:50%;display:none;align-items:center;justify-content:center;}
+.search-clear.visible{display:flex;}
+.search-clear svg{width:10px;height:10px;stroke:#fff;stroke-width:3;}
+.search-results{background:var(--white);border-radius:var(--radius);margin-top:6px;box-shadow:var(--shadow);overflow:hidden;display:none;}
+.search-results.visible{display:block;}
+.search-result-item{padding:11px 16px;font-size:13px;cursor:pointer;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;gap:10px;}
+.search-result-item:last-child{border-bottom:none;}
+.search-result-item:hover{background:var(--blue-light);}
+.sri-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sri-text{}
+.sri-addr{font-weight:500;font-size:13px;color:var(--gray-900);}
+.sri-sub{font-size:11px;color:var(--gray-500);margin-top:1px;}
+
+/* FILTER PANEL */
+.filter-panel{position:fixed;top:56px;left:0;right:0;z-index:850;background:var(--white);border-bottom:1px solid var(--gray-100);padding:12px 16px;box-shadow:0 4px 12px rgba(0,0,0,0.08);display:none;}
+.filter-panel.visible{display:block;}
+.filter-panel-title{font-size:11px;font-weight:600;color:var(--gray-500);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;}
+.filter-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;}
+.filter-chip{display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 4px;border-radius:8px;font-size:11px;font-weight:500;cursor:pointer;border:1.5px solid var(--gray-100);background:var(--white);color:var(--gray-700);transition:all 0.15s;font-family:var(--font);text-align:center;line-height:1.2;}
+.filter-chip.active{color:#fff;border-color:transparent;}
+.chip-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.filter-all{grid-column:span 5;flex-direction:row;justify-content:center;gap:6px;padding:8px;}
+
+/* MAP */
+#map{position:fixed;top:56px;left:0;right:0;bottom:64px;}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:1000;background:var(--white);border-top:1px solid var(--gray-100);height:64px;display:flex;box-shadow:0 -2px 8px rgba(0,0,0,0.08);}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:none;cursor:pointer;font-family:var(--font);font-size:11px;font-weight:500;color:var(--gray-500);}
+.nav-btn.active{color:var(--blue);}
+.nav-btn svg{width:22px;height:22px;}
+.add-btn-inner{width:48px;height:48px;background:var(--blue);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(26,86,160,0.4);margin-bottom:2px;}
+.add-btn-inner svg{width:24px;height:24px;}
+
+/* POPUP */
+.leaflet-popup-content-wrapper{border-radius:14px;box-shadow:0 4px 20px rgba(0,0,0,0.15);border:none;padding:0;overflow:hidden;}
+.leaflet-popup-content{margin:0;width:280px!important;}
+.leaflet-popup-tip-container{display:none;}
+.popup-img{width:100%;height:160px;object-fit:cover;display:block;}
+.popup-body{padding:14px;}
+.popup-addr{font-size:16px;font-weight:600;color:var(--gray-900);margin-bottom:4px;line-height:1.3;}
+.popup-desc{font-size:13px;color:var(--gray-600);line-height:1.5;margin-bottom:10px;}
+.popup-footer{display:flex;align-items:center;justify-content:space-between;padding-top:8px;border-top:1px solid var(--gray-100);}
+.popup-avd-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;font-family:var(--font);}
+.popup-meta{font-size:11px;color:var(--gray-500);}
+.popup-merknad{font-size:12px;color:var(--gray-700);background:var(--gray-50);border-radius:6px;padding:6px 10px;margin-bottom:10px;}
+
+/* LISTE */
+#liste-view{display:none;position:fixed;top:56px;left:0;right:0;bottom:64px;background:var(--gray-50);overflow-y:auto;z-index:700;}
+.liste-search{padding:12px 12px 8px;position:sticky;top:0;background:var(--gray-50);z-index:10;}
+.liste-search input{width:100%;padding:10px 14px;border:1.5px solid var(--gray-100);border-radius:var(--radius);font-family:var(--font);font-size:14px;background:var(--white);outline:none;}
+.liste-search input:focus{border-color:var(--blue);}
+.liste-inner{padding:0 12px 12px;}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,0.45);display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s;}
+.modal-overlay.visible{opacity:1;pointer-events:all;}
+.modal{background:var(--white);border-radius:16px 16px 0 0;width:100%;max-width:540px;padding:20px 20px 36px;transform:translateY(30px);transition:transform 0.2s;max-height:92vh;overflow-y:auto;}
+.modal-overlay.visible .modal{transform:translateY(0);}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.modal-title{font-size:17px;font-weight:600;}
+.modal-close{background:var(--gray-100);border:none;cursor:pointer;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.modal-close svg{width:16px;height:16px;}
+.form-group{margin-bottom:16px;position:relative;}
+.form-label{font-size:12px;font-weight:600;color:var(--gray-500);margin-bottom:6px;display:flex;align-items:center;gap:4px;text-transform:uppercase;letter-spacing:0.04em;}
+.opt-label{font-size:10px;color:var(--gray-300);text-transform:none;font-weight:400;margin-left:4px;}
+.req{color:var(--red);}
+.form-group input,.form-group textarea,.form-group select{width:100%;padding:10px 12px;border:1.5px solid var(--gray-100);border-radius:8px;font-family:var(--font);font-size:14px;color:var(--gray-900);background:var(--gray-50);outline:none;transition:border-color 0.15s;}
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--blue);background:#fff;}
+.form-group textarea{height:80px;resize:none;}
+
+/* ADRESSE FELT */
+.addr-wrap{position:relative;}
+.pos-btn{width:100%;padding:10px 12px;background:var(--blue-light);color:var(--blue);border:1.5px solid var(--blue);border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;font-family:var(--font);display:flex;align-items:center;justify-content:center;gap:8px;margin-top:8px;}
+.pos-btn svg{width:16px;height:16px;}
+.autocomplete-list{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--white);border-radius:8px;box-shadow:var(--shadow);z-index:100;overflow:hidden;display:none;}
+.autocomplete-list.visible{display:block;}
+.autocomplete-item{padding:10px 12px;font-size:13px;cursor:pointer;border-bottom:1px solid var(--gray-100);display:flex;align-items:flex-start;gap:8px;}
+.autocomplete-item:last-child{border-bottom:none;}
+.autocomplete-item:hover{background:var(--blue-light);}
+.autocomplete-item svg{width:14px;height:14px;color:var(--blue);flex-shrink:0;margin-top:2px;}
+.ac-main{font-weight:500;}
+.ac-sub{font-size:11px;color:var(--gray-500);}
+
+/* BILDE */
+.bilde-area{border:1.5px dashed var(--gray-300);border-radius:8px;overflow:hidden;cursor:pointer;transition:border-color 0.15s;}
+.bilde-area:hover{border-color:var(--blue);}
+.bilde-placeholder{padding:20px;text-align:center;}
+.bilde-placeholder svg{width:28px;height:28px;color:var(--gray-300);display:block;margin:0 auto 8px;}
+.bilde-placeholder p{font-size:12px;color:var(--gray-500);}
+.bilde-placeholder span{font-size:11px;color:var(--gray-300);}
+.bilde-preview-img{width:100%;height:160px;object-fit:cover;display:none;}
+.bilde-area input{display:none;}
+
+/* SUBMIT */
+.submit-btn{width:100%;padding:14px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius);font-size:15px;font-weight:600;cursor:pointer;font-family:var(--font);margin-top:4px;}
+.submit-btn:disabled{background:var(--gray-300);cursor:not-allowed;}
+
+/* TOAST */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--gray-900);color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:500;z-index:3000;opacity:0;transition:all 0.2s;pointer-events:none;white-space:nowrap;}
+.toast.visible{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* LOADING */
+.loading{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:500;text-align:center;}
+.loading-spinner{width:36px;height:36px;border:3px solid var(--gray-100);border-top-color:var(--blue);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading p{font-size:13px;color:var(--gray-500);}
 </style>
 </head>
 <body>
@@ -108,17 +153,30 @@
   </div>
   <h1>Nøkkelbokser</h1>
   <div class="header-count" id="count-badge">Laster...</div>
+  <button class="filter-toggle" onclick="toggleFilterPanel()" id="filter-toggle-btn" title="Filtrer avdeling">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="8" y1="12" x2="16" y2="12"/><line x1="11" y1="18" x2="13" y2="18"/></svg>
+    <div class="filter-dot" id="filter-dot"></div>
+  </button>
 </header>
 
+<!-- FILTER PANEL -->
+<div class="filter-panel" id="filter-panel">
+  <div class="filter-panel-title">Filtrer etter avdeling</div>
+  <div class="filter-grid" id="filter-grid"></div>
+</div>
+
+<!-- SEARCH -->
 <div class="search-bar" id="map-search-bar">
   <div class="search-wrap">
     <span class="search-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></span>
-    <input type="text" id="search-input" placeholder="Søk på adresse eller sted..." autocomplete="off"/>
+    <input type="text" id="search-input" placeholder="Søk adresse eller sted..." autocomplete="off"/>
+    <button class="search-clear" id="search-clear" onclick="clearSearch()">
+      <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
   </div>
   <div class="search-results" id="search-results"></div>
 </div>
 
-<div class="filter-bar" id="filter-bar"></div>
 <div id="map"></div>
 
 <div id="loading" class="loading">
@@ -143,13 +201,15 @@
   </button>
 </div>
 
-<div id="liste-view" style="display:none;position:fixed;top:56px;left:0;right:0;bottom:64px;background:var(--gray-50);overflow-y:auto;z-index:700;">
+<!-- LISTE VIEW -->
+<div id="liste-view">
   <div class="liste-search">
     <input type="text" id="liste-search-input" placeholder="Søk i listen..." oninput="filterListe(this.value)"/>
   </div>
-  <div id="liste-content" style="padding:12px;"></div>
+  <div class="liste-inner" id="liste-content"></div>
 </div>
 
+<!-- MODAL -->
 <div class="modal-overlay" id="modal-overlay" onclick="closeModalOutside(event)">
   <div class="modal">
     <div class="modal-header">
@@ -158,23 +218,24 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
     </div>
+
     <div class="form-group">
       <div class="form-label">Ditt navn <span class="req">*</span></div>
       <input type="text" id="f-navn" placeholder="F.eks. Kari Nordmann"/>
     </div>
+
     <div class="form-group">
       <div class="form-label">Adresse <span class="req">*</span></div>
-      <div class="gps-row">
-        <div class="form-group" style="flex:1;margin-bottom:0;position:relative;">
-          <input type="text" id="f-adresse" placeholder="F.eks. Revelheigata 28" autocomplete="off" oninput="adresseAutocomplete(this.value)"/>
-          <div class="autocomplete-list" id="adresse-suggestions"></div>
-        </div>
-        <button class="gps-btn" onclick="useGPS()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
-          GPS
-        </button>
+      <div class="addr-wrap">
+        <input type="text" id="f-adresse" placeholder="Søk etter adresse..." autocomplete="off" oninput="adresseAutocomplete(this.value)"/>
+        <div class="autocomplete-list" id="adresse-suggestions"></div>
       </div>
+      <button class="pos-btn" onclick="useGPS()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M1 12h4M19 12h4"/><circle cx="12" cy="12" r="8" stroke-dasharray="2 2"/></svg>
+        Bruk min posisjon
+      </button>
     </div>
+
     <div class="form-group">
       <div class="form-label">Avdeling <span class="req">*</span></div>
       <select id="f-avdeling">
@@ -184,23 +245,30 @@
         <option>Vest 3</option><option>Øst 1</option><option>Innsatsteamet</option><option>Annet</option>
       </select>
     </div>
+
     <div class="form-group">
       <div class="form-label">Beskrivelse <span class="req">*</span></div>
-      <textarea id="f-beskrivelse" placeholder="Beskriv nøyaktig hvor nøkkelboksen er plassert, f.eks. ved hovedinngang, veggen til venstre"></textarea>
+      <textarea id="f-beskrivelse" placeholder="Beskriv nøyaktig hvor nøkkelboksen er plassert, f.eks. ved hovedinngang, veggen til venstre for døren"></textarea>
     </div>
+
     <div class="form-group">
-      <div class="form-label">Merknader <span style="font-size:10px;color:var(--gray-500);text-transform:none;font-weight:400;">(valgfritt)</span></div>
+      <div class="form-label">Merknader <span class="opt-label">(valgfritt)</span></div>
       <input type="text" id="f-merknader" placeholder="F.eks. 1 nøkkel for hovedinngang"/>
     </div>
+
     <div class="form-group">
-      <div class="form-label">Bilde <span style="font-size:10px;color:var(--gray-500);text-transform:none;font-weight:400;">(valgfritt)</span></div>
-      <div class="upload-box" onclick="document.getElementById('f-bilde').click()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:28px;height:28px;color:var(--gray-300);margin:0 auto;display:block;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-        <p id="upload-label">Trykk for å laste opp bilde</p>
-        <input type="file" id="f-bilde" accept="image/*" onchange="previewBilde(this)"/>
+      <div class="form-label">Bilde <span class="opt-label">(valgfritt)</span></div>
+      <div class="bilde-area" id="bilde-area" onclick="document.getElementById('f-bilde').click()">
+        <div class="bilde-placeholder" id="bilde-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          <p>Ta bilde eller velg fra galleri</p>
+          <span>Viser i popup og liste</span>
+        </div>
+        <img id="bilde-preview-img" class="bilde-preview-img"/>
+        <input type="file" id="f-bilde" accept="image/*" capture="environment" onchange="previewBilde(this)"/>
       </div>
-      <img id="bilde-preview" class="upload-preview"/>
     </div>
+
     <button class="submit-btn" id="submit-btn" onclick="submitForm()">Registrer nøkkelboks</button>
   </div>
 </div>
@@ -214,10 +282,15 @@ const SB_KEY='sb_publishable_RAIOxsbMw1cmsqIVkygv2g_AKYl1zMF';
 const SB_TABLE='nokkelbokser';
 const SB_BUCKET='bilder';
 
-const AVD_COLORS={'Demenslaget':'#7F77DD','Nattpatruljen':'#1D9E75','Nord':'#378ADD','Sentrum 3':'#D85A30','Sør':'#639922','Vest 1':'#BA7517','Vest 3':'#D4537E','Øst 1':'#533AB7','Innsatsteamet':'#185FA5','Annet':'#888780'};
+const AVD_COLORS={
+  'Demenslaget':'#7F77DD','Nattpatruljen':'#1D9E75','Nord':'#378ADD',
+  'Sentrum 3':'#D85A30','Sør':'#639922','Vest 1':'#BA7517',
+  'Vest 3':'#D4537E','Øst 1':'#533AB7','Innsatsteamet':'#185FA5','Annet':'#888780'
+};
 const AVD_LIST=Object.keys(AVD_COLORS);
 
 let map,markers=[],activeFilter='Alle',currentLat=null,currentLng=null,allData=[];
+let filterPanelOpen=false;
 
 async function sbFetch(path,options={}){
   return fetch(`${SB_URL}/rest/v1/${path}`,{
@@ -233,7 +306,11 @@ async function loadData(){
 }
 
 async function saveData(item){
-  const r=await sbFetch(SB_TABLE,{method:'POST',body:JSON.stringify({adresse:item.adresse,avdeling:item.avdeling,beskrivelse:item.beskrivelse,merknader:item.merknader,breddegrad:item.lat,lengdegrad:item.lng,opprettet_av:item.navn,bilde_url:item.bilde_url||null})});
+  const r=await sbFetch(SB_TABLE,{method:'POST',body:JSON.stringify({
+    adresse:item.adresse,avdeling:item.avdeling,beskrivelse:item.beskrivelse,
+    merknader:item.merknader,breddegrad:item.lat,lengdegrad:item.lng,
+    opprettet_av:item.navn,bilde_url:item.bilde_url||null
+  })});
   if(!r.ok){const e=await r.text();throw new Error(e);}
   const d=await r.json();
   return d[0];
@@ -247,7 +324,7 @@ async function uploadBilde(file){
     headers:{'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`,'Content-Type':file.type},
     body:file
   });
-  if(!r.ok)throw new Error('Feil ved bildeopplasting');
+  if(!r.ok)throw new Error('Bildeopplasting feilet');
   return`${SB_URL}/storage/v1/object/public/${SB_BUCKET}/${filename}`;
 }
 
@@ -255,10 +332,18 @@ function initMap(){
   map=L.map('map',{zoomControl:false}).setView([66.3126,14.1434],13);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:19}).addTo(map);
   L.control.zoom({position:'bottomright'}).addTo(map);
+  map.on('click',()=>{
+    if(filterPanelOpen)toggleFilterPanel();
+    document.getElementById('search-results').classList.remove('visible');
+  });
 }
 
 function makeIcon(color){
-  return L.divIcon({className:'',html:`<div style="width:28px;height:28px;background:${color};border-radius:50%;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.3);"></div>`,iconSize:[28,28],iconAnchor:[14,14],popupAnchor:[0,-16]});
+  return L.divIcon({
+    className:'',
+    html:`<div style="width:30px;height:30px;background:${color};border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.3);"></div>`,
+    iconSize:[30,30],iconAnchor:[15,15],popupAnchor:[0,-18]
+  });
 }
 
 function renderMarkers(){
@@ -269,38 +354,56 @@ function renderMarkers(){
     if(!item.breddegrad||!item.lengdegrad)return;
     const color=AVD_COLORS[item.avdeling]||'#888';
     const m=L.marker([item.breddegrad,item.lengdegrad],{icon:makeIcon(color)}).addTo(map);
-    m.bindPopup(`<div>
-      ${item.bilde_url?`<img src="${item.bilde_url}" class="popup-img" onerror="this.style.display='none'"/>`:''}
-      <div class="popup-inner">
-        <div class="popup-avd-badge" style="background:${color}22;color:${color}">${item.avdeling}</div>
-        <div class="popup-addr">${item.adresse}</div>
-        <div class="popup-desc">${item.beskrivelse}</div>
-        ${item.merknader?`<div class="popup-row"><span class="popup-key">Merknad</span><span class="popup-val">${item.merknader}</span></div>`:''}
-        <div class="popup-row"><span class="popup-key">Registrert av</span><span class="popup-val">${item.opprettet_av||''}</span></div>
+    const dato=new Date(item.created_at).toLocaleDateString('no');
+    m.bindPopup(`
+      <div>
+        ${item.bilde_url?`<img src="${item.bilde_url}" class="popup-img" onerror="this.style.display='none'"/>`:''}
+        <div class="popup-body">
+          <div class="popup-addr">${item.adresse}</div>
+          <div class="popup-desc">${item.beskrivelse}</div>
+          ${item.merknader?`<div class="popup-merknad">${item.merknader}</div>`:''}
+          <div class="popup-footer">
+            <div class="popup-avd-badge" style="background:${color}22;color:${color}">${item.avdeling}</div>
+            <div class="popup-meta">${item.opprettet_av||''} · ${dato}</div>
+          </div>
+        </div>
       </div>
-    </div>`,{maxWidth:280});
+    `,{maxWidth:290});
     markers.push(m);
   });
 }
 
-function renderFilters(){
-  const bar=document.getElementById('filter-bar');
-  bar.innerHTML='';
+function renderFilterGrid(){
+  const grid=document.getElementById('filter-grid');
+  grid.innerHTML='';
   const all=document.createElement('button');
-  all.className='filter-chip'+(activeFilter==='Alle'?' active':'');
-  if(activeFilter==='Alle')all.style.background='#1a56a0';
-  all.textContent='Alle';
-  all.onclick=()=>{activeFilter='Alle';renderFilters();renderMarkers();};
-  bar.appendChild(all);
+  all.className='filter-chip filter-all'+(activeFilter==='Alle'?' active':'');
+  if(activeFilter==='Alle'){all.style.background='#1a56a0';all.style.color='#fff';}
+  all.innerHTML=`<span class="chip-dot" style="background:#fff;${activeFilter!=='Alle'?'background:#888':''}"></span>Alle avdelinger`;
+  all.onclick=()=>{activeFilter='Alle';updateFilterUI();renderMarkers();document.getElementById('filter-dot').classList.remove('visible');};
+  grid.appendChild(all);
   AVD_LIST.forEach(avd=>{
     const color=AVD_COLORS[avd];
     const c=document.createElement('button');
     c.className='filter-chip'+(activeFilter===avd?' active':'');
     if(activeFilter===avd)c.style.background=color;
     c.innerHTML=`<span class="chip-dot" style="background:${color}"></span>${avd}`;
-    c.onclick=()=>{activeFilter=avd;renderFilters();renderMarkers();};
-    bar.appendChild(c);
+    c.onclick=()=>{
+      activeFilter=avd;updateFilterUI();renderMarkers();
+      document.getElementById('filter-dot').classList.add('visible');
+    };
+    grid.appendChild(c);
   });
+}
+
+function updateFilterUI(){renderFilterGrid();}
+
+function toggleFilterPanel(){
+  filterPanelOpen=!filterPanelOpen;
+  document.getElementById('filter-panel').classList.toggle('visible',filterPanelOpen);
+  const mapTop=filterPanelOpen?document.getElementById('filter-panel').offsetHeight+56:56;
+  document.getElementById('map').style.top=mapTop+'px';
+  document.getElementById('search-bar')&&(document.getElementById('map-search-bar').style.top=(filterPanelOpen?document.getElementById('filter-panel').offsetHeight+68:68)+'px');
 }
 
 function updateCount(){document.getElementById('count-badge').textContent=allData.length+' registrert';}
@@ -310,8 +413,9 @@ function setView(v){
   document.getElementById('nav-liste').classList.toggle('active',v==='liste');
   document.getElementById('liste-view').style.display=v==='liste'?'block':'none';
   document.getElementById('map-search-bar').style.display=v==='kart'?'block':'none';
-  document.getElementById('filter-bar').style.display=v==='kart'?'flex':'none';
+  document.getElementById('filter-toggle-btn').style.display=v==='kart'?'flex':'none';
   if(v==='liste'){document.getElementById('liste-search-input').value='';renderListe(allData);}
+  if(filterPanelOpen&&v!=='kart')toggleFilterPanel();
 }
 
 function renderListe(data){
@@ -321,17 +425,16 @@ function renderListe(data){
     const color=AVD_COLORS[item.avdeling]||'#888';
     const dato=new Date(item.created_at).toLocaleDateString('no');
     return`<div style="background:#fff;border-radius:10px;margin-bottom:10px;border:1px solid var(--gray-100);overflow:hidden;">
-      ${item.bilde_url?`<img src="${item.bilde_url}" style="width:100%;height:120px;object-fit:cover;display:block;" onerror="this.style.display='none'"/>`:''}
+      ${item.bilde_url?`<img src="${item.bilde_url}" style="width:100%;height:130px;object-fit:cover;display:block;" onerror="this.style.display='none'"/>`:''}
       <div style="padding:14px;">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-          <span style="width:9px;height:9px;border-radius:50%;background:${color};display:inline-block;flex-shrink:0;"></span>
-          <span style="font-weight:600;font-size:14px;">${item.adresse}</span>
-          <span style="margin-left:auto;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:${color}22;color:${color}">${item.avdeling}</span>
+        <div style="font-weight:600;font-size:15px;margin-bottom:4px;">${item.adresse}</div>
+        <div style="font-size:13px;color:var(--gray-500);margin-bottom:8px;line-height:1.4;">${item.beskrivelse}</div>
+        ${item.merknader?`<div style="font-size:12px;color:var(--gray-700);background:var(--gray-50);border-radius:6px;padding:5px 8px;margin-bottom:8px;">${item.merknader}</div>`:''}
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:${color}22;color:${color}">${item.avdeling}</span>
+          <span style="font-size:11px;color:var(--gray-300);">${item.opprettet_av||''} · ${dato}</span>
         </div>
-        <div style="font-size:12px;color:var(--gray-500);margin-bottom:6px;">${item.beskrivelse}</div>
-        ${item.merknader?`<div style="font-size:12px;color:var(--gray-700);margin-bottom:6px);">Merknad: ${item.merknader}</div>`:''}
-        <div style="font-size:11px;color:var(--gray-300);margin-bottom:10px;">${item.opprettet_av||''} · ${dato}</div>
-        <button onclick="flyTo(${item.breddegrad},${item.lengdegrad})" style="padding:6px 12px;background:var(--blue-light);color:var(--blue);border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);">Vis på kart</button>
+        <button onclick="flyTo(${item.breddegrad},${item.lengdegrad})" style="margin-top:10px;width:100%;padding:8px;background:var(--blue-light);color:var(--blue);border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);">Vis på kart</button>
       </div>
     </div>`;
   }).join('');
@@ -339,70 +442,96 @@ function renderListe(data){
 
 function filterListe(q){
   if(!q.trim()){renderListe(allData);return;}
-  const filtered=allData.filter(d=>
+  const f=allData.filter(d=>
     d.adresse.toLowerCase().includes(q.toLowerCase())||
-    d.avdeling.toLowerCase().includes(q.toLowerCase())||
-    d.beskrivelse.toLowerCase().includes(q.toLowerCase())
+    (d.avdeling||'').toLowerCase().includes(q.toLowerCase())||
+    (d.beskrivelse||'').toLowerCase().includes(q.toLowerCase())
   );
-  renderListe(filtered);
+  renderListe(f);
 }
 
-function flyTo(lat,lng){setView('kart');setTimeout(()=>map.flyTo([lat,lng],17,{duration:1}),100);}
+function flyTo(lat,lng){
+  setView('kart');
+  setTimeout(()=>map.flyTo([lat,lng],17,{duration:1}),100);
+}
 
 // KART-SØK
 const searchInput=document.getElementById('search-input');
 const searchResults=document.getElementById('search-results');
+const searchClear=document.getElementById('search-clear');
 let searchTimeout;
+
 searchInput.addEventListener('input',function(){
   clearTimeout(searchTimeout);
   const val=this.value.trim();
+  searchClear.classList.toggle('visible',val.length>0);
   if(val.length<2){searchResults.classList.remove('visible');return;}
-  searchTimeout=setTimeout(()=>doMapSearch(val),350);
+  searchTimeout=setTimeout(()=>doMapSearch(val),300);
 });
 searchInput.addEventListener('blur',()=>setTimeout(()=>searchResults.classList.remove('visible'),200));
+
+function clearSearch(){
+  searchInput.value='';
+  searchClear.classList.remove('visible');
+  searchResults.classList.remove('visible');
+}
 
 async function doMapSearch(q){
   const local=allData.filter(d=>d.adresse.toLowerCase().includes(q.toLowerCase()));
   let html=local.slice(0,3).map(item=>{
     const color=AVD_COLORS[item.avdeling]||'#888';
-    return`<div class="search-result-item" onclick="flyTo(${item.breddegrad},${item.lengdegrad});searchResults.classList.remove('visible');searchInput.value='${item.adresse}'">
-      <span style="width:8px;height:8px;border-radius:50%;background:${color};display:inline-block;flex-shrink:0;"></span>
-      <div><div class="search-result-addr">${item.adresse}</div><div class="search-result-avd">${item.avdeling} · Registrert nøkkelboks</div></div>
+    return`<div class="search-result-item" onclick="flyTo(${item.breddegrad},${item.lengdegrad});searchResults.classList.remove('visible');searchInput.value='${item.adresse.replace(/'/g,"\\'")}';searchClear.classList.add('visible')">
+      <div class="sri-icon" style="background:${color}22;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2.5" style="width:14px;height:14px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      </div>
+      <div class="sri-text">
+        <div class="sri-addr">${item.adresse}</div>
+        <div class="sri-sub">${item.avdeling} · Registrert nøkkelboks</div>
+      </div>
     </div>`;
   }).join('');
   try{
-    const r=await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q+', Mo i Rana, Norway')}&format=json&limit=4&countrycodes=no`);
+    const r=await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q+', Mo i Rana')}&format=json&limit=5&countrycodes=no&addressdetails=1`);
     const places=await r.json();
     places.forEach(p=>{
-      html+=`<div class="search-result-item" onclick="map.flyTo([${p.lat},${p.lon}],17);searchResults.classList.remove('visible');searchInput.value='${p.display_name.split(',')[0]}'">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;color:var(--gray-500);flex-shrink:0;"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.4 7 11.5 7.74 12.07a1 1 0 0 0 1.27 0C13.9 21.5 20 15.4 20 10a8 8 0 0 0-8-8z"/></svg>
-        <div><div class="search-result-addr">${p.display_name.split(',')[0]}</div><div class="search-result-avd">Adresse</div></div>
+      const parts=p.display_name.split(',');
+      html+=`<div class="search-result-item" onclick="map.flyTo([${p.lat},${p.lon}],17);searchResults.classList.remove('visible');searchInput.value='${parts[0].trim().replace(/'/g,"\\'")}';searchClear.classList.add('visible')">
+        <div class="sri-icon" style="background:var(--gray-100);">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--gray-500)" stroke-width="2" style="width:14px;height:14px;"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.4 7 11.5 7.74 12.07a1 1 0 0 0 1.27 0C13.9 21.5 20 15.4 20 10a8 8 0 0 0-8-8z"/></svg>
+        </div>
+        <div class="sri-text">
+          <div class="sri-addr">${parts[0].trim()}</div>
+          <div class="sri-sub">${parts.slice(1,3).join(',').trim()}</div>
+        </div>
       </div>`;
     });
   }catch{}
-  if(!html)html='<div class="search-result-item" style="color:var(--gray-500);">Ingen treff</div>';
-  searchResults.innerHTML=html;searchResults.classList.add('visible');
+  if(!html)html='<div class="search-result-item" style="color:var(--gray-500);">Ingen treff funnet</div>';
+  searchResults.innerHTML=html;
+  searchResults.classList.add('visible');
 }
 
 // ADRESSE AUTOCOMPLETE I SKJEMA
-let autocompleteTimeout;
+let acTimeout;
 async function adresseAutocomplete(q){
   const list=document.getElementById('adresse-suggestions');
   if(q.length<3){list.classList.remove('visible');currentLat=null;currentLng=null;return;}
-  clearTimeout(autocompleteTimeout);
-  autocompleteTimeout=setTimeout(async()=>{
+  clearTimeout(acTimeout);
+  acTimeout=setTimeout(async()=>{
     try{
-      const r=await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q+', Mo i Rana, Norway')}&format=json&limit=4&countrycodes=no`);
+      const r=await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q+', Mo i Rana')}&format=json&limit=5&countrycodes=no&addressdetails=1`);
       const places=await r.json();
       if(!places.length){list.classList.remove('visible');return;}
-      list.innerHTML=places.map(p=>`
-        <div class="autocomplete-item" onclick="velgAdresse('${p.display_name.split(',')[0].replace(/'/g,"\\'")}',${p.lat},${p.lon})">
+      list.innerHTML=places.map(p=>{
+        const parts=p.display_name.split(',');
+        return`<div class="autocomplete-item" onclick="velgAdresse('${parts[0].trim().replace(/'/g,"\\'")}',${p.lat},${p.lon})">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.4 7 11.5 7.74 12.07a1 1 0 0 0 1.27 0C13.9 21.5 20 15.4 20 10a8 8 0 0 0-8-8z"/></svg>
-          ${p.display_name.split(',').slice(0,2).join(', ')}
-        </div>`).join('');
+          <div><div class="ac-main">${parts[0].trim()}</div><div class="ac-sub">${parts.slice(1,3).join(',').trim()}</div></div>
+        </div>`;
+      }).join('');
       list.classList.add('visible');
     }catch{}
-  },350);
+  },300);
 }
 
 function velgAdresse(navn,lat,lng){
@@ -412,14 +541,13 @@ function velgAdresse(navn,lat,lng){
   document.getElementById('adresse-suggestions').classList.remove('visible');
 }
 
-// BILDE PREVIEW
 function previewBilde(input){
   const file=input.files[0];
   if(!file)return;
-  const preview=document.getElementById('bilde-preview');
-  preview.src=URL.createObjectURL(file);
-  preview.style.display='block';
-  document.getElementById('upload-label').textContent=file.name;
+  const img=document.getElementById('bilde-preview-img');
+  img.src=URL.createObjectURL(file);
+  img.style.display='block';
+  document.getElementById('bilde-placeholder').style.display='none';
 }
 
 function openModal(){document.getElementById('modal-overlay').classList.add('visible');}
@@ -428,8 +556,8 @@ function closeModal(){
   ['f-navn','f-adresse','f-beskrivelse','f-merknader'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('f-avdeling').value='';
   document.getElementById('f-bilde').value='';
-  document.getElementById('bilde-preview').style.display='none';
-  document.getElementById('upload-label').textContent='Trykk for å laste opp bilde';
+  document.getElementById('bilde-preview-img').style.display='none';
+  document.getElementById('bilde-placeholder').style.display='block';
   document.getElementById('adresse-suggestions').classList.remove('visible');
   currentLat=null;currentLng=null;
 }
@@ -437,16 +565,20 @@ function closeModalOutside(e){if(e.target===document.getElementById('modal-overl
 
 async function useGPS(){
   if(!navigator.geolocation){showToast('GPS ikke tilgjengelig');return;}
-  showToast('Henter posisjon...');
+  showToast('Henter din posisjon...');
   navigator.geolocation.getCurrentPosition(async pos=>{
-    currentLat=pos.coords.latitude;currentLng=pos.coords.longitude;
+    currentLat=pos.coords.latitude;
+    currentLng=pos.coords.longitude;
     try{
       const r=await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${currentLat}&lon=${currentLng}&format=json`);
       const d=await r.json();
-      document.getElementById('f-adresse').value=(d.address.road||'')+(d.address.house_number?' '+d.address.house_number:'');
-    }catch{document.getElementById('f-adresse').value=`${currentLat.toFixed(5)}, ${currentLng.toFixed(5)}`;}
+      const addr=(d.address.road||'')+(d.address.house_number?' '+d.address.house_number:'');
+      document.getElementById('f-adresse').value=addr||`${currentLat.toFixed(5)}, ${currentLng.toFixed(5)}`;
+    }catch{
+      document.getElementById('f-adresse').value=`${currentLat.toFixed(5)}, ${currentLng.toFixed(5)}`;
+    }
     showToast('Posisjon hentet');
-  },()=>showToast('Kunne ikke hente posisjon'));
+  },()=>showToast('Kunne ikke hente posisjon – sjekk at du har gitt tilgang'));
 }
 
 async function submitForm(){
@@ -457,27 +589,19 @@ async function submitForm(){
   const merknader=document.getElementById('f-merknader').value.trim();
   const bildeFile=document.getElementById('f-bilde').files[0];
   if(!navn||!adresse||!avdeling||!beskrivelse){showToast('Fyll ut alle obligatoriske felt');return;}
+  if(!currentLat||!currentLng){showToast('Velg adresse fra forslagslisten');return;}
   const btn=document.getElementById('submit-btn');
   btn.disabled=true;btn.textContent='Registrerer...';
-  let lat=currentLat,lng=currentLng;
-  if(!lat||!lng){
-    try{
-      const r=await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(adresse+', Mo i Rana, Norway')}&format=json&limit=1&countrycodes=no`);
-      const p=await r.json();
-      if(p.length){lat=parseFloat(p[0].lat);lng=parseFloat(p[0].lon);}
-      else{lat=66.3126;lng=14.1434;}
-    }catch{lat=66.3126;lng=14.1434;}
-  }
   let bilde_url=null;
   if(bildeFile){
     try{bilde_url=await uploadBilde(bildeFile);}
-    catch{showToast('Bilde kunne ikke lastes opp, fortsetter uten');}
+    catch(e){console.error(e);showToast('Bilde kunne ikke lastes opp, fortsetter uten');}
   }
   try{
-    const saved=await saveData({navn,adresse,avdeling,beskrivelse,merknader,lat,lng,bilde_url});
+    const saved=await saveData({navn,adresse,avdeling,beskrivelse,merknader,lat:currentLat,lng:currentLng,bilde_url});
     allData.unshift(saved);
     renderMarkers();updateCount();closeModal();
-    map.flyTo([lat,lng],16,{duration:1});
+    map.flyTo([currentLat,currentLng],17,{duration:1});
     showToast('Nøkkelboks registrert');
   }catch(e){
     showToast('Kunne ikke lagre – prøv igjen');
@@ -489,15 +613,17 @@ async function submitForm(){
 function showToast(msg){
   const t=document.getElementById('toast');
   t.textContent=msg;t.classList.add('visible');
-  setTimeout(()=>t.classList.remove('visible'),2500);
+  setTimeout(()=>t.classList.remove('visible'),3000);
 }
 
 async function init(){
-  initMap();renderFilters();
+  initMap();
+  renderFilterGrid();
   try{allData=await loadData();}
   catch(e){showToast('Kunne ikke laste data');console.error(e);allData=[];}
   document.getElementById('loading').style.display='none';
-  renderMarkers();updateCount();
+  renderMarkers();
+  updateCount();
 }
 
 init();
