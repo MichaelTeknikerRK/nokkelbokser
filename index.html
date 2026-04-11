@@ -307,7 +307,9 @@ async function searchKartverket(q){
 function setMapTop(){
   const tc=document.getElementById('top-controls');
   const h=tc.offsetHeight;
-  document.getElementById('map').style.top=(56+h)+'px';
+  const mapEl=document.getElementById('map');
+  mapEl.style.top=(56+h)+'px';
+  if(map)map.invalidateSize();
 }
 
 function initMap(){
@@ -352,11 +354,10 @@ function renderMarkers(){
           <div class="popup-footer-top">
             <div class="popup-avd-badge" style="background:${color}22;color:${color}">${item.avdeling}</div>
           </div>
-          <div class="popup-meta-name">${item.opprettet_av||''}</div>
-          <div class="popup-meta-date">${dato}</div>
+          <div style="display:flex;align-items:center;gap:6px;margin-top:2px;"><span style="font-size:12px;color:var(--gray-700);font-weight:500;">${item.opprettet_av||''}</span><span style="font-size:11px;color:var(--gray-300);">·</span><span style="font-size:11px;color:var(--gray-300);">${dato}</span></div>
         </div>
       </div>
-    </div>`,{maxWidth:275});
+    </div>`,{maxWidth:255});
     markers.push(m);
   });
 }
@@ -394,7 +395,7 @@ function setView(v){
     document.getElementById('liste-search-input').value='';
     renderListe(allData);
   }
-  if(v==='kart')setTimeout(()=>map.invalidateSize(),100);
+  if(v==='kart')setTimeout(()=>{setMapTop();map.invalidateSize();},100);
 }
 
 function renderListe(data){
@@ -404,8 +405,8 @@ function renderListe(data){
     const color=AVD_COLORS[item.avdeling]||'#888';
     const dato=new Date(item.created_at).toLocaleDateString('no');
     return`<div style="background:#fff;border-radius:10px;margin-bottom:10px;border:1px solid var(--gray-100);overflow:hidden;">
-      ${item.bilde_url?`<img src="${item.bilde_url}" style="width:100%;height:130px;object-fit:cover;display:block;" onerror="this.style.display='none'"/>`:''}
-      <div style="padding:14px;">
+      ${item.bilde_url?`<img src="${item.bilde_url}" style="width:100%;height:80px;object-fit:cover;display:block;" onerror="this.style.display='none'"/>`:''}
+      <div style="padding:10px 12px 12px;">
         <div style="font-weight:600;font-size:15px;margin-bottom:10px;">${item.adresse}</div>
         <div style="margin-bottom:8px;">
           <div style="font-size:10px;font-weight:600;color:var(--gray-500);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:2px;">Beskrivelse</div>
@@ -620,7 +621,9 @@ async function init(){
   document.getElementById('loading').style.display='none';
   renderMarkers();
   updateCount();
-  setTimeout(setMapTop,100);
+  setTimeout(setMapTop,50);
+  setTimeout(setMapTop,300);
+  setTimeout(setMapTop,800);
 }
 
 init();
