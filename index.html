@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nøkkelbokser – Rana kommune</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --blue:#1a56a0;--blue-dark:#0f3d7a;--blue-light:#e8f0fb;
+    --red:#b03030;--red-light:#fbeaea;
+    --gray-50:#f7f7f7;--gray-100:#ebebeb;--gray-300:#c0c0c0;
+    --gray-500:#888;--gray-700:#444;--gray-900:#1a1a1a;
+    --white:#fff;--shadow:0 2px 12px rgba(0,0,0,0.12);
+    --radius:10px;--font:'IBM Plex Sans',sans-serif;
+  }
+  html,body{height:100%;font-family:var(--font);background:var(--gray-50);color:var(--gray-900);}
+  header{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--blue);height:56px;display:flex;align-items:center;padding:0 16px;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,0.2);}
+  .header-logo{width:32px;height:32px;background:rgba(255,255,255,0.15);border-radius:8px;display:flex;align-items:center;justify-content:center;}
+  .header-logo svg{width:18px;height:18px;}
+  header h1{color:#fff;font-size:16px;font-weight:600;flex:1;}
+  .header-count{background:rgba(255,255,255,0.2);color:#fff;font-size:12px;padding:3px 10px;border-radius:20px;}
+  .search-bar{position:fixed;top:68px;left:50%;transform:translateX(-50%);z-index:900;width:calc(100% - 32px);max-width:480px;}
+  .search-wrap{position:relative;}
+  .search-wrap input{width:100%;padding:11px 16px 11px 42px;border:none;border-radius:var(--radius);background:var(--white);font-family:var(--font);font-size:14px;color:var(--gray-900);box-shadow:var(--shadow);outline:none;}
+  .search-wrap input::placeholder{color:var(--gray-500);}
+  .search-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--gray-500);}
+  .search-icon svg{width:16px;height:16px;}
+  .search-results{background:var(--white);border-radius:var(--radius);margin-top:6px;box-shadow:var(--shadow);overflow:hidden;display:none;}
+  .search-results.visible{display:block;}
+  .search-result-item{padding:10px 16px;font-size:13px;cursor:pointer;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;gap:10px;}
+  .search-result-item:last-child{border-bottom:none;}
+  .search-result-item:hover{background:var(--blue-light);}
+  .search-result-addr{font-weight:500;}
+  .search-result-avd{font-size:11px;color:var(--gray-500);margin-top:1px;}
+  .filter-bar{position:fixed;top:120px;left:0;right:0;z-index:800;padding:0 16px;overflow-x:auto;white-space:nowrap;display:flex;gap:6px;scrollbar-width:none;}
+  .filter-bar::-webkit-scrollbar{display:none;}
+  .filter-chip{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1.5px solid transparent;background:var(--white);color:var(--gray-700);box-shadow:0 1px 4px rgba(0,0,0,0.08);transition:all 0.15s;white-space:nowrap;font-family:var(--font);}
+  .filter-chip.active{color:#fff;}
+  .chip-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+  #map{position:fixed;top:56px;left:0;right:0;bottom:64px;}
+  .bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:1000;background:var(--white);border-top:1px solid var(--gray-100);height:64px;display:flex;box-shadow:0 -2px 8px rgba(0,0,0,0.08);}
+  .nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:none;cursor:pointer;font-family:var(--font);font-size:11px;font-weight:500;color:var(--gray-500);}
+  .nav-btn.active{color:var(--blue);}
+  .nav-btn svg{width:22px;height:22px;}
+  .add-btn-inner{width:48px;height:48px;background:var(--blue);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(26,86,160,0.4);margin-bottom:2px;}
+  .add-btn-inner svg{width:24px;height:24px;}
+  .leaflet-popup-content-wrapper{border-radius:var(--radius);box-shadow:var(--shadow);border:none;padding:0;overflow:hidden;}
+  .leaflet-popup-content{margin:0;width:260px!important;}
+  .leaflet-popup-tip-container{display:none;}
+  .popup-inner{padding:14px;}
+  .popup-avd-badge{display:inline-block;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:600;margin-bottom:8px;font-family:var(--font);}
+  .popup-addr{font-size:15px;font-weight:600;margin-bottom:4px;color:var(--gray-900);}
+  .popup-desc{font-size:12px;color:var(--gray-500);margin-bottom:8px;line-height:1.5;}
+  .popup-row{display:flex;gap:6px;font-size:12px;margin-bottom:4px;}
+  .popup-key{color:var(--gray-500);min-width:70px;}
+  .popup-val{color:var(--gray-700);font-weight:500;}
+  .modal-overlay{position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,0.45);display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s;}
+  .modal-overlay.visible{opacity:1;pointer-events:all;}
+  .modal{background:var(--white);border-radius:16px 16px 0 0;width:100%;max-width:540px;padding:20px 20px 32px;transform:translateY(30px);transition:transform 0.2s;max-height:85vh;overflow-y:auto;}
+  .modal-overlay.visible .modal{transform:translateY(0);}
+  .modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+  .modal-title{font-size:17px;font-weight:600;}
+  .modal-close{background:var(--gray-100);border:none;cursor:pointer;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .modal-close svg{width:16px;height:16px;}
+  .form-group{margin-bottom:16px;}
+  .form-label{font-size:12px;font-weight:600;color:var(--gray-500);margin-bottom:6px;display:flex;align-items:center;gap:4px;text-transform:uppercase;letter-spacing:0.04em;}
+  .req{color:var(--red);}
+  .form-group input,.form-group textarea,.form-group select{width:100%;padding:10px 12px;border:1.5px solid var(--gray-100);border-radius:8px;font-family:var(--font);font-size:14px;color:var(--gray-900);background:var(--gray-50);outline:none;transition:border-color 0.15s;}
+  .form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--blue);background:#fff;}
+  .form-group textarea{height:80px;resize:none;}
+  .submit-btn{width:100%;padding:13px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius);font-size:15px;font-weight:600;cursor:pointer;font-family:var(--font);}
+  .submit-btn:disabled{background:var(--gray-300);cursor:not-allowed;}
+  .gps-row{display:flex;gap:8px;align-items:center;}
+  .gps-row input{flex:1;}
+  .gps-btn{padding:10px 12px;background:var(--blue-light);color:var(--blue);border:1.5px solid var(--blue);border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;white-space:nowrap;font-family:var(--font);display:flex;align-items:center;gap:5px;}
+  .gps-btn svg{width:14px;height:14px;}
+  .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--gray-900);color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:500;z-index:3000;opacity:0;transition:all 0.2s;pointer-events:none;white-space:nowrap;}
+  .toast.visible{opacity:1;transform:translateX(-50%) translateY(0);}
+  .loading{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:500;text-align:center;}
+  .loading-spinner{width:36px;height:36px;border:3px solid var(--gray-100);border-top-color:var(--blue);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .loading p{font-size:13px;color:var(--gray-500);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-logo">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+  </div>
+  <h1>Nøkkelbokser</h1>
+  <div class="header-count" id="count-badge">Laster...</div>
+</header>
+
+<div class="search-bar">
+  <div class="search-wrap">
+    <span class="search-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></span>
+    <input type="text" id="search-input" placeholder="Søk på adresse..." autocomplete="off"/>
+  </div>
+  <div class="search-results" id="search-results"></div>
+</div>
+
+<div class="filter-bar" id="filter-bar"></div>
+<div id="map"></div>
+
+<div id="loading" class="loading">
+  <div class="loading-spinner"></div>
+  <p>Henter nøkkelbokser...</p>
+</div>
+
+<div class="bottom-nav">
+  <button class="nav-btn active" id="nav-kart" onclick="setView('kart')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7l6-3 6 3 6-3v13l-6 3-6-3-6 3V7z"/><line x1="9" y1="4" x2="9" y2="20"/><line x1="15" y1="7" x2="15" y2="20"/></svg>
+    Kart
+  </button>
+  <button class="nav-btn" onclick="openModal()">
+    <div class="add-btn-inner">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </div>
+    Legg til
+  </button>
+  <button class="nav-btn" id="nav-liste" onclick="setView('liste')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+    Liste
+  </button>
+</div>
+
+<div id="liste-view" style="display:none;position:fixed;top:56px;left:0;right:0;bottom:64px;background:var(--gray-50);overflow-y:auto;z-index:700;padding:12px;">
+  <div id="liste-content"></div>
+</div>
+
+<div class="modal-overlay" id="modal-overlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Registrer nøkkelboks</div>
+      <button class="modal-close" onclick="closeModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="form-group">
+      <div class="form-label">Ditt navn <span class="req">*</span></div>
+      <input type="text" id="f-navn" placeholder="F.eks. Kari Nordmann"/>
+    </div>
+    <div class="form-group">
+      <div class="form-label">Adresse <span class="req">*</span></div>
+      <div class="gps-row">
+        <input type="text" id="f-adresse" placeholder="F.eks. Storgt. 12"/>
+        <button class="gps-btn" onclick="useGPS()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+          GPS
+        </button>
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="form-label">Avdeling <span class="req">*</span></div>
+      <select id="f-avdeling">
+        <option value="">Velg avdeling...</option>
+        <option>Demenslaget</option><option>Nattpatruljen</option><option>Nord</option>
+        <option>Sentrum 3</option><option>Sør</option><option>Vest 1</option>
+        <option>Vest 3</option><option>Øst 1</option><option>Innsatsteamet</option><option>Annet</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <div class="form-label">Beskrivelse <span class="req">*</span></div>
+      <textarea id="f-beskrivelse" placeholder="Beskriv nøyaktig hvor nøkkelboksen er plassert"></textarea>
+    </div>
+    <div class="form-group">
+      <div class="form-label">Merknader <span style="font-size:10px;color:var(--gray-500);text-transform:none;font-weight:400;">(valgfritt)</span></div>
+      <input type="text" id="f-merknader" placeholder="F.eks. 1 nøkkel for hovedinngang"/>
+    </div>
+    <button class="submit-btn" id="submit-btn" onclick="submitForm()">Registrer nøkkelboks</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const SB_URL='https://jemhrbhzecdbnylnzdej.supabase.co';
+const SB_KEY='sb_publishable_RAIOxsbMw1cmsqIVkygv2g_AKYl1zMF';
+const SB_TABLE='nokkelbokser';
+
+const AVD_COLORS={'Demenslaget':'#7F77DD','Nattpatruljen':'#1D9E75','Nord':'#378ADD','Sentrum 3':'#D85A30','Sør':'#639922','Vest 1':'#BA7517','Vest 3':'#D4537E','Øst 1':'#533AB7','Innsatsteamet':'#185FA5','Annet':'#888780'};
+const AVD_LIST=Object.keys(AVD_COLORS);
+
+let map,markers=[],activeFilter='Alle',currentLat=null,currentLng=null,allData=[];
+
+async function sbFetch(path,options={}){
+  return fetch(`${SB_URL}/rest/v1/${path}`,{
+    ...options,
+    headers:{
+      'apikey':SB_KEY,
+      'Authorization':`Bearer ${SB_KEY}`,
+      'Content-Type':'application/json',
+      'Prefer':'return=representation',
+      ...(options.headers||{})
+    }
+  });
+}
+
+async function loadData(){
+  const r=await sbFetch(`${SB_TABLE}?select=*&order=created_at.desc`);
+  if(!r.ok)throw new Error('Feil ved henting');
+  return r.json();
+}
+
+async function saveData(item){
+  const r=await sbFetch(SB_TABLE,{
+    method:'POST',
+    body:JSON.stringify({
+      adresse:item.adresse,avdeling:item.avdeling,
+      beskrivelse:item.beskrivelse,merknader:item.merknader,
+      breddegrad:item.lat,lengdegrad:item.lng,
+      opprettet_av:item.navn
+    })
+  });
+  if(!r.ok)throw new Error('Feil ved lagring');
+  const d=await r.json();
+  return d[0];
+}
+
+function initMap(){
+  map=L.map('map',{zoomControl:false}).setView([66.3126,14.1434],13);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:19}).addTo(map);
+  L.control.zoom({position:'bottomright'}).addTo(map);
+}
+
+function makeIcon(color){
+  return L.divIcon({className:'',html:`<div style="width:28px;height:28px;background:${color};border-radius:50%;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.3);"></div>`,iconSize:[28,28],iconAnchor:[14,14],popupAnchor:[0,-16]});
+}
+
+function renderMarkers(){
+  markers.forEach(m=>map.removeLayer(m));
+  markers=[];
+  allData.forEach(item=>{
+    if(activeFilter!=='Alle'&&item.avdeling!==activeFilter)return;
+    const color=AVD_COLORS[item.avdeling]||'#888';
+    const m=L.marker([item.breddegrad,item.lengdegrad],{icon:makeIcon(color)}).addTo(map);
+    m.bindPopup(`<div class="popup-inner">
+      <div class="popup-avd-badge" style="background:${color}22;color:${color}">${item.avdeling}</div>
+      <div class="popup-addr">${item.adresse}</div>
+      <div class="popup-desc">${item.beskrivelse}</div>
+      ${item.merknader?`<div class="popup-row"><span class="popup-key">Merknad</span><span class="popup-val">${item.merknader}</span></div>`:''}
+      <div class="popup-row"><span class="popup-key">Registrert av</span><span class="popup-val">${item.opprettet_av||''}</span></div>
+    </div>`,{maxWidth:280});
+    markers.push(m);
+  });
+}
+
+function renderFilters(){
+  const bar=document.getElementById('filter-bar');
+  bar.innerHTML='';
+  const all=document.createElement('button');
+  all.className='filter-chip'+(activeFilter==='Alle'?' active':'');
+  if(activeFilter==='Alle')all.style.background='#1a56a0';
+  all.textContent='Alle';
+  all.onclick=()=>{activeFilter='Alle';renderFilters();renderMarkers();};
+  bar.appendChild(all);
+  AVD_LIST.forEach(avd=>{
+    const color=AVD_COLORS[avd];
+    const c=document.createElement('button');
+    c.className='filter-chip'+(activeFilter===avd?' active':'');
+    if(activeFilter===avd)c.style.background=color;
+    c.innerHTML=`<span class="chip-dot" style="background:${color}"></span>${avd}`;
+    c.onclick=()=>{activeFilter=avd;renderFilters();renderMarkers();};
+    bar.appendChild(c);
+  });
+}
+
+function updateCount(){document.getElementById('count-badge').textContent=allData.length+' registrert';}
+
+function setView(v){
+  document.getElementById('nav-kart').classList.toggle('active',v==='kart');
+  document.getElementById('nav-liste').classList.toggle('active',v==='liste');
+  document.getElementById('liste-view').style.display=v==='liste'?'block':'none';
+  if(v==='liste')renderListe();
+}
+
+function renderListe(){
+  const c=document.getElementById('liste-content');
+  if(!allData.length){c.innerHTML='<div style="text-align:center;padding:40px;color:var(--gray-500);font-size:14px;">Ingen nøkkelbokser registrert ennå</div>';return;}
+  c.innerHTML=allData.map(item=>{
+    const color=AVD_COLORS[item.avdeling]||'#888';
+    const dato=new Date(item.created_at).toLocaleDateString('no');
+    return`<div style="background:#fff;border-radius:10px;padding:14px;margin-bottom:10px;border:1px solid var(--gray-100);">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+        <span style="width:9px;height:9px;border-radius:50%;background:${color};display:inline-block;flex-shrink:0;"></span>
+        <span style="font-weight:600;font-size:14px;">${item.adresse}</span>
+        <span style="margin-left:auto;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:${color}22;color:${color}">${item.avdeling}</span>
+      </div>
+      <div style="font-size:12px;color:var(--gray-500);margin-bottom:6px;">${item.beskrivelse}</div>
+      ${item.merknader?`<div style="font-size:12px;color:var(--gray-700);margin-bottom:6px;">Merknad: ${item.merknader}</div>`:''}
+      <div style="font-size:11px;color:var(--gray-300);margin-bottom:8px;">${item.opprettet_av||''} · ${dato}</div>
+      <button onclick="flyTo(${item.breddegrad},${item.lengdegrad})" style="padding:6px 12px;background:var(--blue-light);color:var(--blue);border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);">Vis på kart</button>
+    </div>`;
+  }).join('');
+}
+
+function flyTo(lat,lng){setView('kart');setTimeout(()=>map.flyTo([lat,lng],17,{duration:1}),100);}
+
+const searchInput=document.getElementById('search-input');
+const searchResults=document.getElementById('search-results');
+let searchTimeout;
+searchInput.addEventListener('input',function(){
+  clearTimeout(searchTimeout);
+  const val=this.value.trim();
+  if(val.length<3){searchResults.classList.remove('visible');return;}
+  searchTimeout=setTimeout(()=>doSearch(val),400);
+});
+searchInput.addEventListener('blur',()=>setTimeout(()=>searchResults.classList.remove('visible'),200));
+
+async function doSearch(q){
+  const local=allData.filter(d=>d.adresse.toLowerCase().includes(q.toLowerCase()));
+  let html=local.slice(0,3).map(item=>{
+    const color=AVD_COLORS[item.avdeling]||'#888';
+    return`<div class="search-result-item" onclick="flyTo(${item.breddegrad},${item.lengdegrad});searchResults.classList.remove('visible')">
+      <span style="width:8px;height:8px;border-radius:50%;background:${color};display:inline-block;flex-shrink:0;"></span>
+      <div><div class="search-result-addr">${item.adresse}</div><div class="search-result-avd">${item.avdeling}</div></div>
+    </div>`;
+  }).join('');
+  try{
+    const r=await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q+', Mo i Rana')}&format=json&limit=3`);
+    const places=await r.json();
+    places.forEach(p=>{
+      html+=`<div class="search-result-item" onclick="map.flyTo([${p.lat},${p.lon}],17);searchResults.classList.remove('visible')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;color:var(--blue);flex-shrink:0;"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.4 7 11.5 7.74 12.07a1 1 0 0 0 1.27 0C13.9 21.5 20 15.4 20 10a8 8 0 0 0-8-8z"/></svg>
+        <div><div class="search-result-addr">${p.display_name.split(',')[0]}</div><div class="search-result-avd">Adresse</div></div>
+      </div>`;
+    });
+  }catch{}
+  if(!html)html='<div class="search-result-item" style="color:var(--gray-500);">Ingen treff</div>';
+  searchResults.innerHTML=html;searchResults.classList.add('visible');
+}
+
+function openModal(){document.getElementById('modal-overlay').classList.add('visible');}
+function closeModal(){
+  document.getElementById('modal-overlay').classList.remove('visible');
+  ['f-navn','f-adresse','f-beskrivelse','f-merknader'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-avdeling').value='';
+  currentLat=null;currentLng=null;
+}
+function closeModalOutside(e){if(e.target===document.getElementById('modal-overlay'))closeModal();}
+
+async function useGPS(){
+  if(!navigator.geolocation){showToast('GPS ikke tilgjengelig');return;}
+  showToast('Henter posisjon...');
+  navigator.geolocation.getCurrentPosition(async pos=>{
+    currentLat=pos.coords.latitude;currentLng=pos.coords.longitude;
+    try{
+      const r=await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${currentLat}&lon=${currentLng}&format=json`);
+      const d=await r.json();
+      document.getElementById('f-adresse').value=(d.address.road||'')+(d.address.house_number?' '+d.address.house_number:'');
+    }catch{document.getElementById('f-adresse').value=`${currentLat.toFixed(5)}, ${currentLng.toFixed(5)}`;}
+    showToast('Posisjon hentet');
+  },()=>showToast('Kunne ikke hente posisjon'));
+}
+
+async function submitForm(){
+  const navn=document.getElementById('f-navn').value.trim();
+  const adresse=document.getElementById('f-adresse').value.trim();
+  const avdeling=document.getElementById('f-avdeling').value;
+  const beskrivelse=document.getElementById('f-beskrivelse').value.trim();
+  const merknader=document.getElementById('f-merknader').value.trim();
+  if(!navn||!adresse||!avdeling||!beskrivelse){showToast('Fyll ut alle obligatoriske felt');return;}
+  const btn=document.getElementById('submit-btn');
+  btn.disabled=true;btn.textContent='Registrerer...';
+  let lat=currentLat,lng=currentLng;
+  if(!lat||!lng){
+    try{
+      const r=await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(adresse+', Mo i Rana')}&format=json&limit=1`);
+      const p=await r.json();
+      if(p.length){lat=parseFloat(p[0].lat);lng=parseFloat(p[0].lon);}
+      else{lat=66.3126;lng=14.1434;}
+    }catch{lat=66.3126;lng=14.1434;}
+  }
+  try{
+    const saved=await saveData({navn,adresse,avdeling,beskrivelse,merknader,lat,lng});
+    allData.unshift(saved);
+    renderMarkers();updateCount();closeModal();
+    map.flyTo([lat,lng],16,{duration:1});
+    showToast('Nøkkelboks registrert');
+  }catch(e){
+    showToast('Kunne ikke lagre – prøv igjen');
+    console.error(e);
+  }
+  btn.disabled=false;btn.textContent='Registrer nøkkelboks';
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('visible');
+  setTimeout(()=>t.classList.remove('visible'),2500);
+}
+
+async function init(){
+  initMap();renderFilters();
+  try{allData=await loadData();}
+  catch(e){showToast('Kunne ikke laste data');console.error(e);allData=[];}
+  document.getElementById('loading').style.display='none';
+  renderMarkers();updateCount();
+}
+
+init();
+</script>
+</body>
+</html>
