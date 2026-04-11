@@ -61,15 +61,15 @@ header h1{color:#fff;font-size:16px;font-weight:600;flex:1;}
 .leaflet-popup-content-wrapper{border-radius:14px;box-shadow:0 4px 20px rgba(0,0,0,0.15);border:none;padding:0;overflow:hidden;}
 .leaflet-popup-content{margin:0;width:280px!important;}
 .leaflet-popup-tip-container{display:none;}
-.popup-img{width:100%;height:160px;object-fit:cover;display:block;}
+.popup-img{width:100%;height:150px;object-fit:cover;display:block;cursor:pointer;}
 .popup-body{padding:14px;}
 .popup-addr{font-size:16px;font-weight:600;color:var(--gray-900);margin-bottom:10px;line-height:1.3;}
 .popup-field{margin-bottom:8px;}
 .popup-field-label{font-size:10px;font-weight:600;color:var(--gray-500);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:2px;}
 .popup-field-val{font-size:13px;color:var(--gray-700);line-height:1.4;}
-.popup-footer{display:flex;align-items:center;justify-content:space-between;padding-top:8px;margin-top:8px;border-top:1px solid var(--gray-100);}
+.popup-footer{padding-top:8px;margin-top:8px;border-top:1px solid var(--gray-100);}
 .popup-avd-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;font-family:var(--font);}
-.popup-meta{font-size:11px;color:var(--gray-500);}
+.popup-footer-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px;}.popup-avd-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;font-family:var(--font);}.popup-meta-name{font-size:12px;color:var(--gray-700);font-weight:500;}.popup-meta-date{font-size:11px;color:var(--gray-300);}.img-fullscreen{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.92);display:none;align-items:center;justify-content:center;cursor:pointer;}.img-fullscreen.visible{display:flex;}.img-fullscreen img{max-width:95vw;max-height:90vh;object-fit:contain;border-radius:8px;}
 
 #liste-view{display:none;position:fixed;left:0;right:0;bottom:64px;background:var(--gray-50);overflow-y:auto;z-index:700;}
 .liste-search-wrap{padding:10px 12px;position:sticky;top:0;background:var(--gray-50);z-index:10;}
@@ -304,12 +304,18 @@ async function searchKartverket(q){
   })).filter(a=>a.lat&&a.lng);
 }
 
+function setMapTop(){
+  const tc=document.getElementById('top-controls');
+  const h=tc.offsetHeight;
+  document.getElementById('map').style.top=(56+h)+'px';
+}
+
 function initMap(){
-  topH=document.getElementById('top-controls').offsetHeight;
   map=L.map('map',{zoomControl:false}).setView([66.3126,14.1434],13);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:19}).addTo(map);
   L.control.zoom({position:'bottomright'}).addTo(map);
-  document.getElementById('map').style.top=(56+topH)+'px';
+  setMapTop();
+  window.addEventListener('resize',setMapTop);
   map.on('click',()=>document.getElementById('search-results').classList.remove('visible'));
 }
 
@@ -331,7 +337,7 @@ function renderMarkers(){
     const m=L.marker([item.breddegrad,item.lengdegrad],{icon:makeIcon(color)}).addTo(map);
     const dato=new Date(item.created_at).toLocaleDateString('no');
     m.bindPopup(`<div>
-      ${item.bilde_url?`<img src="${item.bilde_url}" class="popup-img" onerror="this.style.display='none'"/>`:''}
+      ${item.bilde_url?`<img src="${item.bilde_url}" class="popup-img" onclick="openFullscreen('${item.bilde_url}')" onerror="this.style.display='none'"/>`:''} 
       <div class="popup-body">
         <div class="popup-addr">${item.adresse}</div>
         <div class="popup-field">
@@ -341,13 +347,16 @@ function renderMarkers(){
         ${item.merknader?`<div class="popup-field">
           <div class="popup-field-label">Merknad</div>
           <div class="popup-field-val">${item.merknader}</div>
-        </div>`:''}
+        </div>`:''} 
         <div class="popup-footer">
-          <div class="popup-avd-badge" style="background:${color}22;color:${color}">${item.avdeling}</div>
-          <div class="popup-meta">${item.opprettet_av||''} · ${dato}</div>
+          <div class="popup-footer-top">
+            <div class="popup-avd-badge" style="background:${color}22;color:${color}">${item.avdeling}</div>
+          </div>
+          <div class="popup-meta-name">${item.opprettet_av||''}</div>
+          <div class="popup-meta-date">${dato}</div>
         </div>
       </div>
-    </div>`,{maxWidth:290});
+    </div>`,{maxWidth:275});
     markers.push(m);
   });
 }
@@ -594,6 +603,15 @@ function showToast(msg){
   setTimeout(()=>t.classList.remove('visible'),3000);
 }
 
+
+function openFullscreen(src){
+  document.getElementById('fullscreen-img').src=src;
+  document.getElementById('img-fullscreen').classList.add('visible');
+}
+function closeFullscreen(){
+  document.getElementById('img-fullscreen').classList.remove('visible');
+}
+
 async function init(){
   initMap();
   renderFilters();
@@ -602,9 +620,15 @@ async function init(){
   document.getElementById('loading').style.display='none';
   renderMarkers();
   updateCount();
+  setTimeout(setMapTop,100);
 }
 
 init();
 </script>
+
+<div class="img-fullscreen" id="img-fullscreen" onclick="closeFullscreen()">
+  <img id="fullscreen-img" src=""/>
+</div>
+
 </body>
 </html>
