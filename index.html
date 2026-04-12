@@ -2,7 +2,7 @@
 <html lang="no">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,interactive-widget=resizes-content">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -12,199 +12,201 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box;margin:0;padding:0;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 :root{
   --blue:#1a56a0;--blue-d:#0e3d78;--blue-l:#deeaf8;--blue-ll:#f0f6fc;
   --green:#1e8a4c;--green-l:#e6f4ed;
-  --red:#c0392b;--red-l:#fdecea;
-  --gray-0:#fff;--gray-1:#f6f6f6;--gray-2:#ececec;--gray-3:#d8d8d8;
-  --gray-4:#b0b0b0;--gray-5:#808080;--gray-6:#505050;--gray-9:#111;
-  --shadow-s:0 1px 4px rgba(0,0,0,0.10);
-  --shadow-m:0 3px 14px rgba(0,0,0,0.13);
-  --shadow-l:0 6px 28px rgba(0,0,0,0.18);
-  --r:10px;--r-l:16px;--r-xl:22px;
+  --red:#c0392b;
+  --g0:#fff;--g1:#f6f6f6;--g2:#ececec;--g3:#d8d8d8;
+  --g4:#b0b0b0;--g5:#808080;--g6:#505050;--g9:#111;
+  --ss:0 1px 4px rgba(0,0,0,0.10);
+  --sm:0 3px 14px rgba(0,0,0,0.13);
+  --sl:0 6px 28px rgba(0,0,0,0.18);
+  --r:10px;--rl:16px;
   --sb:env(safe-area-inset-bottom,0px);
   --font:'Inter',system-ui,sans-serif;
 }
-html,body{height:100%;overflow:hidden;font-family:var(--font);background:#c8dce8;color:var(--gray-9);}
+html,body{height:100%;overflow:hidden;font-family:var(--font);background:#c8dce8;color:var(--g9);}
 input,textarea,select{font-size:16px!important;font-family:var(--font);}
-button{cursor:pointer;font-family:var(--font);}
+button{cursor:pointer;font-family:var(--font);touch-action:manipulation;}
 
 /* MAP */
 #map{position:fixed;inset:0;z-index:1;}
 
 /* SEARCH */
-.search-wrap{position:fixed;top:12px;left:12px;right:64px;z-index:600;}
-.search-bar{background:var(--gray-0);border-radius:var(--r-xl);box-shadow:var(--shadow-m);display:flex;align-items:center;overflow:visible;position:relative;}
-.search-bar input{flex:1;padding:12px 14px 12px 40px;border:none;background:transparent;color:var(--gray-9);font-size:15px;outline:none;border-radius:var(--r-xl);}
-.search-bar input::placeholder{color:var(--gray-4);font-size:14px;}
+.search-wrap{position:fixed;top:12px;left:12px;right:12px;z-index:600;display:flex;gap:8px;align-items:flex-start;}
+.search-bar{flex:1;background:var(--g0);border-radius:24px;box-shadow:var(--sm);display:flex;align-items:center;overflow:visible;position:relative;}
+.search-bar input{flex:1;padding:12px 14px 12px 40px;border:none;background:transparent;color:var(--g9);font-size:15px;outline:none;border-radius:24px;}
+.search-bar input::placeholder{color:var(--g4);font-size:14px;}
 .si{position:absolute;left:13px;top:50%;transform:translateY(-50%);pointer-events:none;}
-.si svg{width:15px;height:15px;stroke:var(--gray-4);}
-.sclear{padding:0 12px;background:none;border:none;color:var(--gray-4);font-size:20px;line-height:1;display:none;}
+.si svg{width:15px;height:15px;stroke:var(--g4);}
+.sclear{padding:0 12px;background:none;border:none;color:var(--g4);font-size:20px;line-height:1;display:none;}
 .sclear.v{display:block;}
-.sresults{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--gray-0);border-radius:var(--r);box-shadow:var(--shadow-m);overflow:hidden;display:none;max-height:240px;overflow-y:auto;z-index:10;}
+.sresults{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--g0);border-radius:var(--r);box-shadow:var(--sm);overflow:hidden;display:none;max-height:240px;overflow-y:auto;z-index:10;}
 .sresults.v{display:block;}
-.sri{padding:10px 13px;display:flex;align-items:center;gap:9px;cursor:pointer;border-bottom:1px solid var(--gray-2);}
+.sri{padding:10px 13px;display:flex;align-items:center;gap:9px;cursor:pointer;border-bottom:1px solid var(--g2);}
 .sri:last-child{border-bottom:none;}
 .sri:active{background:var(--blue-ll);}
 .sri-ic{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .sri-ic svg{width:12px;height:12px;}
-.sri-a{font-size:13px;font-weight:500;color:var(--gray-9);}
-.sri-b{font-size:11px;color:var(--gray-5);margin-top:1px;}
+.sri-a{font-size:13px;font-weight:500;color:var(--g9);}
+.sri-b{font-size:11px;color:var(--g5);margin-top:1px;}
 
-/* INFO BUTTON */
-.info-btn{position:fixed;top:12px;right:12px;z-index:600;width:44px;height:44px;background:var(--gray-0);border:none;border-radius:50%;box-shadow:var(--shadow-m);display:flex;align-items:center;justify-content:center;}
-.info-btn svg{width:18px;height:18px;stroke:var(--blue);}
+/* INFO BTN */
+.info-btn{width:44px;height:44px;background:var(--g0);border:none;border-radius:50%;box-shadow:var(--sm);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.info-btn svg{width:20px;height:20px;}
 
 /* TOOLBAR */
 .toolbar{position:fixed;right:12px;top:50%;transform:translateY(-50%);z-index:500;display:flex;flex-direction:column;gap:8px;}
-.tbtn{width:48px;height:48px;background:var(--gray-0);border:none;border-radius:var(--r);box-shadow:var(--shadow-s);display:flex;align-items:center;justify-content:center;transition:all 0.15s;position:relative;}
-.tbtn svg{width:22px;height:22px;stroke:var(--gray-6);transition:stroke 0.15s;}
-.tbtn:active{transform:scale(0.94);}
-.tbtn.active-add{background:var(--green);box-shadow:0 2px 12px rgba(30,138,76,0.4);}
-.tbtn.active-add svg{stroke:#fff;}
-.tbtn.active-loc{background:var(--blue);box-shadow:0 2px 12px rgba(26,86,160,0.4);}
-.tbtn.active-loc svg{stroke:#fff;}
-.tbtn-tip{position:absolute;right:calc(100% + 8px);top:50%;transform:translateY(-50%);background:rgba(20,20,20,0.82);color:#fff;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:500;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity 0.15s;}
-.tbtn:hover .tbtn-tip{opacity:1;}
+.tbtn{width:48px;height:48px;background:var(--g0);border:none;border-radius:var(--r);box-shadow:var(--ss);display:flex;align-items:center;justify-content:center;transition:background 0.15s,box-shadow 0.15s;position:relative;touch-action:manipulation;}
+.tbtn svg{width:22px;height:22px;stroke:var(--g6);}
+.tbtn.on-add{background:var(--green);box-shadow:0 2px 12px rgba(30,138,76,0.4);}
+.tbtn.on-add svg{stroke:#fff;}
+.tbtn.on-loc{background:var(--blue);box-shadow:0 2px 12px rgba(26,86,160,0.4);}
+.tbtn.on-loc svg{stroke:#fff;}
+.tbtn.on-near{background:var(--blue);box-shadow:0 2px 12px rgba(26,86,160,0.4);}
+.tbtn.on-near svg{stroke:#fff;}
+.tip{position:absolute;right:calc(100% + 8px);top:50%;transform:translateY(-50%);background:rgba(20,20,20,0.82);color:#fff;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:500;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity 0.15s;}
+.tbtn:hover .tip,.tbtn:focus .tip{opacity:1;}
 
 /* TOOL HINT */
-.tool-hint{position:fixed;top:68px;left:50%;transform:translateX(-50%);z-index:590;background:rgba(30,138,76,0.92);color:#fff;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:500;white-space:nowrap;display:none;pointer-events:none;box-shadow:var(--shadow-s);}
+.tool-hint{position:fixed;top:68px;left:50%;transform:translateX(-50%);z-index:590;background:rgba(30,138,76,0.92);color:#fff;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:500;white-space:nowrap;display:none;pointer-events:none;box-shadow:var(--ss);}
 .tool-hint.v{display:block;}
 
 /* NEAREST BANNER */
-.nearest-banner{position:fixed;left:12px;right:68px;z-index:500;background:var(--gray-0);border-radius:var(--r);box-shadow:var(--shadow-m);padding:10px 12px 10px 36px;font-size:13px;font-weight:500;color:var(--gray-9);display:none;bottom:calc(var(--sb) + 14px);line-height:1.4;}
-.nearest-banner.v{display:flex;align-items:flex-start;gap:0;}
-.nb-icon{position:absolute;left:10px;top:11px;}
+.nb-banner{position:fixed;left:12px;right:68px;z-index:500;background:var(--g0);border-radius:var(--r);box-shadow:var(--sm);padding:11px 32px 11px 38px;display:none;bottom:calc(var(--sb) + 14px);}
+.nb-banner.v{display:block;}
+.nb-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);}
 .nb-icon svg{width:16px;height:16px;stroke:var(--blue);}
-.nb-close{position:absolute;right:8px;top:8px;background:none;border:none;color:var(--gray-4);font-size:16px;line-height:1;padding:2px;}
-.nb-title{font-size:11px;font-weight:600;color:var(--gray-5);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:2px;}
+.nb-close{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--g4);font-size:18px;line-height:1;padding:2px 4px;}
+.nb-title{font-size:10px;font-weight:600;color:var(--g5);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:2px;}
+.nb-val{font-size:13px;font-weight:500;color:var(--g9);}
 
 /* CONFIRM PLACEMENT */
-.confirm-overlay{position:fixed;inset:0;z-index:800;background:rgba(0,0,0,0.38);display:none;align-items:flex-end;justify-content:center;padding-bottom:calc(var(--sb) + 16px);}
-.confirm-overlay.v{display:flex;}
-.confirm-card{background:var(--gray-0);border-radius:var(--r-l);width:calc(100% - 24px);max-width:420px;padding:18px 18px 16px;box-shadow:var(--shadow-l);}
-.confirm-title{font-size:16px;font-weight:600;margin-bottom:4px;}
-.confirm-addr{font-size:13px;color:var(--gray-5);margin-bottom:16px;min-height:18px;}
-.confirm-btns{display:flex;gap:8px;}
-.btn-cancel{flex:1;padding:12px;background:var(--gray-2);border:none;border-radius:var(--r);font-size:14px;font-weight:600;color:var(--gray-6);}
+.conf-ov{position:fixed;inset:0;z-index:800;background:rgba(0,0,0,0.38);display:none;align-items:flex-end;justify-content:center;padding-bottom:calc(var(--sb) + 16px);}
+.conf-ov.v{display:flex;}
+.conf-card{background:var(--g0);border-radius:var(--rl);width:calc(100% - 24px);max-width:420px;padding:18px 18px 16px;box-shadow:var(--sl);}
+.conf-title{font-size:16px;font-weight:600;margin-bottom:4px;}
+.conf-addr{font-size:13px;color:var(--g5);margin-bottom:16px;min-height:18px;}
+.conf-btns{display:flex;gap:8px;}
+.btn-cancel{flex:1;padding:12px;background:var(--g2);border:none;border-radius:var(--r);font-size:14px;font-weight:600;color:var(--g6);}
 .btn-go{flex:2;padding:12px;background:var(--green);border:none;border-radius:var(--r);font-size:14px;font-weight:600;color:#fff;}
 
-/* SHEET BASE */
-.sheet{position:fixed;left:0;right:0;bottom:0;z-index:700;background:var(--gray-0);border-radius:var(--r-l) var(--r-l) 0 0;box-shadow:var(--shadow-l);transform:translateY(100%);transition:transform 0.28s cubic-bezier(0.4,0,0.2,1);padding-bottom:calc(var(--sb) + 8px);}
+/* SHEET */
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:700;background:var(--g0);border-radius:var(--rl) var(--rl) 0 0;box-shadow:var(--sl);transform:translateY(100%);transition:transform 0.28s cubic-bezier(0.4,0,0.2,1);padding-bottom:calc(var(--sb) + 8px);}
 .sheet.open{transform:translateY(0);}
-.sheet-handle{width:36px;height:4px;background:var(--gray-3);border-radius:2px;margin:10px auto 0;}
-.sheet-hdr{display:flex;align-items:center;justify-content:space-between;padding:12px 16px 0;}
-.sheet-title{font-size:16px;font-weight:600;}
-.sheet-x{width:30px;height:30px;background:var(--gray-2);border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;}
-.sheet-x svg{width:14px;height:14px;stroke:var(--gray-6);}
+.sh-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 0;}
+.sh-title{font-size:16px;font-weight:600;}
+.sh-x{width:30px;height:30px;background:var(--g2);border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.sh-x svg{width:14px;height:14px;stroke:var(--g6);}
 
 /* PIN SHEET */
-#pin-sheet{max-height:55vh;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+#pin-sheet{max-height:56vh;overflow-y:auto;-webkit-overflow-scrolling:touch;}
 .ps-img{width:100%;height:180px;object-fit:cover;display:block;cursor:pointer;}
-.ps-img-ph{width:100%;height:80px;background:var(--gray-1);display:flex;align-items:center;justify-content:center;}
-.ps-img-ph svg{width:24px;height:24px;stroke:var(--gray-3);}
+.ps-ph{width:100%;height:110px;background:var(--g1);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;}
+.ps-ph svg{width:28px;height:28px;stroke:var(--g3);}
+.ps-ph span{font-size:11px;color:var(--g4);}
 .ps-body{padding:12px 16px 14px;}
 .ps-addr{font-size:17px;font-weight:700;margin-bottom:10px;line-height:1.3;}
-.ps-field{margin-bottom:8px;}
-.ps-label{font-size:10px;font-weight:600;color:var(--gray-5);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:2px;}
-.ps-val{font-size:14px;color:var(--gray-6);line-height:1.45;}
-.ps-foot{display:flex;align-items:center;justify-content:space-between;padding-top:10px;margin-top:6px;border-top:1px solid var(--gray-2);}
+.ps-fl{font-size:10px;font-weight:600;color:var(--g5);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:2px;}
+.ps-fv{font-size:14px;color:var(--g6);line-height:1.45;margin-bottom:8px;}
+.ps-foot{display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid var(--g2);}
 .avd-pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;}
-.ps-meta{text-align:right;}
-.ps-meta-name{font-size:12px;font-weight:500;color:var(--gray-6);}
-.ps-meta-date{font-size:10px;color:var(--gray-4);}
+.ps-meta-name{font-size:12px;font-weight:500;color:var(--g6);text-align:right;}
+.ps-meta-date{font-size:10px;color:var(--g4);text-align:right;}
 
-/* FORM SHEET */
+/* FORM SHEETS */
 #add-sheet,#edit-sheet{max-height:90dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;}
-.form-body{padding:10px 16px 16px;}
+.fb{padding:10px 16px 16px;}
 .fg{margin-bottom:13px;position:relative;}
-.fl{font-size:11px;font-weight:600;color:var(--gray-5);margin-bottom:5px;display:flex;align-items:center;gap:4px;text-transform:uppercase;letter-spacing:0.04em;}
+.fl{font-size:11px;font-weight:600;color:var(--g5);margin-bottom:5px;display:flex;align-items:center;gap:4px;text-transform:uppercase;letter-spacing:0.04em;}
 .req{color:var(--red);}
-.opt{font-size:10px;color:var(--gray-4);text-transform:none;font-weight:400;}
-.fg input,.fg textarea,.fg select{width:100%;padding:11px 12px;border:1.5px solid var(--gray-3);border-radius:var(--r);background:var(--gray-1);color:var(--gray-9);outline:none;transition:border-color 0.15s;}
-.fg input:focus,.fg textarea:focus,.fg select:focus{border-color:var(--blue);background:var(--gray-0);}
+.opt{font-size:10px;color:var(--g4);text-transform:none;font-weight:400;}
+.fg input,.fg textarea,.fg select{width:100%;padding:11px 12px;border:1.5px solid var(--g3);border-radius:var(--r);background:var(--g1);color:var(--g9);outline:none;transition:border-color 0.15s;}
+.fg input:focus,.fg textarea:focus,.fg select:focus{border-color:var(--blue);background:var(--g0);}
 .fg textarea{height:76px;resize:none;}
-.addr-ok{font-size:11px;color:var(--green);margin-top:4px;display:none;align-items:center;gap:4px;}
-.addr-ok.v{display:flex;}
-.addr-ok svg{width:12px;height:12px;stroke:var(--green);}
-.ac-list{position:absolute;top:calc(100% + 3px);left:0;right:0;background:var(--gray-0);border-radius:var(--r);box-shadow:var(--shadow-m);z-index:100;overflow:hidden;display:none;max-height:200px;overflow-y:auto;}
+.aok{font-size:11px;color:var(--green);margin-top:4px;display:none;align-items:center;gap:4px;}
+.aok.v{display:flex;}
+.aok svg{width:12px;height:12px;stroke:var(--green);}
+.ac-list{position:absolute;top:calc(100% + 3px);left:0;right:0;background:var(--g0);border-radius:var(--r);box-shadow:var(--sm);z-index:100;overflow:hidden;display:none;max-height:200px;overflow-y:auto;}
 .ac-list.v{display:block;}
-.ac-item{padding:10px 12px;display:flex;align-items:flex-start;gap:8px;cursor:pointer;border-bottom:1px solid var(--gray-2);}
+.ac-item{padding:10px 12px;display:flex;align-items:flex-start;gap:8px;cursor:pointer;border-bottom:1px solid var(--g2);}
 .ac-item:last-child{border-bottom:none;}
 .ac-item:active{background:var(--blue-ll);}
 .ac-item svg{width:13px;height:13px;stroke:var(--blue);flex-shrink:0;margin-top:2px;}
 .ac-main{font-size:13px;font-weight:500;}
-.ac-sub{font-size:11px;color:var(--gray-5);}
+.ac-sub{font-size:11px;color:var(--g5);}
 .pos-btn{width:100%;padding:10px 12px;background:var(--blue-ll);color:var(--blue);border:1.5px solid var(--blue-l);border-radius:var(--r);font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:7px;margin-top:7px;}
 .pos-btn svg{width:15px;height:15px;stroke:var(--blue);}
 
 /* IMAGE UPLOAD */
-.img-up{border:1.5px dashed var(--gray-3);border-radius:var(--r);overflow:hidden;cursor:pointer;background:var(--gray-1);transition:border-color 0.15s;min-height:60px;}
-.img-up:hover,.img-up:active{border-color:var(--blue);}
+.img-up{border:1.5px dashed var(--g3);border-radius:var(--r);overflow:hidden;cursor:pointer;background:var(--g1);transition:border-color 0.15s;}
+.img-up:active{border-color:var(--blue);}
 .img-up-ph{padding:14px;text-align:center;}
-.img-up-ph svg{width:22px;height:22px;stroke:var(--gray-4);display:block;margin:0 auto 5px;}
+.img-up-ph svg{width:22px;height:22px;stroke:var(--g4);display:block;margin:0 auto 5px;}
 .img-up-ph p{font-size:13px;font-weight:500;color:var(--blue);}
-.img-up-ph span{font-size:11px;color:var(--gray-4);}
+.img-up-ph span{font-size:11px;color:var(--g4);}
 .img-up-prev{width:100%;height:140px;object-fit:cover;display:none;}
-.img-up input{display:none;}
-.img-up-change{display:none;padding:8px;text-align:center;font-size:12px;font-weight:500;color:var(--blue);background:var(--blue-ll);border-top:1px solid var(--blue-l);}
+.img-up-change{display:none;padding:7px;text-align:center;font-size:12px;font-weight:500;color:var(--blue);background:var(--blue-ll);border-top:1px solid var(--blue-l);}
 .img-up-change.v{display:block;}
-
-.submit-btn{width:100%;padding:13px;background:var(--blue);color:#fff;border:none;border-radius:var(--r);font-size:15px;font-weight:600;margin-top:6px;transition:background 0.15s;}
-.submit-btn:active{background:var(--blue-d);}
-.submit-btn:disabled{background:var(--gray-3);color:var(--gray-5);}
+.img-up input{display:none;}
+.sub-btn{width:100%;padding:13px;background:var(--blue);color:#fff;border:none;border-radius:var(--r);font-size:15px;font-weight:600;margin-top:6px;}
+.sub-btn:active{background:var(--blue-d);}
+.sub-btn:disabled{background:var(--g3);color:var(--g5);}
 
 /* LIST SHEET */
 #list-sheet{max-height:90dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;}
-.list-top{padding:10px 16px 8px;position:sticky;top:0;background:var(--gray-0);z-index:5;border-bottom:1px solid var(--gray-2);}
-.list-sw{position:relative;margin-bottom:8px;}
-.list-sw input{width:100%;padding:10px 12px 10px 34px;border:1.5px solid var(--gray-3);border-radius:var(--r);background:var(--gray-1);color:var(--gray-9);outline:none;}
-.list-sw input:focus{border-color:var(--blue);background:var(--gray-0);}
-.list-sw input::placeholder{font-size:14px;color:var(--gray-4);}
-.list-si{position:absolute;left:10px;top:50%;transform:translateY(-50%);}
-.list-si svg{width:14px;height:14px;stroke:var(--gray-4);}
+.lt{padding:10px 16px 8px;position:sticky;top:0;background:var(--g0);z-index:5;border-bottom:1px solid var(--g2);}
+.lsw{position:relative;margin-bottom:8px;}
+.lsw input{width:100%;padding:10px 12px 10px 34px;border:1.5px solid var(--g3);border-radius:var(--r);background:var(--g1);color:var(--g9);outline:none;}
+.lsw input:focus{border-color:var(--blue);background:var(--g0);}
+.lsw input::placeholder{font-size:14px;color:var(--g4);}
+.lsi{position:absolute;left:10px;top:50%;transform:translateY(-50%);}
+.lsi svg{width:14px;height:14px;stroke:var(--g4);}
 .frow{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;}
 .frow::-webkit-scrollbar{display:none;}
-.fchip{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:20px;font-size:11px;font-weight:500;border:1px solid var(--gray-3);background:var(--gray-0);color:var(--gray-6);white-space:nowrap;flex-shrink:0;transition:all 0.15s;}
+.fchip{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:20px;font-size:11px;font-weight:500;border:1px solid var(--g3);background:var(--g0);color:var(--g6);white-space:nowrap;flex-shrink:0;transition:all 0.15s;}
 .fchip.on{color:#fff;border-color:transparent;}
-.fchip-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
-.list-inner{padding:10px 12px 12px;}
-.lcard{background:var(--gray-0);border-radius:var(--r);margin-bottom:8px;border:1px solid var(--gray-2);overflow:hidden;}
+.fdot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.li{padding:10px 12px 12px;}
+.lcard{background:var(--g0);border-radius:var(--r);margin-bottom:8px;border:1px solid var(--g2);overflow:hidden;}
 .lcard-img{width:100%;height:100px;object-fit:cover;display:block;cursor:pointer;}
+.lcard-ph{width:100%;height:70px;background:var(--g1);display:flex;align-items:center;justify-content:center;}
+.lcard-ph svg{width:20px;height:20px;stroke:var(--g3);}
 .lcard-body{padding:10px 12px 12px;}
 .lcard-addr{font-size:14px;font-weight:600;margin-bottom:6px;}
-.lcard-fl{font-size:10px;font-weight:600;color:var(--gray-5);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:1px;}
-.lcard-fv{font-size:12px;color:var(--gray-6);line-height:1.4;margin-bottom:5px;}
-.lcard-foot{display:flex;align-items:center;justify-content:space-between;padding-top:7px;margin-top:5px;border-top:1px solid var(--gray-2);}
+.lfl{font-size:10px;font-weight:600;color:var(--g5);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:1px;}
+.lfv{font-size:12px;color:var(--g6);line-height:1.4;margin-bottom:5px;}
+.lcard-foot{display:flex;align-items:center;justify-content:space-between;padding-top:7px;margin-top:5px;border-top:1px solid var(--g2);}
 .lcard-actions{display:flex;gap:6px;margin-top:8px;}
-.lcard-btn{flex:1;padding:8px;border:none;border-radius:var(--r);font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:4px;}
-.lcard-btn svg{width:12px;height:12px;}
-.lbtn-map{background:var(--gray-2);color:var(--gray-7);}
+.lbtn{flex:1;padding:8px;border:none;border-radius:var(--r);font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:4px;}
+.lbtn svg{width:12px;height:12px;}
+.lbtn-map{background:var(--g2);color:var(--g6);}
 .lbtn-edit{background:var(--blue-ll);color:var(--blue);}
 
 /* ONBOARDING */
-.ob-overlay{position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,0.62);display:flex;align-items:flex-end;justify-content:center;padding:0 12px calc(var(--sb) + 20px);}
-.ob-card{background:var(--gray-0);border-radius:var(--r-l);width:100%;max-width:420px;padding:22px 20px 18px;box-shadow:var(--shadow-l);}
+.ob-ov{position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,0.62);display:none;align-items:flex-end;justify-content:center;padding:0 12px calc(var(--sb) + 20px);}
+.ob-ov.v{display:flex;}
+.ob-card{background:var(--g0);border-radius:var(--rl);width:100%;max-width:420px;padding:22px 20px 18px;box-shadow:var(--sl);}
 .ob-step{display:none;}
 .ob-step.on{display:block;}
-.ob-icon-wrap{width:52px;height:52px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;margin-bottom:14px;}
+.ob-icon{width:52px;height:52px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;margin-bottom:14px;}
 .ob-title{font-size:18px;font-weight:700;margin-bottom:7px;}
-.ob-text{font-size:14px;color:var(--gray-6);line-height:1.55;margin-bottom:20px;}
+.ob-text{font-size:14px;color:var(--g6);line-height:1.55;margin-bottom:16px;}
+.ob-pwa{background:var(--g1);border-radius:var(--r);padding:12px;margin-bottom:16px;}
+.ob-pwa-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.ob-pwa-row:last-child{margin-bottom:0;}
+.ob-pwa-step{width:22px;height:22px;background:var(--blue);color:#fff;border-radius:50%;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ob-pwa-text{font-size:13px;color:var(--g6);}
+.ob-pwa-text strong{color:var(--g9);}
+.ob-pwa-icon{width:32px;height:32px;background:var(--g0);border-radius:7px;border:1px solid var(--g3);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ob-pwa-icon svg{width:18px;height:18px;}
 .ob-foot{display:flex;align-items:center;justify-content:space-between;}
 .ob-dots{display:flex;gap:5px;}
-.ob-dot{width:7px;height:7px;border-radius:50%;background:var(--gray-3);}
+.ob-dot{width:7px;height:7px;border-radius:50%;background:var(--g3);}
 .ob-dot.on{background:var(--blue);}
 .ob-next{padding:11px 22px;background:var(--blue);color:#fff;border:none;border-radius:var(--r);font-size:14px;font-weight:600;}
-.ob-skip{background:none;border:none;color:var(--gray-5);font-size:13px;padding:4px 0;}
-
-/* MARKERS */
-.user-dot{width:18px;height:18px;background:#4285f4;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 5px rgba(66,133,244,0.22);}
-.search-pin-wrap{display:flex;flex-direction:column;align-items:center;}
-.search-pin-dot{width:24px;height:24px;background:#8b5cf6;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,0.25);}
-.temp-pin-wrap{display:flex;flex-direction:column;align-items:center;}
-.temp-pin-dot{width:28px;height:28px;background:var(--green);border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(30,138,76,0.4);display:flex;align-items:center;justify-content:center;}
-.temp-pin-dot svg{width:14px;height:14px;stroke:#fff;stroke-width:2.5;}
+.ob-skip{background:none;border:none;color:var(--g5);font-size:13px;padding:4px 0;}
 
 /* FULLSCREEN */
 .fs{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.94);display:none;align-items:center;justify-content:center;cursor:pointer;}
@@ -219,312 +221,263 @@ button{cursor:pointer;font-family:var(--font);}
 .offline{position:fixed;top:0;left:0;right:0;z-index:6000;background:var(--red);color:#fff;text-align:center;padding:9px 12px;font-size:13px;font-weight:500;display:none;}
 .offline.v{display:block;}
 
-/* iOS INSTALL HINT */
-.ios-hint{position:fixed;bottom:calc(var(--sb) + 12px);left:12px;right:12px;z-index:600;background:var(--gray-0);border-radius:var(--r);box-shadow:var(--shadow-m);padding:12px 14px;display:none;gap:10px;align-items:flex-start;}
-.ios-hint.v{display:flex;}
-.ios-hint-text{flex:1;font-size:12px;color:var(--gray-6);line-height:1.5;}
-.ios-hint-text strong{display:block;font-size:13px;font-weight:600;color:var(--gray-9);margin-bottom:2px;}
-.ios-hint-close{background:none;border:none;color:var(--gray-4);font-size:20px;line-height:1;padding:0;}
-
-/* LOAD SCREEN */
-.load-screen{position:fixed;inset:0;z-index:9000;background:var(--blue);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;}
-.load-screen svg{width:46px;height:46px;stroke:#fff;}
+/* LOAD */
+.load{position:fixed;inset:0;z-index:9000;background:var(--blue);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;}
+.load svg{width:46px;height:46px;stroke:#fff;}
 .load-spin{width:30px;height:30px;border:3px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite;}
-.load-screen p{color:rgba(255,255,255,0.75);font-size:14px;font-weight:500;}
+.load p{color:rgba(255,255,255,0.75);font-size:14px;font-weight:500;}
 @keyframes spin{to{transform:rotate(360deg);}}
+
+/* PINS */
+.user-dot{width:18px;height:18px;background:#4285f4;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 5px rgba(66,133,244,0.22);}
 </style>
 </head>
 <body>
 
-<div class="load-screen" id="load-screen">
+<div class="load" id="load">
   <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
   <div class="load-spin"></div>
   <p>Laster nøkkelbokser...</p>
 </div>
 
 <div class="offline" id="offline">Ingen internettforbindelse</div>
-
 <div id="map"></div>
 
-<!-- SEARCH -->
+<!-- SEARCH + INFO -->
 <div class="search-wrap">
-  <div class="search-bar">
+  <div class="search-bar" style="flex:1;">
     <span class="si"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></span>
     <input type="text" id="si" placeholder="Søk adresse eller sted..." autocomplete="off"/>
     <button class="sclear" id="sclear" onclick="clearSearch()">×</button>
     <div class="sresults" id="sresults"></div>
   </div>
+  <button class="info-btn" onclick="showOb()" title="Hjelp">
+    <svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17" stroke-width="3"/></svg>
+  </button>
 </div>
 
-<!-- INFO BTN -->
-<button class="info-btn" onclick="showOnboarding()" title="Hjelp og info">
-  <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="8.01" stroke-width="3"/><line x1="12" y1="12" x2="12" y2="16"/></svg>
-</button>
-
 <!-- TOOLBAR -->
-<div class="toolbar" id="toolbar">
-  <button class="tbtn" id="tb-add" onclick="setTool('add')" title="Registrer nøkkelboks">
-    <div class="tbtn-tip">Registrer nøkkelboks</div>
+<div class="toolbar">
+  <button class="tbtn" id="tb-add" onclick="setTool('add')">
+    <div class="tip">Registrer nøkkelboks</div>
     <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><line x1="12" y1="7" x2="12" y2="13"/><line x1="9" y1="10" x2="15" y2="10"/></svg>
   </button>
-  <button class="tbtn" id="tb-loc" onclick="setTool('locate')" title="Min posisjon og nærmeste">
-    <div class="tbtn-tip">Min posisjon</div>
+  <button class="tbtn" id="tb-loc" onclick="setTool('locate')">
+    <div class="tip">Min posisjon</div>
     <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
   </button>
-  <button class="tbtn" id="tb-list" onclick="openList()" title="Liste over nøkkelbokser">
-    <div class="tbtn-tip">Liste over nøkkelbokser</div>
+  <button class="tbtn" id="tb-near" onclick="setTool('nearest')">
+    <div class="tip">Nærmeste nøkkelboks</div>
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49"/><path d="M7.76 16.24a6 6 0 0 1 0-8.49"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M4.93 19.07a10 10 0 0 1 0-14.14"/></svg>
+  </button>
+  <button class="tbtn" id="tb-list" onclick="openList()">
+    <div class="tip">Liste over nøkkelbokser</div>
     <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6" stroke-width="3"/><line x1="3" y1="12" x2="3.01" y2="12" stroke-width="3"/><line x1="3" y1="18" x2="3.01" y2="18" stroke-width="3"/></svg>
   </button>
 </div>
 
-<!-- TOOL HINT -->
 <div class="tool-hint" id="tool-hint">Trykk på kartet for å plassere nøkkelboks</div>
 
 <!-- NEAREST BANNER -->
-<div class="nearest-banner" id="nearest-banner">
-  <span class="nb-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg></span>
-  <div>
-    <div class="nb-title">Nærmeste nøkkelboks</div>
-    <div id="nb-text"></div>
-  </div>
-  <button class="nb-close" onclick="document.getElementById('nearest-banner').classList.remove('v')">×</button>
+<div class="nb-banner" id="nb-banner">
+  <span class="nb-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49"/><path d="M7.76 16.24a6 6 0 0 1 0-8.49"/></svg></span>
+  <div class="nb-title">Nærmeste nøkkelboks</div>
+  <div class="nb-val" id="nb-val"></div>
+  <button class="nb-close" onclick="document.getElementById('nb-banner').classList.remove('v')">×</button>
 </div>
 
-<!-- CONFIRM PLACEMENT -->
-<div class="confirm-overlay" id="conf-overlay">
-  <div class="confirm-card">
-    <div class="confirm-title">Plasser nøkkelboks her?</div>
-    <div class="confirm-addr" id="conf-addr">Henter adresse...</div>
-    <div class="confirm-btns">
+<!-- CONFIRM -->
+<div class="conf-ov" id="conf-ov">
+  <div class="conf-card">
+    <div class="conf-title">Plasser nøkkelboks her?</div>
+    <div class="conf-addr" id="conf-addr">Henter adresse...</div>
+    <div class="conf-btns">
       <button class="btn-cancel" onclick="cancelPlace()">Avbryt</button>
       <button class="btn-go" onclick="confirmPlace()">Bekreft plassering</button>
     </div>
   </div>
 </div>
 
-<!-- PIN INFO SHEET -->
+<!-- PIN SHEET -->
 <div class="sheet" id="pin-sheet">
-  <div class="sheet-handle"></div>
-  <div class="sheet-hdr" style="padding-bottom:0;">
-    <div class="sheet-title" id="ps-title"></div>
-    <button class="sheet-x" onclick="closeSheet('pin-sheet')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  <div class="sh-hdr">
+    <div class="sh-title" id="ps-title"></div>
+    <button class="sh-x" onclick="closeSheet('pin-sheet')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
   </div>
   <div id="ps-img-wrap"></div>
   <div class="ps-body">
     <div class="ps-addr" id="ps-addr"></div>
-    <div class="ps-field"><div class="ps-label">Beskrivelse</div><div class="ps-val" id="ps-besk"></div></div>
-    <div class="ps-field" id="ps-merk-wrap"><div class="ps-label">Merknad</div><div class="ps-val" id="ps-merk"></div></div>
+    <div class="ps-fl">Beskrivelse</div>
+    <div class="ps-fv" id="ps-besk"></div>
+    <div id="ps-mw"><div class="ps-fl">Merknad</div><div class="ps-fv" id="ps-merk"></div></div>
     <div class="ps-foot">
       <div class="avd-pill" id="ps-avd"></div>
-      <div class="ps-meta"><div class="ps-meta-name" id="ps-name"></div><div class="ps-meta-date" id="ps-date"></div></div>
+      <div><div class="ps-meta-name" id="ps-name"></div><div class="ps-meta-date" id="ps-date"></div></div>
     </div>
   </div>
 </div>
 
 <!-- ADD SHEET -->
 <div class="sheet" id="add-sheet">
-  <div class="sheet-handle"></div>
-  <div class="sheet-hdr">
-    <div class="sheet-title">Registrer nøkkelboks</div>
-    <button class="sheet-x" onclick="closeAddSheet()"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  <div class="sh-hdr">
+    <div class="sh-title">Registrer nøkkelboks</div>
+    <button class="sh-x" onclick="closeAddSheet()"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
   </div>
-  <div class="form-body">
-    <div class="fg">
-      <div class="fl">Ditt navn <span class="req">*</span></div>
-      <input type="text" id="a-navn" placeholder="F.eks. Kari Nordmann" autocomplete="name"/>
-    </div>
+  <div class="fb">
+    <div class="fg"><div class="fl">Ditt navn <span class="req">*</span></div><input type="text" id="a-navn" placeholder="F.eks. Kari Nordmann" autocomplete="name"/></div>
     <div class="fg">
       <div class="fl">Adresse <span class="req">*</span></div>
       <input type="text" id="a-adr" placeholder="Søk etter adresse..." autocomplete="off" oninput="doAC(this.value,'a-ac','a-ok','a')"/>
       <div class="ac-list" id="a-ac"></div>
-      <div class="addr-ok" id="a-ok"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Adresse bekreftet</div>
+      <div class="aok" id="a-ok"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Adresse bekreftet</div>
       <button class="pos-btn" onclick="useGPS()"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M1 12h4M19 12h4"/></svg>Bruk min posisjon</button>
     </div>
-    <div class="fg">
-      <div class="fl">Avdeling <span class="req">*</span></div>
-      <select id="a-avd"><option value="">Velg avdeling...</option><option>Demenslaget</option><option>Nattpatruljen</option><option>Nord</option><option>Sentrum 3</option><option>Sør</option><option>Vest 1</option><option>Vest 3</option><option>Øst 1</option><option>Innsatsteamet</option><option>Annet</option></select>
-    </div>
-    <div class="fg">
-      <div class="fl">Beskrivelse <span class="req">*</span></div>
-      <textarea id="a-besk" placeholder="Beskriv nøyaktig hvor nøkkelboksen er plassert, f.eks. ved hovedinngang, veggen til venstre for døren"></textarea>
-    </div>
-    <div class="fg">
-      <div class="fl">Merknader <span class="opt">(valgfritt)</span></div>
-      <input type="text" id="a-merk" placeholder="F.eks. 1 nøkkel for hovedinngang"/>
-    </div>
+    <div class="fg"><div class="fl">Avdeling <span class="req">*</span></div><select id="a-avd"><option value="">Velg avdeling...</option><option>Demenslaget</option><option>Nattpatruljen</option><option>Nord</option><option>Sentrum 3</option><option>Sør</option><option>Vest 1</option><option>Vest 3</option><option>Øst 1</option><option>Innsatsteamet</option><option>Annet</option></select></div>
+    <div class="fg"><div class="fl">Beskrivelse <span class="req">*</span></div><textarea id="a-besk" placeholder="Beskriv nøyaktig hvor nøkkelboksen er plassert, f.eks. ved hovedinngang, veggen til venstre for døren"></textarea></div>
+    <div class="fg"><div class="fl">Merknader <span class="opt">(valgfritt)</span></div><input type="text" id="a-merk" placeholder="F.eks. 1 nøkkel for hovedinngang"/></div>
     <div class="fg">
       <div class="fl">Bilde <span class="opt">(valgfritt – kan legges til senere)</span></div>
-      <div class="img-up" id="a-img-up" onclick="document.getElementById('a-img-file').click()">
-        <div class="img-up-ph" id="a-img-ph">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-          <p>Legg til bilde</p>
-          <span>Trykk for å åpne kamera eller galleri</span>
-        </div>
-        <img id="a-img-prev" class="img-up-prev" onclick="event.stopPropagation();openFS(this.src)"/>
-        <div class="img-up-change" id="a-img-change">Trykk for å bytte bilde</div>
-        <input type="file" id="a-img-file" accept="image/*" onchange="onImgChange('a')" style="display:none;"/>
+      <div class="img-up" onclick="document.getElementById('a-img-f').click()">
+        <div class="img-up-ph" id="a-img-ph"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><p>Legg til bilde</p><span>Trykk for kamera eller galleri</span></div>
+        <img id="a-img-p" class="img-up-prev" onclick="event.stopPropagation();openFS(this.src)"/>
+        <div class="img-up-change" id="a-img-ch">Trykk for å bytte bilde</div>
+        <input type="file" id="a-img-f" accept="image/*" onchange="onImg('a')" style="display:none;"/>
       </div>
     </div>
-    <button class="submit-btn" id="a-sub" onclick="submitAdd()">Registrer nøkkelboks</button>
+    <button class="sub-btn" id="a-sub" onclick="submitAdd()">Registrer nøkkelboks</button>
   </div>
 </div>
 
 <!-- EDIT SHEET -->
 <div class="sheet" id="edit-sheet">
-  <div class="sheet-handle"></div>
-  <div class="sheet-hdr">
-    <div class="sheet-title">Rediger nøkkelboks</div>
-    <button class="sheet-x" onclick="closeEditSheet()"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  <div class="sh-hdr">
+    <div class="sh-title">Rediger nøkkelboks</div>
+    <button class="sh-x" onclick="closeEditSheet()"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
   </div>
-  <div class="form-body">
+  <div class="fb">
     <div class="fg">
       <div class="fl">Adresse</div>
       <input type="text" id="e-adr" placeholder="Søk etter adresse..." autocomplete="off" oninput="doAC(this.value,'e-ac','e-ok','e')"/>
       <div class="ac-list" id="e-ac"></div>
-      <div class="addr-ok" id="e-ok"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Ny adresse bekreftet</div>
+      <div class="aok" id="e-ok"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Ny adresse bekreftet</div>
     </div>
-    <div class="fg">
-      <div class="fl">Avdeling</div>
-      <select id="e-avd"><option>Demenslaget</option><option>Nattpatruljen</option><option>Nord</option><option>Sentrum 3</option><option>Sør</option><option>Vest 1</option><option>Vest 3</option><option>Øst 1</option><option>Innsatsteamet</option><option>Annet</option></select>
-    </div>
-    <div class="fg">
-      <div class="fl">Beskrivelse</div>
-      <textarea id="e-besk"></textarea>
-    </div>
-    <div class="fg">
-      <div class="fl">Merknader <span class="opt">(valgfritt)</span></div>
-      <input type="text" id="e-merk"/>
-    </div>
+    <div class="fg"><div class="fl">Avdeling</div><select id="e-avd"><option>Demenslaget</option><option>Nattpatruljen</option><option>Nord</option><option>Sentrum 3</option><option>Sør</option><option>Vest 1</option><option>Vest 3</option><option>Øst 1</option><option>Innsatsteamet</option><option>Annet</option></select></div>
+    <div class="fg"><div class="fl">Beskrivelse</div><textarea id="e-besk"></textarea></div>
+    <div class="fg"><div class="fl">Merknader <span class="opt">(valgfritt)</span></div><input type="text" id="e-merk"/></div>
     <div class="fg">
       <div class="fl">Bilde <span class="opt">(valgfritt)</span></div>
-      <div class="img-up" id="e-img-up" onclick="document.getElementById('e-img-file').click()">
-        <div class="img-up-ph" id="e-img-ph">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-          <p>Legg til bilde</p>
-          <span>Trykk for å åpne kamera eller galleri</span>
-        </div>
-        <img id="e-img-prev" class="img-up-prev" onclick="event.stopPropagation();openFS(this.src)"/>
-        <div class="img-up-change" id="e-img-change">Trykk for å bytte bilde</div>
-        <input type="file" id="e-img-file" accept="image/*" onchange="onImgChange('e')" style="display:none;"/>
+      <div class="img-up" onclick="document.getElementById('e-img-f').click()">
+        <div class="img-up-ph" id="e-img-ph"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><p>Legg til bilde</p><span>Trykk for kamera eller galleri</span></div>
+        <img id="e-img-p" class="img-up-prev" onclick="event.stopPropagation();openFS(this.src)"/>
+        <div class="img-up-change" id="e-img-ch">Trykk for å bytte bilde</div>
+        <input type="file" id="e-img-f" accept="image/*" onchange="onImg('e')" style="display:none;"/>
       </div>
     </div>
-    <button class="submit-btn" id="e-sub" onclick="submitEdit()">Lagre endringer</button>
+    <button class="sub-btn" id="e-sub" onclick="submitEdit()">Lagre endringer</button>
   </div>
 </div>
 
 <!-- LIST SHEET -->
 <div class="sheet" id="list-sheet">
-  <div class="sheet-handle"></div>
-  <div class="sheet-hdr">
-    <div class="sheet-title">Alle nøkkelbokser</div>
-    <button class="sheet-x" onclick="closeSheet('list-sheet')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  <div class="sh-hdr">
+    <div class="sh-title">Alle nøkkelbokser</div>
+    <button class="sh-x" onclick="closeSheet('list-sheet')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
   </div>
-  <div class="list-top">
-    <div class="list-sw">
-      <span class="list-si"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></span>
-      <input type="text" id="list-q" placeholder="Søk adresse eller avdeling..." oninput="filterList(this.value)"/>
-    </div>
+  <div class="lt">
+    <div class="lsw"><span class="lsi"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></span><input type="text" id="lq" placeholder="Søk adresse eller avdeling..." oninput="filterList(this.value)"/></div>
     <div class="frow" id="frow"></div>
   </div>
-  <div class="list-inner" id="list-content"></div>
+  <div class="li" id="li"></div>
 </div>
 
 <!-- ONBOARDING -->
-<div class="ob-overlay" id="ob-overlay" style="display:none;">
+<div class="ob-ov" id="ob-ov">
   <div class="ob-card">
     <div class="ob-step on" id="ob-0">
-      <div class="ob-icon-wrap" style="background:#deeaf8;"><svg viewBox="0 0 24 24" fill="none" stroke="#1a56a0" stroke-width="2" width="26" height="26"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+      <div class="ob-icon" style="background:var(--blue-l);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" width="26" height="26"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
       <div class="ob-title">Nøkkelbokser – Rana kommune</div>
-      <div class="ob-text">Finn kommunale nøkkelbokser raskt. Søk på en adresse for å se hvilke nøkkelbokser som er i nærheten.</div>
+      <div class="ob-text">Finn kommunale nøkkelbokser raskt. Søk på en adresse for å se hvilke nøkkelbokser som er i nærheten, og registrer nye direkte på kartet.</div>
       <div class="ob-foot"><div class="ob-dots"><div class="ob-dot on"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div></div><button class="ob-next" onclick="obNext()">Neste</button></div>
     </div>
     <div class="ob-step" id="ob-1">
-      <div class="ob-icon-wrap" style="background:#e6f4ed;"><svg viewBox="0 0 24 24" fill="none" stroke="#1e8a4c" stroke-width="2" width="26" height="26"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><line x1="12" y1="7" x2="12" y2="13"/><line x1="9" y1="10" x2="15" y2="10"/></svg></div>
-      <div class="ob-title">Registrer nøkkelboks</div>
-      <div class="ob-text">Trykk på registrer-knappen til høyre, deretter trykk på kartet der nøkkelboksen er. Bekreft plasseringen og fyll inn informasjon.</div>
+      <div class="ob-icon" style="background:var(--green-l);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" width="26" height="26"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><line x1="12" y1="7" x2="12" y2="13"/><line x1="9" y1="10" x2="15" y2="10"/></svg></div>
+      <div class="ob-title">Registrer og søk</div>
+      <div class="ob-text">Trykk på <strong>registrer-knappen</strong> til høyre, deretter trykk på kartet der nøkkelboksen er. Bekreft plasseringen og fyll inn informasjon.<br><br>Bruk <strong>søkefeltet</strong> øverst for å finne en adresse – det dropper en pin så du ser nøyaktig sted.</div>
       <div class="ob-foot"><div class="ob-dots"><div class="ob-dot"></div><div class="ob-dot on"></div><div class="ob-dot"></div><div class="ob-dot"></div></div><button class="ob-next" onclick="obNext()">Neste</button></div>
     </div>
     <div class="ob-step" id="ob-2">
-      <div class="ob-icon-wrap" style="background:#deeaf8;"><svg viewBox="0 0 24 24" fill="none" stroke="#1a56a0" stroke-width="2" width="26" height="26"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg></div>
-      <div class="ob-title">Min posisjon</div>
-      <div class="ob-text">Trykk på posisjon-knappen for å sentrere kartet på deg. Nærmeste nøkkelboks vises automatisk med avstand i meter.</div>
+      <div class="ob-icon" style="background:var(--blue-l);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" width="26" height="26"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg></div>
+      <div class="ob-title">Posisjon og nærmeste</div>
+      <div class="ob-text"><strong>Posisjon-knappen</strong> sentrerer kartet på deg og viser din posisjon som en blå prikk.<br><br><strong>Nærmeste-knappen</strong> (radar-ikon) finner nærmeste nøkkelboks fra der du er og viser avstand i meter.</div>
       <div class="ob-foot"><div class="ob-dots"><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot on"></div><div class="ob-dot"></div></div><button class="ob-next" onclick="obNext()">Neste</button></div>
     </div>
     <div class="ob-step" id="ob-3">
-      <div class="ob-icon-wrap" style="background:#f0f0f0;"><svg viewBox="0 0 24 24" fill="none" stroke="#505050" stroke-width="2" width="26" height="26"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6" stroke-width="3"/><line x1="3" y1="12" x2="3.01" y2="12" stroke-width="3"/><line x1="3" y1="18" x2="3.01" y2="18" stroke-width="3"/></svg></div>
-      <div class="ob-title">Liste og redigering</div>
-      <div class="ob-text">Se alle nøkkelbokser i liste-visning, søk og filtrer på avdeling. Her kan du også redigere informasjon og legge til bilde.</div>
+      <div class="ob-icon" style="background:var(--g2);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--g6)" stroke-width="2" width="26" height="26"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6" stroke-width="3"/><line x1="3" y1="12" x2="3.01" y2="12" stroke-width="3"/><line x1="3" y1="18" x2="3.01" y2="18" stroke-width="3"/></svg></div>
+      <div class="ob-title">Liste og hjemskjerm</div>
+      <div class="ob-text"><strong>Liste-knappen</strong> viser alle nøkkelbokser med søk og avdelingsfilter. Her kan du også redigere og legge til bilder.</div>
+      <div id="ob-pwa-wrap" style="display:none;">
+        <div class="ob-pwa">
+          <div style="font-size:12px;font-weight:600;color:var(--g5);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:10px;">Legg til på hjemskjerm (iPhone)</div>
+          <div class="ob-pwa-row">
+            <div class="ob-pwa-step">1</div>
+            <div class="ob-pwa-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div>
+            <div class="ob-pwa-text">Trykk på <strong>Del</strong>-ikonet nederst i Safari</div>
+          </div>
+          <div class="ob-pwa-row">
+            <div class="ob-pwa-step">2</div>
+            <div class="ob-pwa-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div>
+            <div class="ob-pwa-text">Velg <strong>«Legg til på Hjem-skjerm»</strong></div>
+          </div>
+          <div class="ob-pwa-row">
+            <div class="ob-pwa-step">3</div>
+            <div class="ob-pwa-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <div class="ob-pwa-text">Trykk <strong>Legg til</strong> øverst til høyre</div>
+          </div>
+        </div>
+      </div>
       <div class="ob-foot"><div class="ob-dots"><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot on"></div></div><button class="ob-next" onclick="obDone()">Kom i gang</button></div>
     </div>
   </div>
 </div>
 
-<!-- FULLSCREEN -->
 <div class="fs" id="fs" onclick="closeFS()"><img id="fs-img" src=""/></div>
-
-<!-- iOS INSTALL HINT -->
-<div class="ios-hint" id="ios-hint">
-  <div class="ios-hint-text">
-    <strong>Legg til på hjemskjerm</strong>
-    Trykk <strong>Del</strong> i Safari, deretter <strong>«Legg til på Hjem-skjerm»</strong> for å installere appen.
-  </div>
-  <button class="ios-hint-close" onclick="document.getElementById('ios-hint').classList.remove('v');localStorage.setItem('nb_ios_hint','1')">×</button>
-</div>
-
 <div class="toast" id="toast"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 const SB='https://jemhrbhzecdbnylnzdej.supabase.co';
 const KEY='sb_publishable_RAIOxsbMw1cmsqIVkygv2g_AKYl1zMF';
-const TBL='nokkelbokser';
-const BKT='bilder';
-
+const TBL='nokkelbokser',BKT='bilder';
 const COLORS={'Demenslaget':'#7F77DD','Nattpatruljen':'#1D9E75','Nord':'#378ADD','Sentrum 3':'#D85A30','Sør':'#639922','Vest 1':'#BA7517','Vest 3':'#D4537E','Øst 1':'#533AB7','Innsatsteamet':'#185FA5','Annet':'#888780'};
 const AVDS=Object.keys(COLORS);
 
 let map,markers=[],allData=[],activeF='Alle';
-let tool='none';
-let pendLat=null,pendLng=null,pendMark=null;
-let addLat=null,addLng=null;
-let editId=null,editLat=null,editLng=null;
-let userMark=null,userLat=null,userLng=null;
-let searchMark=null;
-let obStep=0;
-let _aFile=null,_eFile=null;
+let tool='none',pendLat=null,pendLng=null,pendMark=null;
+let addLat=null,addLng=null,editId=null,editLat=null,editLng=null;
+let userMark=null,userLat=null,userLng=null,searchMark=null;
+let obStep=0,_aFile=null,_eFile=null;
 
-// ── API ───────────────────────────────────────────
-async function sbFetch(path,o={}){
-  return fetch(`${SB}/rest/v1/${path}`,{...o,headers:{'apikey':KEY,'Authorization':`Bearer ${KEY}`,'Content-Type':'application/json','Prefer':'return=representation',...(o.headers||{})}});
-}
-async function loadAll(){const r=await sbFetch(`${TBL}?select=*&order=created_at.desc`);if(!r.ok)throw 0;return r.json();}
-async function insert(item){const r=await sbFetch(TBL,{method:'POST',body:JSON.stringify(item)});if(!r.ok)throw await r.text();return(await r.json())[0];}
-async function patch(id,p){const r=await sbFetch(`${TBL}?id=eq.${id}`,{method:'PATCH',headers:{'apikey':KEY,'Authorization':`Bearer ${KEY}`,'Content-Type':'application/json','Prefer':'return=representation'},body:JSON.stringify(p)});if(!r.ok)throw await r.text();return(await r.json())[0];}
-async function uploadImg(file){const fn=`${Date.now()}.${file.name.split('.').pop()}`;const r=await fetch(`${SB}/storage/v1/object/${BKT}/${fn}`,{method:'POST',headers:{'apikey':KEY,'Authorization':`Bearer ${KEY}`,'Content-Type':file.type},body:file});if(!r.ok)throw 0;return`${SB}/storage/v1/object/public/${BKT}/${fn}`;}
+// ── API ───────────────────────────────────────────────────
+async function sbF(path,o={}){return fetch(`${SB}/rest/v1/${path}`,{...o,headers:{'apikey':KEY,'Authorization':`Bearer ${KEY}`,'Content-Type':'application/json','Prefer':'return=representation',...(o.headers||{})}});}
+async function loadAll(){const r=await sbF(`${TBL}?select=*&order=created_at.desc`);if(!r.ok)throw 0;return r.json();}
+async function insertRow(d){const r=await sbF(TBL,{method:'POST',body:JSON.stringify(d)});if(!r.ok)throw await r.text();return(await r.json())[0];}
+async function patchRow(id,d){const r=await sbF(`${TBL}?id=eq.${id}`,{method:'PATCH',headers:{'apikey':KEY,'Authorization':`Bearer ${KEY}`,'Content-Type':'application/json','Prefer':'return=representation'},body:JSON.stringify(d)});if(!r.ok)throw await r.text();return(await r.json())[0];}
+async function upImg(file){const fn=`${Date.now()}.${file.name.split('.').pop()}`;const r=await fetch(`${SB}/storage/v1/object/${BKT}/${fn}`,{method:'POST',headers:{'apikey':KEY,'Authorization':`Bearer ${KEY}`,'Content-Type':file.type},body:file});if(!r.ok)throw 0;return`${SB}/storage/v1/object/public/${BKT}/${fn}`;}
 
-// ── KARTVERKET ────────────────────────────────────
-async function kv(q){
-  const r=await fetch(`https://ws.geonorge.no/adresser/v1/sok?sok=${encodeURIComponent(q)}&kommunenummer=1833&treffPerSide=6&utkoordsys=4258`);
-  if(!r.ok)return[];
-  const d=await r.json();
-  return(d.adresser||[]).map(a=>({t:`${a.adressenavn} ${a.nummer||''}${a.bokstav||''}`.trim(),s:a.poststed||'',lat:a.representasjonspunkt?.lat,lng:a.representasjonspunkt?.lon})).filter(a=>a.lat&&a.lng);
-}
-async function revGeo(lat,lng){
-  try{const r=await fetch(`https://ws.geonorge.no/adresser/v1/punktsok?lat=${lat}&lon=${lng}&radius=100&utkoordsys=4258`);const d=await r.json();if(d.adresser?.length){const a=d.adresser[0];return`${a.adressenavn} ${a.nummer||''}${a.bokstav||''}`.trim();}}catch{}return`${lat.toFixed(5)}, ${lng.toFixed(5)}`;
-}
+// ── KARTVERKET ────────────────────────────────────────────
+async function kv(q){try{const r=await fetch(`https://ws.geonorge.no/adresser/v1/sok?sok=${encodeURIComponent(q)}&kommunenummer=1833&treffPerSide=6&utkoordsys=4258`);const d=await r.json();return(d.adresser||[]).map(a=>({t:`${a.adressenavn} ${a.nummer||''}${a.bokstav||''}`.trim(),s:a.poststed||'',lat:a.representasjonspunkt?.lat,lng:a.representasjonspunkt?.lon})).filter(a=>a.lat&&a.lng);}catch{return[];}}
+async function revGeo(lat,lng){try{const r=await fetch(`https://ws.geonorge.no/adresser/v1/punktsok?lat=${lat}&lon=${lng}&radius=100&utkoordsys=4258`);const d=await r.json();if(d.adresser?.length){const a=d.adresser[0];return`${a.adressenavn} ${a.nummer||''}${a.bokstav||''}`.trim();}}catch{}return`${lat.toFixed(5)}, ${lng.toFixed(5)}`;}
 
-// ── MAP ───────────────────────────────────────────
+// ── MAP ───────────────────────────────────────────────────
 function initMap(){
   map=L.map('map',{zoomControl:false,attributionControl:false}).setView([66.3126,14.1434],14);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,detectRetina:true,tileSize:window.devicePixelRatio>1?512:256,zoomOffset:window.devicePixelRatio>1?-1:0}).addTo(map);
   L.control.attribution({position:'bottomleft',prefix:'© OpenStreetMap'}).addTo(map);
   map.on('click',onMapClick);
-  map.on('click',()=>{document.getElementById('sresults').classList.remove('v');});
+  map.on('click',()=>document.getElementById('sresults').classList.remove('v'));
 }
 
-function pinIcon(color){
-  return L.divIcon({className:'',html:`<div style="width:28px;height:28px;background:${color};border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.28);"></div>`,iconSize:[28,28],iconAnchor:[14,14],popupAnchor:[0,-17]});
-}
+function pinIcon(color){return L.divIcon({className:'',html:`<div style="width:28px;height:28px;background:${color};border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.28);"></div>`,iconSize:[28,28],iconAnchor:[14,14],popupAnchor:[0,-17]});}
 
 function renderMarkers(){
   markers.forEach(m=>map.removeLayer(m));markers=[];
@@ -533,7 +486,7 @@ function renderMarkers(){
     if(!item.breddegrad||!item.lengdegrad)return;
     const c=COLORS[item.avdeling]||'#888';
     const m=L.marker([item.breddegrad,item.lengdegrad],{icon:pinIcon(c)}).addTo(map);
-    m.on('click',e=>{L.DomEvent.stopPropagation(e);openPinSheet(item);});
+    m.on('click',e=>{L.DomEvent.stopPropagation(e);if(tool==='add')return;openPinSheet(item);});
     markers.push(m);
   });
 }
@@ -544,81 +497,58 @@ async function onMapClick(e){
   const{lat,lng}=e.latlng;
   pendLat=lat;pendLng=lng;
   if(pendMark)map.removeLayer(pendMark);
-  pendMark=L.marker([lat,lng],{icon:L.divIcon({className:'',html:'<div class="temp-pin-wrap"><div class="temp-pin-dot"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div></div>',iconSize:[28,28],iconAnchor:[14,14]}),zIndexOffset:1000}).addTo(map);
+  pendMark=L.marker([lat,lng],{icon:L.divIcon({className:'',html:`<div style="width:28px;height:28px;background:var(--green);border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(30,138,76,0.4);display:flex;align-items:center;justify-content:center;"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>`,iconSize:[28,28],iconAnchor:[14,14]}),zIndexOffset:1000}).addTo(map);
   document.getElementById('conf-addr').textContent='Henter adresse...';
-  document.getElementById('conf-overlay').classList.add('v');
-  const addr=await revGeo(lat,lng);
-  document.getElementById('conf-addr').textContent=addr;
+  document.getElementById('conf-ov').classList.add('v');
+  document.getElementById('conf-addr').textContent=await revGeo(lat,lng);
 }
 
-// ── TOOL ─────────────────────────────────────────
+// ── TOOLS ─────────────────────────────────────────────────
 function setTool(t){
   tool=t;
-  document.getElementById('tb-add').classList.remove('active-add');
-  document.getElementById('tb-loc').classList.remove('active-loc');
-  const hint=document.getElementById('tool-hint');
-  if(t==='add'){
-    document.getElementById('tb-add').classList.add('active-add');
-    hint.classList.add('v');
-    map.getContainer().style.cursor='crosshair';
-    closeAllSheets();
-  } else if(t==='locate'){
-    document.getElementById('tb-loc').classList.add('active-loc');
-    hint.classList.remove('v');
-    map.getContainer().style.cursor='';
-    doLocate();
-  } else {
-    hint.classList.remove('v');
-    map.getContainer().style.cursor='';
-  }
+  ['tb-add','tb-loc','tb-near'].forEach(id=>document.getElementById(id).className='tbtn');
+  document.getElementById('tool-hint').classList.remove('v');
+  map.getContainer().style.cursor='';
+  if(t==='add'){document.getElementById('tb-add').classList.add('on-add');document.getElementById('tool-hint').classList.add('v');map.getContainer().style.cursor='crosshair';closeAllSheets();}
+  else if(t==='locate'){document.getElementById('tb-loc').classList.add('on-loc');doLocate();}
+  else if(t==='nearest'){document.getElementById('tb-near').classList.add('on-near');doNearest();}
 }
 
-// ── PLACE ─────────────────────────────────────────
-function cancelPlace(){
-  document.getElementById('conf-overlay').classList.remove('v');
-  if(pendMark){map.removeLayer(pendMark);pendMark=null;}
-  pendLat=null;pendLng=null;
-  setTool('none');
-}
+// ── PLACEMENT ─────────────────────────────────────────────
+function cancelPlace(){document.getElementById('conf-ov').classList.remove('v');if(pendMark){map.removeLayer(pendMark);pendMark=null;}pendLat=null;pendLng=null;setTool('none');}
 function confirmPlace(){
-  document.getElementById('conf-overlay').classList.remove('v');
+  document.getElementById('conf-ov').classList.remove('v');
   addLat=pendLat;addLng=pendLng;
-  const addr=document.getElementById('conf-addr').textContent;
-  document.getElementById('a-adr').value=addr;
+  document.getElementById('a-adr').value=document.getElementById('conf-addr').textContent;
   document.getElementById('a-ok').classList.add('v');
-  openSheet('add-sheet');
-  setTool('none');
+  openSheet('add-sheet');setTool('none');
 }
 
-// ── PIN SHEET ─────────────────────────────────────
+// ── PIN SHEET ─────────────────────────────────────────────
 function openPinSheet(item){
   closeAllSheets();
   const c=COLORS[item.avdeling]||'#888';
   const iw=document.getElementById('ps-img-wrap');
-  if(item.bilde_url){iw.innerHTML=`<img src="${item.bilde_url}" class="ps-img" onclick="openFS(this.src)" onerror="this.parentNode.innerHTML=''"/>`;}
-  else{iw.innerHTML=`<div class="ps-img-ph"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>`;}
+  if(item.bilde_url){iw.innerHTML=`<img src="${item.bilde_url}" class="ps-img" onclick="openFS(this.src)" onerror="this.parentNode.innerHTML='<div class=ps-ph><svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke-width=&quot;1.5&quot;><rect x=&quot;3&quot; y=&quot;3&quot; width=&quot;18&quot; height=&quot;18&quot; rx=&quot;2&quot;/><circle cx=&quot;8.5&quot; cy=&quot;8.5&quot; r=&quot;1.5&quot;/><polyline points=&quot;21 15 16 10 5 21&quot;/></svg><span>Ingen bilde</span></div>'">`;}
+  else{iw.innerHTML=`<div class="ps-ph"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>Ingen bilde</span></div>`;}
   document.getElementById('ps-title').textContent=item.adresse;
   document.getElementById('ps-addr').textContent=item.adresse;
   document.getElementById('ps-besk').textContent=item.beskrivelse;
-  const mw=document.getElementById('ps-merk-wrap');
-  if(item.merknader){document.getElementById('ps-merk').textContent=item.merknader;mw.style.display='block';}
-  else mw.style.display='none';
-  const badge=document.getElementById('ps-avd');
-  badge.textContent=item.avdeling;badge.style.cssText=`background:${c}22;color:${c};`;
+  const mw=document.getElementById('ps-mw');
+  if(item.merknader){document.getElementById('ps-merk').textContent=item.merknader;mw.style.display='block';}else mw.style.display='none';
+  const b=document.getElementById('ps-avd');b.textContent=item.avdeling;b.style.cssText=`background:${c}22;color:${c};`;
   document.getElementById('ps-name').textContent=item.opprettet_av||'';
   document.getElementById('ps-date').textContent=new Date(item.created_at).toLocaleDateString('no');
   openSheet('pin-sheet');
 }
 
-// ── ADD ───────────────────────────────────────────
+// ── ADD ───────────────────────────────────────────────────
 function closeAddSheet(){
   closeSheet('add-sheet');
   if(pendMark){map.removeLayer(pendMark);pendMark=null;}
   ['a-navn','a-adr','a-besk','a-merk'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('a-avd').value='';
-  resetImg('a');
-  document.getElementById('a-ok').classList.remove('v');
-  document.getElementById('a-ac').classList.remove('v');
+  resetImg('a');document.getElementById('a-ok').classList.remove('v');document.getElementById('a-ac').classList.remove('v');
   addLat=null;addLng=null;_aFile=null;
 }
 async function submitAdd(){
@@ -631,10 +561,10 @@ async function submitAdd(){
   if(!addLat||!addLng){showToast('Velg adresse fra listen eller bruk posisjon-knappen');return;}
   const btn=document.getElementById('a-sub');btn.disabled=true;btn.textContent='Registrerer...';
   let bilde_url=null;
-  if(_aFile){try{bilde_url=await uploadImg(_aFile);}catch{showToast('Bilde feilet, fortsetter uten');}}
+  if(_aFile){try{bilde_url=await upImg(_aFile);}catch{showToast('Bilde feilet, fortsetter uten');}}
   try{
-    const saved=await insert({adresse:adr,avdeling:avd,beskrivelse:besk,merknader:merk,breddegrad:addLat,lengdegrad:addLng,opprettet_av:navn,bilde_url});
-    allData.unshift(saved);renderMarkers();
+    const s=await insertRow({adresse:adr,avdeling:avd,beskrivelse:besk,merknader:merk,breddegrad:addLat,lengdegrad:addLng,opprettet_av:navn,bilde_url});
+    allData.unshift(s);renderMarkers();
     if(pendMark){map.removeLayer(pendMark);pendMark=null;}
     closeAddSheet();map.flyTo([addLat,addLng],17,{duration:0.8});
     showToast('Nøkkelboks registrert');
@@ -642,7 +572,7 @@ async function submitAdd(){
   btn.disabled=false;btn.textContent='Registrer nøkkelboks';
 }
 
-// ── EDIT ──────────────────────────────────────────
+// ── EDIT ──────────────────────────────────────────────────
 function openEdit(id){
   const item=allData.find(d=>d.id===id);if(!item)return;
   editId=id;editLat=item.breddegrad;editLng=item.lengdegrad;_eFile=null;
@@ -651,39 +581,28 @@ function openEdit(id){
   document.getElementById('e-besk').value=item.beskrivelse||'';
   document.getElementById('e-merk').value=item.merknader||'';
   document.getElementById('e-ok').classList.remove('v');
-  document.getElementById('e-img-file').value='';
-  const prev=document.getElementById('e-img-prev');
-  const ph=document.getElementById('e-img-ph');
-  const ch=document.getElementById('e-img-change');
-  if(item.bilde_url){prev.src=item.bilde_url;prev.style.display='block';ph.style.display='none';ch.classList.add('v');}
-  else{prev.style.display='none';ph.style.display='block';ch.classList.remove('v');}
-  closeSheet('list-sheet');
-  setTimeout(()=>openSheet('edit-sheet'),60);
+  document.getElementById('e-img-f').value='';
+  const p=document.getElementById('e-img-p'),ph=document.getElementById('e-img-ph'),ch=document.getElementById('e-img-ch');
+  if(item.bilde_url){p.src=item.bilde_url;p.style.display='block';ph.style.display='none';ch.classList.add('v');}
+  else{p.style.display='none';ph.style.display='block';ch.classList.remove('v');}
+  closeSheet('list-sheet');setTimeout(()=>openSheet('edit-sheet'),60);
 }
-function closeEditSheet(){
-  closeSheet('edit-sheet');
-  editId=null;editLat=null;editLng=null;_eFile=null;
-  document.getElementById('e-img-file').value='';
-}
+function closeEditSheet(){closeSheet('edit-sheet');editId=null;editLat=null;editLng=null;_eFile=null;document.getElementById('e-img-f').value='';}
 async function submitEdit(){
   if(!editId)return;
   const btn=document.getElementById('e-sub');btn.disabled=true;btn.textContent='Lagrer...';
   const p={adresse:document.getElementById('e-adr').value.trim(),avdeling:document.getElementById('e-avd').value,beskrivelse:document.getElementById('e-besk').value.trim(),merknader:document.getElementById('e-merk').value.trim(),breddegrad:editLat,lengdegrad:editLng};
-  if(_eFile){try{p.bilde_url=await uploadImg(_eFile);}catch{showToast('Bilde feilet, lagrer uten');}}
+  if(_eFile){try{p.bilde_url=await upImg(_eFile);}catch{showToast('Bilde feilet, lagrer uten');}}
   try{
-    const upd=await patch(editId,p);
-    const i=allData.findIndex(d=>d.id===editId);if(i>=0)allData[i]={...allData[i],...upd};
+    const u=await patchRow(editId,p);
+    const i=allData.findIndex(d=>d.id===editId);if(i>=0)allData[i]={...allData[i],...u};
     renderMarkers();closeEditSheet();showToast('Endringer lagret');
   }catch(e){showToast('Kunne ikke lagre');console.error(e);}
   btn.disabled=false;btn.textContent='Lagre endringer';
 }
 
-// ── LIST ──────────────────────────────────────────
-function openList(){
-  renderFRow();renderList(allData);
-  document.getElementById('list-q').value='';
-  openSheet('list-sheet');
-}
+// ── LIST ──────────────────────────────────────────────────
+function openList(){renderFRow();renderList(allData);document.getElementById('lq').value='';openSheet('list-sheet');}
 function renderFRow(){
   const row=document.getElementById('frow');row.innerHTML='';
   const all=document.createElement('button');
@@ -696,127 +615,80 @@ function renderFRow(){
     const c=COLORS[avd],btn=document.createElement('button');
     btn.className='fchip'+(activeF===avd?' on':'');
     if(activeF===avd)btn.style.cssText=`background:${c};color:#fff;border-color:${c};`;
-    btn.innerHTML=`<span class="fchip-dot" style="background:${c}"></span>${avd}`;
+    btn.innerHTML=`<span class="fdot" style="background:${c}"></span>${avd}`;
     btn.onclick=()=>{activeF=avd;renderFRow();renderMarkers();renderList(allData.filter(d=>d.avdeling===avd));};
     row.appendChild(btn);
   });
 }
 function renderList(data){
-  const c=document.getElementById('list-content');
+  const c=document.getElementById('li');
   if(!data.length){c.innerHTML='<div style="text-align:center;padding:40px;color:#888;font-size:14px;">Ingen nøkkelbokser funnet</div>';return;}
   c.innerHTML=data.map(item=>{
     const col=COLORS[item.avdeling]||'#888';
     const dato=new Date(item.created_at).toLocaleDateString('no');
-    return`<div class="lcard">
-      ${item.bilde_url?`<img src="${item.bilde_url}" class="lcard-img" onclick="openFS(this.src)" onerror="this.style.display='none'"/>`:''}
-      <div class="lcard-body">
-        <div class="lcard-addr">${item.adresse}</div>
-        <div class="lcard-fl">Beskrivelse</div><div class="lcard-fv">${item.beskrivelse}</div>
-        ${item.merknader?`<div class="lcard-fl">Merknad</div><div class="lcard-fv">${item.merknader}</div>`:''}
-        <div class="lcard-foot">
-          <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:${col}22;color:${col}">${item.avdeling}</span>
-          <span style="font-size:10px;color:#bbb;">${item.opprettet_av||''} · ${dato}</span>
-        </div>
-        <div class="lcard-actions">
-          <button class="lcard-btn lbtn-map" onclick="flyFromList(${item.breddegrad},${item.lengdegrad})">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            Vis på kart
-          </button>
-          <button class="lcard-btn lbtn-edit" onclick="openEdit(${item.id})">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-            Rediger
-          </button>
-        </div>
-      </div>
-    </div>`;
+    const imgHtml=item.bilde_url
+      ?`<img src="${item.bilde_url}" class="lcard-img" onclick="openFS(this.src)" onerror="this.style.display='none'">`
+      :`<div class="lcard-ph"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>`;
+    return`<div class="lcard">${imgHtml}<div class="lcard-body"><div class="lcard-addr">${item.adresse}</div><div class="lfl">Beskrivelse</div><div class="lfv">${item.beskrivelse}</div>${item.merknader?`<div class="lfl">Merknad</div><div class="lfv">${item.merknader}</div>`:''}<div class="lcard-foot"><span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:${col}22;color:${col}">${item.avdeling}</span><span style="font-size:10px;color:#bbb;">${item.opprettet_av||''} · ${dato}</span></div><div class="lcard-actions"><button class="lbtn lbtn-map" onclick="flyFL(${item.breddegrad},${item.lengdegrad})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Vis på kart</button><button class="lbtn lbtn-edit" onclick="openEdit(${item.id})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Rediger</button></div></div></div>`;
   }).join('');
 }
-function filterList(q){
-  const base=activeF==='Alle'?allData:allData.filter(d=>d.avdeling===activeF);
-  if(!q.trim()){renderList(base);return;}
-  renderList(base.filter(d=>(d.adresse||'').toLowerCase().includes(q.toLowerCase())||(d.avdeling||'').toLowerCase().includes(q.toLowerCase())||(d.beskrivelse||'').toLowerCase().includes(q.toLowerCase())));
-}
-function flyFromList(lat,lng){closeSheet('list-sheet');setTimeout(()=>{if(lat&&lng)map.flyTo([lat,lng],17,{duration:0.8});},200);}
+function filterList(q){const base=activeF==='Alle'?allData:allData.filter(d=>d.avdeling===activeF);if(!q.trim()){renderList(base);return;}renderList(base.filter(d=>(d.adresse||'').toLowerCase().includes(q.toLowerCase())||(d.avdeling||'').toLowerCase().includes(q.toLowerCase())||(d.beskrivelse||'').toLowerCase().includes(q.toLowerCase())));}
+function flyFL(lat,lng){closeSheet('list-sheet');setTimeout(()=>{if(lat&&lng)map.flyTo([lat,lng],17,{duration:0.8});},200);}
 
-// ── SEARCH ────────────────────────────────────────
-const siEl=document.getElementById('si');
-const srEl=document.getElementById('sresults');
-const scEl=document.getElementById('sclear');
+// ── SEARCH ────────────────────────────────────────────────
+const siEl=document.getElementById('si'),srEl=document.getElementById('sresults'),scEl=document.getElementById('sclear');
 let sT;
-siEl.addEventListener('input',function(){
-  clearTimeout(sT);const v=this.value.trim();
-  scEl.classList.toggle('v',v.length>0);
-  if(v.length<2){srEl.classList.remove('v');return;}
-  sT=setTimeout(()=>doSearch(v),300);
-});
+siEl.addEventListener('input',function(){clearTimeout(sT);const v=this.value.trim();scEl.classList.toggle('v',v.length>0);if(v.length<2){srEl.classList.remove('v');return;}sT=setTimeout(()=>doSearch(v),300);});
 siEl.addEventListener('blur',()=>setTimeout(()=>srEl.classList.remove('v'),200));
 function clearSearch(){siEl.value='';scEl.classList.remove('v');srEl.classList.remove('v');if(searchMark){map.removeLayer(searchMark);searchMark=null;}}
-
 async function doSearch(q){
   const local=allData.filter(d=>(d.adresse||'').toLowerCase().includes(q.toLowerCase()));
   let html=local.slice(0,3).map(item=>{
     const c=COLORS[item.avdeling]||'#888';
-    return`<div class="sri" onclick="srEl.classList.remove('v');map.flyTo([${item.breddegrad},${item.lengdegrad}],17);openPinSheet(allData.find(d=>d.id===${item.id}))">
-      <div class="sri-ic" style="background:${c}22;"><svg viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
-      <div><div class="sri-a">${item.adresse}</div><div class="sri-b">${item.avdeling} · Nøkkelboks</div></div>
-    </div>`;
+    return`<div class="sri" onclick="srEl.classList.remove('v');map.flyTo([${item.breddegrad},${item.lengdegrad}],17);openPinSheet(allData.find(d=>d.id===${item.id}))"><div class="sri-ic" style="background:${c}22;"><svg viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div><div><div class="sri-a">${item.adresse}</div><div class="sri-b">${item.avdeling} · Nøkkelboks</div></div></div>`;
   }).join('');
-  try{
-    const places=await kv(q);
-    places.forEach(p=>{
-      html+=`<div class="sri" onclick="srEl.classList.remove('v');placeSearchPin(${p.lat},${p.lng},'${p.t.replace(/'/g,"\\'")}')">
-        <div class="sri-ic" style="background:#f0eeff;"><svg viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.4 7 11.5 7.74 12.07a1 1 0 0 0 1.27 0C13.9 21.5 20 15.4 20 10a8 8 0 0 0-8-8z"/></svg></div>
-        <div><div class="sri-a">${p.t}</div><div class="sri-b">${p.s}</div></div>
-      </div>`;
-    });
-  }catch{}
+  const pl=await kv(q);
+  pl.forEach(p=>{html+=`<div class="sri" onclick="srEl.classList.remove('v');placePin(${p.lat},${p.lng},'${p.t.replace(/'/g,"\\'")}')"><div class="sri-ic" style="background:#f0eeff;"><svg viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.4 7 11.5 7.74 12.07a1 1 0 0 0 1.27 0C13.9 21.5 20 15.4 20 10a8 8 0 0 0-8-8z"/></svg></div><div><div class="sri-a">${p.t}</div><div class="sri-b">${p.s}</div></div></div>`;});
   if(!html)html='<div class="sri" style="color:#888;cursor:default;">Ingen treff</div>';
   srEl.innerHTML=html;srEl.classList.add('v');
 }
-
-function placeSearchPin(lat,lng,addr){
+function placePin(lat,lng,addr){
   if(searchMark)map.removeLayer(searchMark);
-  searchMark=L.marker([lat,lng],{icon:L.divIcon({className:'',html:'<div style="width:22px;height:22px;background:#8b5cf6;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2px solid #fff;box-shadow:0 2px 6px rgba(139,92,246,0.4);"></div>',iconSize:[22,22],iconAnchor:[11,22]})}).addTo(map);
-  searchMark.bindTooltip(addr,{permanent:true,direction:'top',offset:[0,-24],className:''});
+  searchMark=L.marker([lat,lng],{icon:L.divIcon({className:'',html:`<div style="width:22px;height:22px;background:#8b5cf6;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2px solid #fff;box-shadow:0 2px 6px rgba(139,92,246,0.4);"></div>`,iconSize:[22,22],iconAnchor:[11,22]})}).addTo(map);
   siEl.value=addr;scEl.classList.add('v');
   map.flyTo([lat,lng],16,{duration:0.8});
 }
 
-// ── AC ────────────────────────────────────────────
+// ── AC ────────────────────────────────────────────────────
 let acT;
 async function doAC(q,listId,okId,prefix){
   const list=document.getElementById(listId);
   if(q.length<3){list.classList.remove('v');if(prefix==='a'){addLat=null;addLng=null;}else{editLat=null;editLng=null;}document.getElementById(okId).classList.remove('v');return;}
   clearTimeout(acT);
   acT=setTimeout(async()=>{
-    try{
-      const pl=await kv(q);if(!pl.length){list.classList.remove('v');return;}
-      list.innerHTML=pl.map(p=>`<div class="ac-item" onclick="pickAddr('${p.t.replace(/'/g,"\\'")}',${p.lat},${p.lng},'${listId}','${okId}','${prefix}')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.4 7 11.5 7.74 12.07a1 1 0 0 0 1.27 0C13.9 21.5 20 15.4 20 10a8 8 0 0 0-8-8z"/></svg><div><div class="ac-main">${p.t}</div><div class="ac-sub">${p.s}</div></div></div>`).join('');
-      list.classList.add('v');
-    }catch{}
+    const pl=await kv(q);if(!pl.length){list.classList.remove('v');return;}
+    list.innerHTML=pl.map(p=>`<div class="ac-item" onclick="pickAddr('${p.t.replace(/'/g,"\\'")}',${p.lat},${p.lng},'${listId}','${okId}','${prefix}')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.4 7 11.5 7.74 12.07a1 1 0 0 0 1.27 0C13.9 21.5 20 15.4 20 10a8 8 0 0 0-8-8z"/></svg><div><div class="ac-main">${p.t}</div><div class="ac-sub">${p.s}</div></div></div>`).join('');
+    list.classList.add('v');
   },300);
 }
 function pickAddr(navn,lat,lng,listId,okId,prefix){
   if(prefix==='a'){document.getElementById('a-adr').value=navn;addLat=parseFloat(lat);addLng=parseFloat(lng);}
   else{document.getElementById('e-adr').value=navn;editLat=parseFloat(lat);editLng=parseFloat(lng);}
-  document.getElementById(listId).classList.remove('v');
-  document.getElementById(okId).classList.add('v');
+  document.getElementById(listId).classList.remove('v');document.getElementById(okId).classList.add('v');
 }
 
-// ── GPS ───────────────────────────────────────────
+// ── GPS ───────────────────────────────────────────────────
 async function useGPS(){
   if(!navigator.geolocation){showToast('GPS ikke tilgjengelig');return;}
   showToast('Henter din posisjon...');
   navigator.geolocation.getCurrentPosition(async pos=>{
     addLat=pos.coords.latitude;addLng=pos.coords.longitude;
-    const addr=await revGeo(addLat,addLng);
-    document.getElementById('a-adr').value=addr;
-    document.getElementById('a-ok').classList.add('v');
-    showToast('Posisjon hentet');
+    document.getElementById('a-adr').value=await revGeo(addLat,addLng);
+    document.getElementById('a-ok').classList.add('v');showToast('Posisjon hentet');
   },()=>showToast('Kunne ikke hente posisjon – sjekk tillatelser'));
 }
 
-// ── LOCATE ────────────────────────────────────────
+// ── LOCATE ────────────────────────────────────────────────
 function doLocate(){
   if(!navigator.geolocation){showToast('GPS ikke tilgjengelig');setTool('none');return;}
   navigator.geolocation.getCurrentPosition(pos=>{
@@ -824,93 +696,91 @@ function doLocate(){
     if(userMark)map.removeLayer(userMark);
     userMark=L.marker([userLat,userLng],{icon:L.divIcon({className:'',html:'<div class="user-dot"></div>',iconSize:[18,18],iconAnchor:[9,9]})}).addTo(map);
     map.flyTo([userLat,userLng],15,{duration:0.8});
-    showNearest();
-    document.getElementById('tb-loc').classList.remove('active-loc');
-    tool='none';
-  },()=>{showToast('Kunne ikke hente posisjon – sjekk tillatelser');document.getElementById('tb-loc').classList.remove('active-loc');tool='none';});
+    document.getElementById('tb-loc').className='tbtn';tool='none';
+  },()=>{showToast('Kunne ikke hente posisjon – sjekk tillatelser');document.getElementById('tb-loc').className='tbtn';tool='none';},
+  {enableHighAccuracy:true,timeout:8000});
 }
 
-function showNearest(){
-  if(!userLat||!userLng||!allData.length)return;
+// ── NEAREST ───────────────────────────────────────────────
+function doNearest(){
+  document.getElementById('tb-near').className='tbtn';tool='none';
+  if(!navigator.geolocation){showToast('GPS ikke tilgjengelig');return;}
+  if(userLat&&userLng){findNearest();}
+  else{
+    showToast('Henter posisjon...');
+    navigator.geolocation.getCurrentPosition(pos=>{
+      userLat=pos.coords.latitude;userLng=pos.coords.longitude;
+      if(userMark)map.removeLayer(userMark);
+      userMark=L.marker([userLat,userLng],{icon:L.divIcon({className:'',html:'<div class="user-dot"></div>',iconSize:[18,18],iconAnchor:[9,9]})}).addTo(map);
+      findNearest();
+    },()=>showToast('Kunne ikke hente posisjon – sjekk tillatelser'),{enableHighAccuracy:true,timeout:8000});
+  }
+}
+function findNearest(){
+  if(!allData.length){showToast('Ingen nøkkelbokser registrert');return;}
   let near=null,minD=Infinity;
   allData.forEach(item=>{
     if(!item.breddegrad||!item.lengdegrad)return;
     const d=Math.hypot(item.breddegrad-userLat,item.lengdegrad-userLng);
     if(d<minD){minD=d;near=item;}
   });
-  if(!near)return;
+  if(!near){showToast('Ingen nøkkelbokser funnet');return;}
   const m=Math.round(minD*111000);
-  document.getElementById('nb-text').textContent=`${near.adresse} – ${m<1000?m+' m':((m/1000).toFixed(1)+' km')} unna`;
-  document.getElementById('nearest-banner').classList.add('v');
+  document.getElementById('nb-val').textContent=`${near.adresse} – ${m<1000?m+' m':((m/1000).toFixed(1)+' km')} unna`;
+  document.getElementById('nb-banner').classList.add('v');
+  map.flyTo([near.breddegrad,near.lengdegrad],17,{duration:1});
 }
 
-// ── IMAGE ─────────────────────────────────────────
-function onImgChange(prefix){
-  const file=document.getElementById(`${prefix}-img-file`).files[0];
-  if(!file)return;
-  if(prefix==='a')_aFile=file;else _eFile=file;
-  const prev=document.getElementById(`${prefix}-img-prev`);
-  const ph=document.getElementById(`${prefix}-img-ph`);
-  const ch=document.getElementById(`${prefix}-img-change`);
-  prev.src=URL.createObjectURL(file);prev.style.display='block';
-  ph.style.display='none';ch.classList.add('v');
+// ── IMAGE ─────────────────────────────────────────────────
+function onImg(p){
+  const file=document.getElementById(`${p}-img-f`).files[0];if(!file)return;
+  if(p==='a')_aFile=file;else _eFile=file;
+  const prev=document.getElementById(`${p}-img-p`),ph=document.getElementById(`${p}-img-ph`),ch=document.getElementById(`${p}-img-ch`);
+  prev.src=URL.createObjectURL(file);prev.style.display='block';ph.style.display='none';ch.classList.add('v');
 }
-function resetImg(prefix){
-  document.getElementById(`${prefix}-img-file`).value='';
-  document.getElementById(`${prefix}-img-prev`).style.display='none';
-  document.getElementById(`${prefix}-img-ph`).style.display='block';
-  document.getElementById(`${prefix}-img-change`).classList.remove('v');
-}
+function resetImg(p){document.getElementById(`${p}-img-f`).value='';document.getElementById(`${p}-img-p`).style.display='none';document.getElementById(`${p}-img-ph`).style.display='block';document.getElementById(`${p}-img-ch`).classList.remove('v');}
 function openFS(src){document.getElementById('fs-img').src=src;document.getElementById('fs').classList.add('v');}
 function closeFS(){document.getElementById('fs').classList.remove('v');}
 
-// ── SHEETS ────────────────────────────────────────
+// ── SHEETS ────────────────────────────────────────────────
 function openSheet(id){document.getElementById(id).classList.add('open');}
 function closeSheet(id){document.getElementById(id).classList.remove('open');}
 function closeAllSheets(){['pin-sheet','add-sheet','edit-sheet','list-sheet'].forEach(closeSheet);}
 
-// ── ONBOARDING ────────────────────────────────────
-function showOnboarding(){
+// ── ONBOARDING ────────────────────────────────────────────
+function showOb(){
   obStep=0;
   document.querySelectorAll('.ob-step').forEach(s=>s.classList.remove('on'));
   document.getElementById('ob-0').classList.add('on');
-  document.getElementById('ob-overlay').style.display='flex';
+  document.getElementById('ob-ov').classList.add('v');
 }
 function obNext(){
   document.getElementById(`ob-${obStep}`).classList.remove('on');
   obStep++;
   document.getElementById(`ob-${obStep}`).classList.add('on');
 }
-function obDone(){
-  document.getElementById('ob-overlay').style.display='none';
-  localStorage.setItem('nb_ob','1');
-}
+function obDone(){document.getElementById('ob-ov').classList.remove('v');localStorage.setItem('nb_ob','1');}
 
-// ── TOAST ─────────────────────────────────────────
+// ── TOAST ─────────────────────────────────────────────────
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('v');setTimeout(()=>t.classList.remove('v'),3000);}
 
-// ── OFFLINE ───────────────────────────────────────
+// ── OFFLINE ───────────────────────────────────────────────
 window.addEventListener('online',()=>document.getElementById('offline').classList.remove('v'));
 window.addEventListener('offline',()=>document.getElementById('offline').classList.add('v'));
 if(!navigator.onLine)document.getElementById('offline').classList.add('v');
 
-// ── PWA ───────────────────────────────────────────
+// ── PWA ───────────────────────────────────────────────────
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent)&&!window.navigator.standalone;
-if(isIOS&&!localStorage.getItem('nb_ios')){
-  setTimeout(()=>{document.getElementById('ios-hint').classList.add('v');},3000);
-}
-let deferredInstall=null;
-window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstall=e;});
+if(isIOS)document.getElementById('ob-pwa-wrap').style.display='block';
 
-// ── INIT ──────────────────────────────────────────
+// ── INIT ──────────────────────────────────────────────────
 async function init(){
   initMap();
-  try{allData=await loadAll();}
-  catch{showToast('Kunne ikke laste data – sjekk internettforbindelsen');allData=[];}
-  document.getElementById('load-screen').style.display='none';
+  try{allData=await loadAll();}catch{showToast('Kunne ikke laste data – sjekk internettforbindelsen');allData=[];}
+  document.getElementById('load').style.display='none';
   renderMarkers();
-  if(!localStorage.getItem('nb_ob'))setTimeout(showOnboarding,600);
+  if(!localStorage.getItem('nb_ob'))setTimeout(showOb,700);
 }
 init();
 </script>
