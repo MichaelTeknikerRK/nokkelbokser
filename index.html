@@ -3,280 +3,558 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
-<title>Nøkkelbokser – Rana kommune</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#1a56a0">
+<meta name="description" content="Oversikt over kommunale nøkkelbokser i Rana kommune">
+<link rel="manifest" href="manifest.json">
+<title>Nøkkelbokser – Rana kommune</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --blue:#1a56a0;--blue-dark:#0f3d7a;--blue-light:#e8f0fb;
-  --red:#b03030;--red-light:#fbeaea;
-  --gray-50:#f7f7f7;--gray-100:#ebebeb;--gray-300:#c0c0c0;
-  --gray-500:#888;--gray-700:#444;--gray-900:#1a1a1a;
-  --white:#fff;--shadow:0 2px 12px rgba(0,0,0,0.12);
-  --radius:10px;--font:'IBM Plex Sans',sans-serif;
+  --blue:#1a56a0;--blue-d:#0f3d7a;--blue-l:#e8f0fb;--blue-m:#d0e4f7;
+  --gray-0:#fff;--gray-1:#f8f8f8;--gray-2:#efefef;--gray-3:#e0e0e0;
+  --gray-4:#bbb;--gray-5:#888;--gray-6:#555;--gray-7:#333;--gray-9:#111;
+  --red:#c0392b;--red-l:#fdecea;
+  --green:#27ae60;--green-l:#e9f7ef;
+  --shadow-sm:0 1px 6px rgba(0,0,0,0.10);
+  --shadow-md:0 4px 20px rgba(0,0,0,0.13);
+  --shadow-lg:0 8px 32px rgba(0,0,0,0.18);
+  --r-sm:8px;--r-md:12px;--r-lg:18px;--r-xl:24px;
+  --font:'Inter',system-ui,sans-serif;
+  --safe-bottom:env(safe-area-inset-bottom,0px);
 }
-html,body{height:100%;font-family:var(--font);background:var(--gray-50);color:var(--gray-900);}
+html,body{height:100%;overflow:hidden;font-family:var(--font);background:#000;color:var(--gray-9);}
+input,textarea,select,button{font-family:var(--font);font-size:16px;}
+button{cursor:pointer;}
 
-header{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--blue);height:56px;display:flex;align-items:center;padding:0 16px;gap:12px;box-shadow:0 2px 8px rgba(0,0,0,0.2);}
-.header-logo{width:32px;height:32px;background:rgba(255,255,255,0.15);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.header-logo svg{width:18px;height:18px;}
-header h1{color:#fff;font-size:16px;font-weight:600;flex:1;}
-.header-count{background:rgba(255,255,255,0.2);color:#fff;font-size:12px;padding:3px 10px;border-radius:20px;}
-
-.top-controls{position:fixed;top:56px;left:0;right:0;z-index:900;background:var(--white);border-bottom:1px solid var(--gray-100);padding:10px 12px 8px;}
-.search-wrap{position:relative;margin-bottom:8px;}
-.search-wrap input{width:100%;padding:10px 36px 10px 38px;border:1.5px solid var(--gray-100);border-radius:var(--radius);background:var(--gray-50);font-family:var(--font);font-size:14px;color:var(--gray-900);outline:none;transition:border-color 0.15s;}
-.search-wrap input:focus{border-color:var(--blue);background:#fff;}
-.search-wrap input::placeholder{color:var(--gray-500);}
-.search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--gray-500);}
-.search-icon svg{width:16px;height:16px;}
-.search-clear{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:var(--gray-300);border:none;cursor:pointer;width:18px;height:18px;border-radius:50%;display:none;align-items:center;justify-content:center;}
-.search-clear.visible{display:flex;}
-.search-clear svg{width:10px;height:10px;stroke:#fff;stroke-width:3;}
-.search-results{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;display:none;z-index:200;}
+/* ── SEARCH BAR ── */
+.search-bar{
+  position:fixed;top:12px;left:12px;right:12px;z-index:800;
+  background:var(--gray-0);border-radius:var(--r-xl);
+  box-shadow:var(--shadow-md);
+  display:flex;align-items:center;gap:0;
+  overflow:hidden;
+}
+.search-bar input{
+  flex:1;padding:13px 14px 13px 42px;border:none;background:transparent;
+  color:var(--gray-9);font-size:15px;outline:none;
+}
+.search-bar input::placeholder{color:var(--gray-4);font-size:14px;}
+.search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);pointer-events:none;}
+.search-icon svg{width:16px;height:16px;stroke:var(--gray-4);}
+.search-clear-btn{padding:0 14px;background:none;border:none;color:var(--gray-4);display:none;font-size:18px;line-height:1;}
+.search-clear-btn.visible{display:block;}
+.search-results{
+  position:fixed;top:64px;left:12px;right:12px;z-index:799;
+  background:var(--gray-0);border-radius:var(--r-md);
+  box-shadow:var(--shadow-md);overflow:hidden;display:none;
+  max-height:260px;overflow-y:auto;
+}
 .search-results.visible{display:block;}
-.sri{padding:10px 12px;font-size:13px;cursor:pointer;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;gap:10px;}
-.sri:last-child{border-bottom:none;}
-.sri:hover{background:var(--blue-light);}
-.sri-icon{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.sri-addr{font-weight:500;font-size:13px;}
-.sri-sub{font-size:11px;color:var(--gray-500);margin-top:1px;}
+.sr-item{padding:11px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;border-bottom:1px solid var(--gray-2);}
+.sr-item:last-child{border-bottom:none;}
+.sr-item:active{background:var(--blue-l);}
+.sr-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sr-icon svg{width:13px;height:13px;}
+.sr-addr{font-size:13px;font-weight:500;color:var(--gray-9);}
+.sr-sub{font-size:11px;color:var(--gray-5);margin-top:1px;}
 
+/* ── MAP ── */
+#map{position:fixed;inset:0;z-index:1;}
+
+/* ── TOOL BAR ── */
+.toolbar{
+  position:fixed;right:12px;top:50%;transform:translateY(-50%);z-index:700;
+  display:flex;flex-direction:column;gap:6px;
+}
+.tool-btn{
+  width:54px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;padding:10px 4px 8px;
+  background:var(--gray-0);border:none;border-radius:var(--r-md);
+  box-shadow:var(--shadow-sm);transition:all 0.15s;
+  color:var(--gray-6);font-size:9px;font-weight:600;letter-spacing:0.02em;
+  text-transform:uppercase;
+}
+.tool-btn svg{width:20px;height:20px;stroke:var(--gray-6);transition:stroke 0.15s;}
+.tool-btn:active{transform:scale(0.96);}
+.tool-btn.active{background:var(--blue);color:#fff;box-shadow:0 2px 12px rgba(26,86,160,0.4);}
+.tool-btn.active svg{stroke:#fff;}
+.tool-btn.active-green{background:var(--green);color:#fff;box-shadow:0 2px 12px rgba(39,174,96,0.4);}
+.tool-btn.active-green svg{stroke:#fff;}
+
+/* ── TOOL HINT ── */
+.tool-hint{
+  position:fixed;top:72px;left:50%;transform:translateX(-50%);z-index:750;
+  background:rgba(26,86,160,0.92);color:#fff;
+  padding:8px 16px;border-radius:20px;font-size:13px;font-weight:500;
+  white-space:nowrap;display:none;pointer-events:none;
+  box-shadow:var(--shadow-sm);
+}
+.tool-hint.visible{display:block;}
+
+/* ── NEAREST BANNER ── */
+.nearest-banner{
+  position:fixed;left:12px;right:76px;z-index:700;
+  background:var(--gray-0);border-radius:var(--r-md);
+  box-shadow:var(--shadow-sm);padding:9px 12px;
+  font-size:12px;font-weight:500;color:var(--gray-7);
+  display:none;align-items:center;gap:8px;
+  bottom:calc(var(--safe-bottom) + 14px);
+}
+.nearest-banner.visible{display:flex;}
+.nearest-banner svg{width:14px;height:14px;stroke:var(--blue);flex-shrink:0;}
+
+/* ── CONFIRM PIN OVERLAY ── */
+.confirm-pin{
+  position:fixed;inset:0;z-index:900;
+  background:rgba(0,0,0,0.4);
+  display:none;flex-direction:column;align-items:center;justify-content:flex-end;
+  padding-bottom:calc(var(--safe-bottom) + 20px);
+}
+.confirm-pin.visible{display:flex;}
+.confirm-pin-card{
+  background:var(--gray-0);border-radius:var(--r-lg) var(--r-lg) var(--r-sm) var(--r-sm);
+  width:calc(100% - 24px);max-width:420px;padding:20px;
+  box-shadow:var(--shadow-lg);
+}
+.confirm-pin-title{font-size:16px;font-weight:600;margin-bottom:6px;}
+.confirm-pin-addr{font-size:13px;color:var(--gray-5);margin-bottom:18px;}
+.confirm-pin-btns{display:flex;gap:10px;}
+.btn-cancel{flex:1;padding:12px;background:var(--gray-2);border:none;border-radius:var(--r-sm);font-size:14px;font-weight:600;color:var(--gray-7);}
+.btn-confirm{flex:2;padding:12px;background:var(--blue);border:none;border-radius:var(--r-sm);font-size:14px;font-weight:600;color:#fff;}
+
+/* ── BOTTOM SHEET BASE ── */
+.sheet{
+  position:fixed;left:0;right:0;z-index:800;
+  background:var(--gray-0);border-radius:var(--r-lg) var(--r-lg) 0 0;
+  box-shadow:var(--shadow-lg);
+  transform:translateY(100%);transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);
+  max-height:88dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding-bottom:calc(var(--safe-bottom) + 8px);
+}
+.sheet.open{transform:translateY(0);}
+.sheet-handle{width:36px;height:4px;background:var(--gray-3);border-radius:2px;margin:10px auto 0;}
+.sheet-header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 0;}
+.sheet-title{font-size:16px;font-weight:600;}
+.sheet-close{background:var(--gray-2);border:none;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.sheet-close svg{width:14px;height:14px;stroke:var(--gray-6);}
+
+/* ── PIN INFO SHEET ── */
+#pin-sheet{bottom:0;}
+.pin-img{width:100%;height:160px;object-fit:cover;display:block;}
+.pin-img-placeholder{width:100%;height:100px;background:var(--gray-2);display:flex;align-items:center;justify-content:center;}
+.pin-img-placeholder svg{width:28px;height:28px;stroke:var(--gray-4);}
+.pin-body{padding:14px 16px 16px;}
+.pin-address{font-size:17px;font-weight:600;margin-bottom:10px;}
+.pin-field{margin-bottom:9px;}
+.pin-field-label{font-size:10px;font-weight:600;color:var(--gray-5);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:2px;}
+.pin-field-val{font-size:14px;color:var(--gray-7);line-height:1.45;}
+.pin-footer{display:flex;align-items:center;justify-content:space-between;padding-top:10px;margin-top:4px;border-top:1px solid var(--gray-2);}
+.avd-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;}
+.pin-meta{text-align:right;}
+.pin-meta-name{font-size:12px;font-weight:500;color:var(--gray-7);}
+.pin-meta-date{font-size:10px;color:var(--gray-4);}
+
+/* ── ADD / EDIT SHEET ── */
+#add-sheet,#edit-sheet{bottom:0;}
+.form-body{padding:10px 16px 16px;}
+.form-group{margin-bottom:13px;position:relative;}
+.form-label{font-size:11px;font-weight:600;color:var(--gray-5);margin-bottom:5px;display:flex;align-items:center;gap:4px;text-transform:uppercase;letter-spacing:0.04em;}
+.req{color:var(--red);}
+.opt{font-size:10px;color:var(--gray-4);text-transform:none;font-weight:400;}
+.form-group input,.form-group textarea,.form-group select{
+  width:100%;padding:11px 12px;border:1.5px solid var(--gray-3);
+  border-radius:var(--r-sm);background:var(--gray-1);
+  color:var(--gray-9);outline:none;transition:border-color 0.15s;
+}
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--blue);background:var(--gray-0);}
+.form-group textarea{height:78px;resize:none;}
+.addr-ok{font-size:11px;color:var(--green);margin-top:4px;display:none;}
+.addr-ok.visible{display:flex;align-items:center;gap:4px;}
+.addr-ok svg{width:12px;height:12px;stroke:var(--green);}
+.ac-list{position:absolute;top:calc(100% + 3px);left:0;right:0;background:var(--gray-0);border-radius:var(--r-sm);box-shadow:var(--shadow-md);z-index:100;overflow:hidden;display:none;max-height:180px;overflow-y:auto;}
+.ac-list.visible{display:block;}
+.ac-item{padding:10px 12px;display:flex;align-items:flex-start;gap:8px;cursor:pointer;border-bottom:1px solid var(--gray-2);}
+.ac-item:last-child{border-bottom:none;}
+.ac-item:active{background:var(--blue-l);}
+.ac-item svg{width:13px;height:13px;stroke:var(--blue);flex-shrink:0;margin-top:2px;}
+.ac-main{font-size:13px;font-weight:500;}
+.ac-sub{font-size:11px;color:var(--gray-5);}
+.pos-btn{
+  width:100%;padding:11px 12px;background:var(--blue-l);color:var(--blue);
+  border:1.5px solid var(--blue-m);border-radius:var(--r-sm);
+  font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:7px;margin-top:7px;
+}
+.pos-btn svg{width:15px;height:15px;stroke:var(--blue);}
+.img-upload{
+  border:1.5px dashed var(--gray-3);border-radius:var(--r-sm);
+  overflow:hidden;cursor:pointer;background:var(--gray-1);
+  transition:border-color 0.15s;
+}
+.img-upload:hover{border-color:var(--blue);}
+.img-upload-placeholder{padding:16px;text-align:center;}
+.img-upload-placeholder svg{width:22px;height:22px;stroke:var(--gray-4);display:block;margin:0 auto 6px;}
+.img-upload-placeholder p{font-size:13px;font-weight:500;color:var(--blue);}
+.img-upload-placeholder span{font-size:11px;color:var(--gray-4);}
+.img-preview{width:100%;height:130px;object-fit:cover;display:none;}
+.img-upload input{display:none;}
+.submit-btn{
+  width:100%;padding:14px;background:var(--blue);color:#fff;
+  border:none;border-radius:var(--r-sm);font-size:15px;font-weight:600;
+  margin-top:6px;transition:background 0.15s;
+}
+.submit-btn:active{background:var(--blue-d);}
+.submit-btn:disabled{background:var(--gray-3);color:var(--gray-5);}
+
+/* ── LIST SHEET ── */
+#list-sheet{bottom:0;}
+.list-top{padding:10px 16px 8px;position:sticky;top:0;background:var(--gray-0);z-index:10;border-bottom:1px solid var(--gray-2);}
+.list-search-wrap{position:relative;margin-bottom:8px;}
+.list-search-wrap input{width:100%;padding:10px 12px 10px 36px;border:1.5px solid var(--gray-3);border-radius:var(--r-sm);background:var(--gray-1);color:var(--gray-9);outline:none;}
+.list-search-wrap input:focus{border-color:var(--blue);background:var(--gray-0);}
+.list-search-wrap input::placeholder{font-size:14px;color:var(--gray-4);}
+.list-search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);}
+.list-search-icon svg{width:14px;height:14px;stroke:var(--gray-4);}
 .filter-row{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px;}
 .filter-row::-webkit-scrollbar{display:none;}
-.fchip{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1.5px solid var(--gray-100);background:var(--white);color:var(--gray-700);white-space:nowrap;font-family:var(--font);flex-shrink:0;transition:all 0.15s;}
+.fchip{
+  display:inline-flex;align-items:center;gap:4px;padding:5px 10px;
+  border-radius:20px;font-size:11px;font-weight:500;
+  border:1px solid var(--gray-3);background:var(--gray-0);color:var(--gray-6);
+  white-space:nowrap;flex-shrink:0;transition:all 0.15s;
+}
 .fchip.active{color:#fff;border-color:transparent;}
-.fchip-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.fchip-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.list-inner{padding:10px 12px 12px;}
+.lcard{background:var(--gray-0);border-radius:var(--r-md);margin-bottom:9px;border:1px solid var(--gray-2);overflow:hidden;}
+.lcard-img{width:100%;height:90px;object-fit:cover;display:block;cursor:pointer;}
+.lcard-body{padding:10px 12px 12px;}
+.lcard-addr{font-size:14px;font-weight:600;margin-bottom:7px;}
+.lcard-field{margin-bottom:5px;}
+.lcard-field-label{font-size:10px;font-weight:600;color:var(--gray-5);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:1px;}
+.lcard-field-val{font-size:12px;color:var(--gray-6);line-height:1.4;}
+.lcard-footer{display:flex;align-items:center;justify-content:space-between;padding-top:8px;margin-top:6px;border-top:1px solid var(--gray-2);}
+.lcard-actions{display:flex;gap:6px;margin-top:8px;}
+.lcard-btn{flex:1;padding:8px;border:none;border-radius:var(--r-sm);font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:5px;}
+.lcard-btn svg{width:12px;height:12px;}
+.lcard-btn-map{background:var(--gray-2);color:var(--gray-7);}
+.lcard-btn-edit{background:var(--blue-l);color:var(--blue);}
 
-#map{position:fixed;left:0;right:0;bottom:calc(64px + env(safe-area-inset-bottom));}
+/* ── USER DOT ── */
+.user-dot-el{width:16px;height:16px;background:#4285f4;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 4px rgba(66,133,244,0.22);}
 
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:1000;background:var(--white);border-top:1px solid var(--gray-100);height:calc(64px + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);display:flex;box-shadow:0 -2px 8px rgba(0,0,0,0.08);}
-.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:none;cursor:pointer;font-family:var(--font);font-size:11px;font-weight:500;color:var(--gray-500);}
-.nav-btn.active{color:var(--blue);}
-.nav-btn svg{width:22px;height:22px;}
-.add-btn-inner{width:48px;height:48px;background:var(--blue);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(26,86,160,0.4);margin-bottom:2px;}
-.add-btn-inner svg{width:24px;height:24px;}
+/* ── ONBOARDING ── */
+.onboarding{
+  position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,0.7);
+  display:flex;align-items:flex-end;justify-content:center;
+  padding-bottom:calc(var(--safe-bottom) + 20px);
+}
+.onboarding-card{
+  background:var(--gray-0);border-radius:var(--r-lg);
+  width:calc(100% - 24px);max-width:420px;padding:24px 22px 20px;
+  box-shadow:var(--shadow-lg);
+}
+.ob-step{display:none;}
+.ob-step.active{display:block;}
+.ob-icon{width:52px;height:52px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;margin-bottom:14px;}
+.ob-title{font-size:18px;font-weight:600;margin-bottom:8px;}
+.ob-text{font-size:14px;color:var(--gray-6);line-height:1.55;margin-bottom:20px;}
+.ob-footer{display:flex;align-items:center;justify-content:space-between;}
+.ob-dots{display:flex;gap:6px;}
+.ob-dot{width:7px;height:7px;border-radius:50%;background:var(--gray-3);}
+.ob-dot.active{background:var(--blue);}
+.ob-next{padding:11px 22px;background:var(--blue);color:#fff;border:none;border-radius:var(--r-sm);font-size:14px;font-weight:600;}
+.ob-skip{background:none;border:none;color:var(--gray-5);font-size:13px;padding:11px 0;}
 
-.leaflet-popup-content-wrapper{border-radius:14px;box-shadow:0 4px 20px rgba(0,0,0,0.15);border:none;padding:0;overflow:hidden;}
-.leaflet-popup-content{margin:0;width:280px!important;}
-.leaflet-popup-tip-container{display:none;}
-.popup-img{width:calc(100% - 0px);height:150px;object-fit:cover;display:block;cursor:pointer;border-radius:14px 14px 0 0;}
-.popup-body{padding:14px;}
-.popup-addr{font-size:16px;font-weight:600;color:var(--gray-900);margin-bottom:10px;line-height:1.3;}
-.popup-field{margin-bottom:8px;}
-.popup-field-label{font-size:10px;font-weight:600;color:var(--gray-500);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:2px;}
-.popup-field-val{font-size:13px;color:var(--gray-700);line-height:1.4;}
-.popup-footer{padding-top:8px;margin-top:8px;border-top:1px solid var(--gray-100);}
-.popup-avd-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;font-family:var(--font);}
-.popup-footer-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px;}.popup-avd-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;font-family:var(--font);}.popup-meta-name{font-size:12px;color:var(--gray-700);font-weight:500;}.popup-meta-date{font-size:11px;color:var(--gray-300);}.img-fullscreen{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.92);display:none;align-items:center;justify-content:center;cursor:pointer;}.img-fullscreen.visible{display:flex;}.img-fullscreen img{max-width:95vw;max-height:90vh;object-fit:contain;border-radius:8px;}
-.popup-actions{display:flex;gap:8px;margin-top:10px;}
-.popup-action-btn{flex:1;padding:8px;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:var(--font);display:flex;align-items:center;justify-content:center;gap:5px;}
-.popup-action-btn svg{width:13px;height:13px;}
-.btn-edit{background:var(--blue-light);color:var(--blue);}
-.btn-delete{background:var(--red-light);color:var(--red);}
-.confirm-overlay{position:fixed;inset:0;z-index:4000;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity 0.2s;}
-.confirm-overlay.visible{opacity:1;pointer-events:all;}
-.confirm-box{background:var(--white);border-radius:14px;padding:24px;width:100%;max-width:320px;text-align:center;}
-.confirm-title{font-size:16px;font-weight:600;margin-bottom:8px;}
-.confirm-sub{font-size:13px;color:var(--gray-500);margin-bottom:20px;}
-.confirm-actions{display:flex;gap:10px;}
-.confirm-cancel{flex:1;padding:12px;background:var(--gray-50);border:1.5px solid var(--gray-100);border-radius:var(--radius);font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font);}
-.confirm-delete{flex:1;padding:12px;background:var(--red);color:#fff;border:none;border-radius:var(--radius);font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font);}
-.edit-modal-overlay{position:fixed;inset:0;z-index:3500;background:rgba(0,0,0,0.45);display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s;}
-.edit-modal-overlay.visible{opacity:1;pointer-events:all;}
-.edit-modal{background:var(--white);border-radius:16px 16px 0 0;width:100%;max-width:540px;padding:20px 20px calc(28px + env(safe-area-inset-bottom));transform:translateY(30px);transition:transform 0.2s;max-height:88dvh;overflow-y:auto;}
-.edit-modal-overlay.visible .edit-modal{transform:translateY(0);}
+/* ── FULLSCREEN IMAGE ── */
+.fullscreen{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.94);display:none;align-items:center;justify-content:center;cursor:pointer;}
+.fullscreen.visible{display:flex;}
+.fullscreen img{max-width:95vw;max-height:90vh;object-fit:contain;border-radius:var(--r-sm);}
 
-#liste-view{display:none;position:fixed;left:0;right:0;bottom:calc(64px + env(safe-area-inset-bottom));background:var(--gray-50);overflow-y:auto;z-index:700;}
-.liste-search-wrap{padding:10px 12px;position:sticky;top:0;background:var(--gray-50);z-index:10;}
-.liste-search-wrap input{width:100%;padding:10px 14px;border:1.5px solid var(--gray-100);border-radius:var(--radius);font-family:var(--font);font-size:14px;background:var(--white);outline:none;}
-.liste-search-wrap input:focus{border-color:var(--blue);}
-.liste-inner{padding:0 12px 12px;}
-
-.modal-overlay{position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,0.45);display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s;-webkit-overflow-scrolling:touch;}
-.modal-overlay.visible{opacity:1;pointer-events:all;}
-.modal{background:var(--white);border-radius:16px 16px 0 0;width:100%;max-width:540px;padding:20px 20px 36px;transform:translateY(30px);transition:transform 0.2s;max-height:88dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;}
-.modal-overlay.visible .modal{transform:translateY(0);}
-.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
-.modal-title{font-size:17px;font-weight:600;}
-.modal-close{background:var(--gray-100);border:none;cursor:pointer;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
-.modal-close svg{width:16px;height:16px;}
-.form-group{margin-bottom:16px;position:relative;}
-.form-label{font-size:12px;font-weight:600;color:var(--gray-500);margin-bottom:6px;display:flex;align-items:center;gap:4px;text-transform:uppercase;letter-spacing:0.04em;}
-.opt{font-size:10px;color:var(--gray-300);text-transform:none;font-weight:400;}
-.req{color:var(--red);}
-.form-group input,.form-group textarea,.form-group select{width:100%;padding:10px 12px;border:1.5px solid var(--gray-100);border-radius:8px;font-family:var(--font);font-size:14px;color:var(--gray-900);background:var(--gray-50);outline:none;transition:border-color 0.15s;}
-.form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--blue);background:#fff;}
-.form-group textarea{height:80px;resize:none;}
-.ac-list{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--white);border-radius:8px;box-shadow:var(--shadow);z-index:300;overflow:hidden;display:none;}
-.ac-list.visible{display:block;}
-.ac-item{padding:10px 12px;font-size:13px;cursor:pointer;border-bottom:1px solid var(--gray-100);display:flex;align-items:flex-start;gap:8px;}
-.ac-item:last-child{border-bottom:none;}
-.ac-item:hover{background:var(--blue-light);}
-.ac-item svg{width:14px;height:14px;color:var(--blue);flex-shrink:0;margin-top:2px;}
-.ac-main{font-weight:500;}
-.ac-sub{font-size:11px;color:var(--gray-500);}
-.addr-selected{font-size:11px;color:var(--green,#2d7a3a);margin-top:4px;display:none;}
-.addr-selected.visible{display:block;}
-.pos-btn{width:100%;padding:10px 12px;background:var(--blue-light);color:var(--blue);border:1.5px solid var(--blue);border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;font-family:var(--font);display:flex;align-items:center;justify-content:center;gap:8px;margin-top:8px;}
-.pos-btn svg{width:16px;height:16px;}
-.bilde-area{border:1.5px dashed var(--gray-300);border-radius:8px;overflow:hidden;cursor:pointer;transition:border-color 0.15s;}
-.bilde-area:hover{border-color:var(--blue);}
-.bilde-placeholder{padding:20px;text-align:center;}
-.bilde-placeholder svg{width:28px;height:28px;color:var(--gray-300);display:block;margin:0 auto 8px;}
-.bilde-placeholder p{font-size:12px;color:var(--gray-500);}
-.bilde-placeholder span{font-size:11px;color:var(--gray-300);}
-.bilde-preview-img{width:100%;height:160px;object-fit:cover;display:none;}
-.bilde-area input{display:none;}
-.submit-btn{width:100%;padding:14px;background:var(--blue);color:#fff;border:none;border-radius:var(--radius);font-size:15px;font-weight:600;cursor:pointer;font-family:var(--font);margin-top:4px;}
-.submit-btn:disabled{background:var(--gray-300);cursor:not-allowed;}
-.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--gray-900);color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:500;z-index:3000;opacity:0;transition:all 0.2s;pointer-events:none;white-space:nowrap;}
+/* ── TOAST ── */
+.toast{
+  position:fixed;left:50%;transform:translateX(-50%) translateY(16px);
+  background:var(--gray-9);color:#fff;padding:10px 18px;
+  border-radius:20px;font-size:13px;font-weight:500;
+  z-index:5000;opacity:0;transition:all 0.22s;pointer-events:none;
+  white-space:nowrap;max-width:calc(100vw - 32px);
+  overflow:hidden;text-overflow:ellipsis;
+  bottom:calc(var(--safe-bottom) + 16px);
+}
 .toast.visible{opacity:1;transform:translateX(-50%) translateY(0);}
-.loading{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:500;text-align:center;}
-.loading-spinner{width:36px;height:36px;border:3px solid var(--gray-100);border-top-color:var(--blue);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px;}
+
+/* ── OFFLINE BANNER ── */
+.offline-banner{
+  position:fixed;top:0;left:0;right:0;z-index:6000;
+  background:var(--red);color:#fff;text-align:center;
+  padding:10px;font-size:13px;font-weight:500;
+  display:none;
+}
+.offline-banner.visible{display:block;}
+
+/* ── INSTALL BANNER ── */
+.install-banner{
+  position:fixed;bottom:calc(var(--safe-bottom) + 10px);left:12px;right:12px;
+  z-index:700;background:var(--gray-0);border-radius:var(--r-md);
+  box-shadow:var(--shadow-md);padding:12px 14px;
+  display:none;align-items:center;gap:10px;
+}
+.install-banner.visible{display:flex;}
+.install-banner-text{flex:1;font-size:13px;color:var(--gray-7);}
+.install-banner-text strong{display:block;font-size:13px;font-weight:600;color:var(--gray-9);}
+.install-btn{padding:8px 14px;background:var(--blue);color:#fff;border:none;border-radius:var(--r-sm);font-size:13px;font-weight:600;white-space:nowrap;}
+.install-dismiss{background:none;border:none;color:var(--gray-4);font-size:20px;line-height:1;padding:0 4px;}
+
+/* ── LOADING ── */
+.loading-screen{position:fixed;inset:0;z-index:9000;background:var(--blue);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
+.loading-screen svg{width:48px;height:48px;stroke:#fff;}
+.loading-screen p{color:rgba(255,255,255,0.8);font-size:14px;font-weight:500;}
+.loading-spinner{width:32px;height:32px;border:3px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
-.loading p{font-size:13px;color:var(--gray-500);}
-.loc-btn{position:fixed;left:12px;z-index:800;background:var(--white);border:none;cursor:pointer;width:42px;height:42px;border-radius:50%;box-shadow:var(--shadow);display:flex;align-items:center;justify-content:center;}
-.loc-btn svg{width:20px;height:20px;}
-.nearest-toast{position:fixed;left:50%;transform:translateX(-50%);z-index:800;background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:10px 14px;font-size:13px;font-weight:500;display:none;white-space:nowrap;max-width:calc(100% - 32px);text-overflow:ellipsis;overflow:hidden;}
-.nearest-toast.visible{display:block;}
-.user-dot{width:16px;height:16px;background:#4285f4;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 2px rgba(66,133,244,0.3);}
-.bilde-choice-overlay{position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,0.45);display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s;}
-.bilde-choice-overlay.visible{opacity:1;pointer-events:all;}
-.bilde-choice-panel{background:var(--white);border-radius:16px 16px 0 0;width:100%;max-width:540px;padding:20px 20px calc(20px + env(safe-area-inset-bottom));}
-.bilde-choice-title{font-size:13px;color:var(--gray-500);text-align:center;margin-bottom:16px;}
-.bilde-choice-btn{width:100%;padding:14px;background:var(--gray-50);border:1.5px solid var(--gray-100);border-radius:var(--radius);font-family:var(--font);font-size:15px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:12px;margin-bottom:10px;color:var(--gray-900);}
-.bilde-choice-btn svg{width:22px;height:22px;color:var(--blue);}
-.bilde-choice-cancel{width:100%;padding:14px;background:none;border:none;font-family:var(--font);font-size:15px;font-weight:600;cursor:pointer;color:var(--red);margin-top:4px;}
 </style>
 </head>
 <body>
 
-<header>
-  <div class="header-logo">
-    <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-  </div>
-  <h1>Nøkkelbokser</h1>
-  <div class="header-count" id="count-badge">Laster...</div>
-</header>
-
-<div class="top-controls" id="top-controls">
-  <div class="search-wrap">
-    <span class="search-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></span>
-    <input type="text" id="search-input" placeholder="Søk adresse eller sted..." autocomplete="off"/>
-    <button class="search-clear" id="search-clear" onclick="clearSearch()">
-      <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    </button>
-    <div class="search-results" id="search-results"></div>
-  </div>
-  <div class="filter-row" id="filter-row"></div>
+<!-- OFFLINE BANNER -->
+<div class="offline-banner" id="offline-banner">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;display:inline;margin-right:6px;vertical-align:middle;"><line x1="1" y1="1" x2="23" y2="23"/><path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55M5 12.55a10.94 10.94 0 0 1 5.17-2.39M10.71 5.05A16 16 0 0 1 22.56 9M1.42 9a15.91 15.91 0 0 1 4.7-2.88M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/></svg>
+  Ingen internettforbindelse
 </div>
 
+<!-- LOADING -->
+<div class="loading-screen" id="loading-screen">
+  <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+  <div class="loading-spinner"></div>
+  <p>Laster nøkkelbokser...</p>
+</div>
+
+<!-- MAP -->
 <div id="map"></div>
 
-<div id="loading" class="loading">
-  <div class="loading-spinner"></div>
-  <p>Henter nøkkelbokser...</p>
+<!-- SEARCH -->
+<div class="search-bar" id="search-bar">
+  <span class="search-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></span>
+  <input type="text" id="search-input" placeholder="Søk adresse eller sted..." autocomplete="off"/>
+  <button class="search-clear-btn" id="search-clear" onclick="clearSearch()">×</button>
 </div>
+<div class="search-results" id="search-results"></div>
 
-<button class="loc-btn" id="loc-btn" style="bottom:calc(80px + env(safe-area-inset-bottom));" onclick="locateMe()" title="Min posisjon">
-  <svg viewBox="0 0 24 24" fill="none" stroke="#1a56a0" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="8" stroke-dasharray="2 3" stroke-width="1.5"/></svg>
-</button>
-<button class="loc-btn" id="nearest-btn" style="bottom:calc(130px + env(safe-area-inset-bottom));" onclick="findNearest()" title="Nærmeste nøkkelboks">
-  <svg viewBox="0 0 24 24" fill="none" stroke="#1a56a0" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/><path d="M12 2v2M12 18v2M2 10h2M18 10h2" stroke="#378ADD" stroke-width="1.5"/></svg>
-</button>
-<div class="nearest-toast" id="nearest-toast"></div>
+<!-- TOOL HINT -->
+<div class="tool-hint" id="tool-hint"></div>
 
-<div class="bottom-nav">
-  <button class="nav-btn active" id="nav-kart" onclick="setView('kart')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7l6-3 6 3 6-3v13l-6 3-6-3-6 3V7z"/><line x1="9" y1="4" x2="9" y2="20"/><line x1="15" y1="7" x2="15" y2="20"/></svg>
+<!-- TOOLBAR -->
+<div class="toolbar" id="toolbar">
+  <button class="tool-btn active" id="tool-select" onclick="setTool('select')" title="Se nøkkelbokser">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
     Kart
   </button>
-  <button class="nav-btn" onclick="openModal()">
-    <div class="add-btn-inner">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-    </div>
-    Legg til
+  <button class="tool-btn" id="tool-add" onclick="setTool('add')" title="Registrer nøkkelboks">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+    Registrer
   </button>
-  <button class="nav-btn" id="nav-liste" onclick="setView('liste')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+  <button class="tool-btn" id="tool-locate" onclick="setTool('locate')" title="Min posisjon og nærmeste">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="7" stroke-dasharray="2 3" stroke-width="1.5"/></svg>
+    Posisjon
+  </button>
+  <button class="tool-btn" id="tool-list" onclick="openList()" title="Liste over alle nøkkelbokser">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
     Liste
   </button>
 </div>
 
-<div id="liste-view">
-  <div class="liste-search-wrap">
-    <input type="text" id="liste-search-input" placeholder="Søk i listen..." oninput="filterListe(this.value)"/>
-  </div>
-  <div class="liste-inner" id="liste-content"></div>
+<!-- NEAREST BANNER -->
+<div class="nearest-banner" id="nearest-banner">
+  <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+  <span id="nearest-text"></span>
 </div>
 
-<div class="modal-overlay" id="modal-overlay" onclick="closeModalOutside(event)">
-  <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title">Registrer nøkkelboks</div>
-      <button class="modal-close" onclick="closeModal()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
+<!-- CONFIRM PIN PLACEMENT -->
+<div class="confirm-pin" id="confirm-pin">
+  <div class="confirm-pin-card">
+    <div class="confirm-pin-title">Plasser nøkkelboks her?</div>
+    <div class="confirm-pin-addr" id="confirm-pin-addr">Henter adresse...</div>
+    <div class="confirm-pin-btns">
+      <button class="btn-cancel" onclick="cancelPinPlacement()">Avbryt</button>
+      <button class="btn-confirm" onclick="confirmPinPlacement()">Bekreft plassering</button>
     </div>
+  </div>
+</div>
 
+<!-- PIN INFO SHEET -->
+<div class="sheet" id="pin-sheet">
+  <div class="sheet-handle"></div>
+  <div id="pin-sheet-img-wrap"></div>
+  <div class="pin-body">
+    <div class="pin-address" id="pin-address"></div>
+    <div class="pin-field"><div class="pin-field-label">Beskrivelse</div><div class="pin-field-val" id="pin-beskrivelse"></div></div>
+    <div class="pin-field" id="pin-merknad-wrap"><div class="pin-field-label">Merknad</div><div class="pin-field-val" id="pin-merknad"></div></div>
+    <div class="pin-footer">
+      <div class="avd-badge" id="pin-avd-badge"></div>
+      <div class="pin-meta"><div class="pin-meta-name" id="pin-meta-name"></div><div class="pin-meta-date" id="pin-meta-date"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ADD SHEET -->
+<div class="sheet" id="add-sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <div class="sheet-title">Registrer nøkkelboks</div>
+    <button class="sheet-close" onclick="closeAddSheet()"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  </div>
+  <div class="form-body">
     <div class="form-group">
       <div class="form-label">Ditt navn <span class="req">*</span></div>
-      <input type="text" id="f-navn" placeholder="F.eks. Kari Nordmann"/>
+      <input type="text" id="a-navn" placeholder="F.eks. Kari Nordmann" autocomplete="name"/>
     </div>
-
     <div class="form-group">
       <div class="form-label">Adresse <span class="req">*</span></div>
-      <input type="text" id="f-adresse" placeholder="Søk etter adresse..." autocomplete="off" oninput="adresseAC(this.value)"/>
-      <div class="ac-list" id="ac-list"></div>
-      <div class="addr-selected" id="addr-selected">✓ Adresse valgt</div>
+      <input type="text" id="a-adresse" placeholder="Søk etter adresse..." autocomplete="off" oninput="adresseAC(this.value,'a-ac','a-addr-ok','a')"/>
+      <div class="ac-list" id="a-ac"></div>
+      <div class="addr-ok" id="a-addr-ok"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Adresse bekreftet</div>
       <button class="pos-btn" onclick="useGPS()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M1 12h4M19 12h4"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M1 12h4M19 12h4"/></svg>
         Bruk min posisjon
       </button>
     </div>
-
     <div class="form-group">
       <div class="form-label">Avdeling <span class="req">*</span></div>
-      <select id="f-avdeling">
+      <select id="a-avdeling">
         <option value="">Velg avdeling...</option>
         <option>Demenslaget</option><option>Nattpatruljen</option><option>Nord</option>
         <option>Sentrum 3</option><option>Sør</option><option>Vest 1</option>
         <option>Vest 3</option><option>Øst 1</option><option>Innsatsteamet</option><option>Annet</option>
       </select>
     </div>
-
     <div class="form-group">
       <div class="form-label">Beskrivelse <span class="req">*</span></div>
-      <textarea id="f-beskrivelse" placeholder="Beskriv nøyaktig hvor nøkkelboksen er plassert, f.eks. ved hovedinngang, veggen til venstre"></textarea>
+      <textarea id="a-beskrivelse" placeholder="Beskriv nøyaktig hvor nøkkelboksen er plassert, f.eks. ved hovedinngang, veggen til venstre for døren"></textarea>
     </div>
-
     <div class="form-group">
       <div class="form-label">Merknader <span class="opt">(valgfritt)</span></div>
-      <input type="text" id="f-merknader" placeholder="F.eks. 1 nøkkel for hovedinngang"/>
+      <input type="text" id="a-merknader" placeholder="F.eks. 1 nøkkel for hovedinngang"/>
     </div>
-
     <div class="form-group">
-      <div class="form-label">Bilde <span class="opt">(valgfritt)</span></div>
-      <div class="bilde-area" id="bilde-area" onclick="document.getElementById('f-bilde').click()">
-        <div class="bilde-placeholder" id="bilde-placeholder">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:28px;height:28px;color:var(--gray-300);display:block;margin:0 auto 8px;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-          <p style="font-size:13px;font-weight:500;color:var(--blue);">Legg til bilde</p>
-          <p style="font-size:11px;color:var(--gray-300);margin-top:4px;">Trykk for å velge</p>
+      <div class="form-label">Bilde <span class="opt">(valgfritt – kan legges til senere)</span></div>
+      <div class="img-upload" onclick="document.getElementById('a-bilde').click()">
+        <div class="img-upload-placeholder" id="a-bilde-ph">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          <p>Legg til bilde</p>
+          <span>Trykk for å åpne kamera eller galleri</span>
         </div>
-        <img id="bilde-preview-img" class="bilde-preview-img" onclick="event.stopPropagation();openFullscreen(this.src)" style="cursor:pointer;"/>
-        <input type="file" id="f-bilde" accept="image/*" onchange="previewBilde(this)" style="display:none;"/>
+        <img id="a-bilde-prev" class="img-preview" onclick="event.stopPropagation();openFullscreen(this.src)"/>
+        <input type="file" id="a-bilde" accept="image/*" onchange="previewImg('a-bilde','a-bilde-prev','a-bilde-ph','_addBilde')" style="display:none;"/>
       </div>
     </div>
-
-    <button class="submit-btn" id="submit-btn" onclick="submitForm()">Registrer nøkkelboks</button>
+    <button class="submit-btn" id="a-submit" onclick="submitAdd()">Registrer nøkkelboks</button>
   </div>
 </div>
 
+<!-- EDIT SHEET -->
+<div class="sheet" id="edit-sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <div class="sheet-title">Rediger nøkkelboks</div>
+    <button class="sheet-close" onclick="closeEditSheet()"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  </div>
+  <div class="form-body">
+    <div class="form-group">
+      <div class="form-label">Adresse</div>
+      <input type="text" id="e-adresse" placeholder="Søk etter adresse..." autocomplete="off" oninput="adresseAC(this.value,'e-ac','e-addr-ok','e')"/>
+      <div class="ac-list" id="e-ac"></div>
+      <div class="addr-ok" id="e-addr-ok"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Ny adresse bekreftet</div>
+    </div>
+    <div class="form-group">
+      <div class="form-label">Avdeling</div>
+      <select id="e-avdeling">
+        <option>Demenslaget</option><option>Nattpatruljen</option><option>Nord</option>
+        <option>Sentrum 3</option><option>Sør</option><option>Vest 1</option>
+        <option>Vest 3</option><option>Øst 1</option><option>Innsatsteamet</option><option>Annet</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <div class="form-label">Beskrivelse</div>
+      <textarea id="e-beskrivelse"></textarea>
+    </div>
+    <div class="form-group">
+      <div class="form-label">Merknader <span class="opt">(valgfritt)</span></div>
+      <input type="text" id="e-merknader"/>
+    </div>
+    <div class="form-group">
+      <div class="form-label">Bilde <span class="opt">(valgfritt)</span></div>
+      <div class="img-upload" onclick="document.getElementById('e-bilde').click()">
+        <div class="img-upload-placeholder" id="e-bilde-ph">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          <p>Legg til / bytt bilde</p>
+          <span>Trykk for å åpne kamera eller galleri</span>
+        </div>
+        <img id="e-bilde-prev" class="img-preview" onclick="event.stopPropagation();openFullscreen(this.src)"/>
+        <input type="file" id="e-bilde" accept="image/*" onchange="previewImg('e-bilde','e-bilde-prev','e-bilde-ph','_editBilde')" style="display:none;"/>
+      </div>
+    </div>
+    <button class="submit-btn" id="e-submit" onclick="submitEdit()">Lagre endringer</button>
+  </div>
+</div>
+
+<!-- LIST SHEET -->
+<div class="sheet" id="list-sheet">
+  <div class="sheet-handle"></div>
+  <div class="sheet-header">
+    <div class="sheet-title">Alle nøkkelbokser</div>
+    <button class="sheet-close" onclick="closeSheet('list-sheet')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  </div>
+  <div class="list-top">
+    <div class="list-search-wrap">
+      <span class="list-search-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></span>
+      <input type="text" id="list-search" placeholder="Søk adresse eller avdeling..." oninput="filterList(this.value)"/>
+    </div>
+    <div class="filter-row" id="filter-row"></div>
+  </div>
+  <div class="list-inner" id="list-content"></div>
+</div>
+
+<!-- ONBOARDING -->
+<div class="onboarding" id="onboarding">
+  <div class="onboarding-card">
+    <div class="ob-step active" id="ob-0">
+      <div class="ob-icon" style="background:#e8f0fb;"><svg viewBox="0 0 24 24" fill="none" stroke="#1a56a0" stroke-width="2" width="24" height="24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+      <div class="ob-title">Nøkkelbokser – Rana kommune</div>
+      <div class="ob-text">Finn og registrer kommunale nøkkelbokser. Appen har tre verktøy – vi viser deg hvordan de fungerer.</div>
+      <div class="ob-footer">
+        <div class="ob-dots"><div class="ob-dot active"></div><div class="ob-dot"></div><div class="ob-dot"></div></div>
+        <button class="ob-next" onclick="obNext()">Neste</button>
+      </div>
+    </div>
+    <div class="ob-step" id="ob-1">
+      <div class="ob-icon" style="background:#e8f0fb;"><svg viewBox="0 0 24 24" fill="none" stroke="#1a56a0" stroke-width="2" width="24" height="24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+      <div class="ob-title">Kart-verktøyet</div>
+      <div class="ob-text">Trykk på en pin på kartet for å se informasjon om nøkkelboksen. Bruk søkefeltet øverst for å finne en adresse.</div>
+      <div class="ob-footer">
+        <div class="ob-dots"><div class="ob-dot"></div><div class="ob-dot active"></div><div class="ob-dot"></div></div>
+        <button class="ob-next" onclick="obNext()">Neste</button>
+      </div>
+    </div>
+    <div class="ob-step" id="ob-2">
+      <div class="ob-icon" style="background:#e9f7ef;"><svg viewBox="0 0 24 24" fill="none" stroke="#27ae60" stroke-width="2" width="24" height="24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div>
+      <div class="ob-title">Registrer-verktøyet</div>
+      <div class="ob-text">Velg Registrer i verktøylinjen til høyre, trykk på kartet der nøkkelboksen er, bekreft plasseringen, og fyll inn informasjon.</div>
+      <div class="ob-footer">
+        <div class="ob-dots"><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot active"></div></div>
+        <button class="ob-next" onclick="obDone()">Kom i gang</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FULLSCREEN IMAGE -->
+<div class="fullscreen" id="fullscreen" onclick="closeFullscreen()">
+  <img id="fullscreen-img" src=""/>
+</div>
+
+<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -293,141 +571,243 @@ const AVD_COLORS={
 };
 const AVD_LIST=Object.keys(AVD_COLORS);
 
-let map,markers=[],activeFilter='Alle',currentLat=null,currentLng=null,allData=[];
-let topH=0;
+let map,markers=[],allData=[],activeFilter='Alle';
+let currentTool='select';
+let pendingLat=null,pendingLng=null,pendingMarker=null;
+let editId=null,editLat=null,editLng=null;
+let addLat=null,addLng=null;
+let userMarker=null,userLat=null,userLng=null;
+let obStep=0;
+window._addBilde=null;window._editBilde=null;
 
-async function sbFetch(path,options={}){
+// ── SUPABASE ──────────────────────────────────────────────
+async function sbFetch(path,opts={}){
   return fetch(`${SB_URL}/rest/v1/${path}`,{
-    ...options,
-    headers:{'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`,'Content-Type':'application/json','Prefer':'return=representation',...(options.headers||{})}
+    ...opts,
+    headers:{'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`,'Content-Type':'application/json','Prefer':'return=representation',...(opts.headers||{})}
   });
 }
+async function loadData(){const r=await sbFetch(`${SB_TABLE}?select=*&order=created_at.desc`);if(!r.ok)throw new Error();return r.json();}
+async function insertData(item){const r=await sbFetch(SB_TABLE,{method:'POST',body:JSON.stringify(item)});if(!r.ok)throw new Error(await r.text());return(await r.json())[0];}
+async function patchData(id,patch){const r=await sbFetch(`${SB_TABLE}?id=eq.${id}`,{method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`,'Content-Type':'application/json','Prefer':'return=representation'},body:JSON.stringify(patch)});if(!r.ok)throw new Error(await r.text());return(await r.json())[0];}
+async function uploadBilde(file){const fn=`${Date.now()}.${file.name.split('.').pop()}`;const r=await fetch(`${SB_URL}/storage/v1/object/${SB_BUCKET}/${fn}`,{method:'POST',headers:{'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`,'Content-Type':file.type},body:file});if(!r.ok)throw new Error();return`${SB_URL}/storage/v1/object/public/${SB_BUCKET}/${fn}`;}
 
-async function loadData(){
-  const r=await sbFetch(`${SB_TABLE}?select=*&order=created_at.desc`);
-  if(!r.ok)throw new Error('Feil');
-  return r.json();
-}
-
-async function saveData(item){
-  const r=await sbFetch(SB_TABLE,{method:'POST',body:JSON.stringify({
-    adresse:item.adresse,avdeling:item.avdeling,beskrivelse:item.beskrivelse,
-    merknader:item.merknader,breddegrad:item.lat,lengdegrad:item.lng,
-    opprettet_av:item.navn,bilde_url:item.bilde_url||null
-  })});
-  if(!r.ok){const e=await r.text();throw new Error(e);}
-  return(await r.json())[0];
-}
-
-async function uploadBilde(file){
-  const ext=file.name.split('.').pop();
-  const fn=`${Date.now()}.${ext}`;
-  const r=await fetch(`${SB_URL}/storage/v1/object/${SB_BUCKET}/${fn}`,{
-    method:'POST',
-    headers:{'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`,'Content-Type':file.type},
-    body:file
-  });
-  if(!r.ok)throw new Error('Bildeopplasting feilet');
-  return`${SB_URL}/storage/v1/object/public/${SB_BUCKET}/${fn}`;
-}
-
-// Kartverket adresse-API
+// ── KARTVERKET ────────────────────────────────────────────
 async function searchKartverket(q){
   const r=await fetch(`https://ws.geonorge.no/adresser/v1/sok?sok=${encodeURIComponent(q)}&kommunenummer=1833&treffPerSide=6&utkoordsys=4258`);
   if(!r.ok)return[];
   const d=await r.json();
-  return(d.adresser||[]).map(a=>({
-    tekst:`${a.adressenavn} ${a.nummer||''}${a.bokstav||''}`.trim(),
-    sted:a.poststed||'',
-    lat:a.representasjonspunkt?.lat,
-    lng:a.representasjonspunkt?.lon
-  })).filter(a=>a.lat&&a.lng);
+  return(d.adresser||[]).map(a=>({tekst:`${a.adressenavn} ${a.nummer||''}${a.bokstav||''}`.trim(),sted:a.poststed||'',lat:a.representasjonspunkt?.lat,lng:a.representasjonspunkt?.lon})).filter(a=>a.lat&&a.lng);
+}
+async function reverseGeo(lat,lng){
+  try{const r=await fetch(`https://ws.geonorge.no/adresser/v1/punktsok?lat=${lat}&lon=${lng}&radius=100&utkoordsys=4258`);const d=await r.json();if(d.adresser&&d.adresser.length){const a=d.adresser[0];return`${a.adressenavn} ${a.nummer||''}${a.bokstav||''}`.trim();}}catch{}return`${lat.toFixed(5)}, ${lng.toFixed(5)}`;
 }
 
-function setMapTop(){
-  const tc=document.getElementById('top-controls');
-  const h=tc.offsetHeight;
-  const mapEl=document.getElementById('map');
-  mapEl.style.top=(56+h)+'px';
-  if(map)map.invalidateSize();
-}
-
+// ── MAP ───────────────────────────────────────────────────
 function initMap(){
-  map=L.map('map',{zoomControl:false}).setView([66.3126,14.1434],13);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-    attribution:'© OpenStreetMap',
-    maxZoom:19,
-    tileSize: window.devicePixelRatio>1?512:256,
-    zoomOffset: window.devicePixelRatio>1?-1:0,
-    detectRetina:true
-  }).addTo(map);
-  if(window.innerWidth>600){
-    L.control.zoom({position:'bottomright'}).addTo(map);
-  }
-  setMapTop();
-  window.addEventListener('resize',setMapTop);
-  map.on('click',()=>document.getElementById('search-results').classList.remove('visible'));
+  map=L.map('map',{zoomControl:false,attributionControl:false}).setView([66.3126,14.1434],14);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,detectRetina:true,tileSize:window.devicePixelRatio>1?512:256,zoomOffset:window.devicePixelRatio>1?-1:0}).addTo(map);
+  L.control.attribution({position:'bottomleft',prefix:'© OpenStreetMap'}).addTo(map);
+  map.on('click',onMapClick);
 }
 
-function makeIcon(color){
-  return L.divIcon({
-    className:'',
-    html:`<div style="width:30px;height:30px;background:${color};border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.3);"></div>`,
-    iconSize:[30,30],iconAnchor:[15,15],popupAnchor:[0,-18]
-  });
+function makePin(color){
+  return L.divIcon({className:'',html:`<div style="width:28px;height:28px;background:${color};border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.28);"></div>`,iconSize:[28,28],iconAnchor:[14,14],popupAnchor:[0,-17]});
 }
 
 function renderMarkers(){
-  markers.forEach(m=>map.removeLayer(m));
-  markers=[];
+  markers.forEach(m=>map.removeLayer(m));markers=[];
   allData.forEach(item=>{
     if(activeFilter!=='Alle'&&item.avdeling!==activeFilter)return;
     if(!item.breddegrad||!item.lengdegrad)return;
     const color=AVD_COLORS[item.avdeling]||'#888';
-    const m=L.marker([item.breddegrad,item.lengdegrad],{icon:makeIcon(color)}).addTo(map);
-    const dato=new Date(item.created_at).toLocaleDateString('no');
-    m.bindPopup(`<div>
-      ${item.bilde_url?`<img src="${item.bilde_url}" class="popup-img" onclick="openFullscreen('${item.bilde_url}')" onerror="this.style.display='none'"/>`:''} 
-      <div class="popup-body">
-        <div class="popup-addr">${item.adresse}</div>
-        <div class="popup-field">
-          <div class="popup-field-label">Beskrivelse</div>
-          <div class="popup-field-val">${item.beskrivelse}</div>
-        </div>
-        ${item.merknader?`<div class="popup-field">
-          <div class="popup-field-label">Merknad</div>
-          <div class="popup-field-val">${item.merknader}</div>
-        </div>`:''} 
-        <div class="popup-footer">
-          <div class="popup-footer-top">
-            <div class="popup-avd-badge" style="background:${color}22;color:${color}">${item.avdeling}</div>
-          </div>
-          <div style="display:flex;align-items:center;gap:6px;margin-top:2px;"><span style="font-size:12px;color:var(--gray-700);font-weight:500;">${item.opprettet_av||''}</span><span style="font-size:11px;color:var(--gray-300);">·</span><span style="font-size:11px;color:var(--gray-300);">${dato}</span></div>
-          <div class="popup-actions">
-            <button class="popup-action-btn btn-edit" onclick="openEditModal(${item.id})">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-              Rediger
-            </button>
-            <button class="popup-action-btn btn-delete" onclick="confirmDelete(${item.id},'${(item.adresse||'').replace(/'/g,"\''")}')">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-              Slett
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>`,{maxWidth:255});
+    const m=L.marker([item.breddegrad,item.lengdegrad],{icon:makePin(color)}).addTo(map);
+    m.on('click',()=>openPinSheet(item));
     markers.push(m);
   });
 }
 
-function renderFilters(){
-  const row=document.getElementById('filter-row');
-  row.innerHTML='';
+async function onMapClick(e){
+  if(currentTool!=='add')return;
+  closeAllSheets();
+  const{lat,lng}=e.latlng;
+  pendingLat=lat;pendingLng=lng;
+  if(pendingMarker)map.removeLayer(pendingMarker);
+  pendingMarker=L.marker([lat,lng],{icon:makePin('#27ae60'),zIndexOffset:1000}).addTo(map);
+  const addr=await reverseGeo(lat,lng);
+  document.getElementById('confirm-pin-addr').textContent=addr;
+  document.getElementById('confirm-pin').classList.add('visible');
+}
+
+// ── TOOL ─────────────────────────────────────────────────
+function setTool(t){
+  currentTool=t;
+  ['select','add','locate'].forEach(id=>{
+    const btn=document.getElementById(`tool-${id}`);
+    btn.classList.remove('active','active-green');
+  });
+  const hint=document.getElementById('tool-hint');
+  if(t==='select'){
+    document.getElementById('tool-select').classList.add('active');
+    hint.classList.remove('visible');
+    map.getContainer().style.cursor='';
+  } else if(t==='add'){
+    document.getElementById('tool-add').classList.add('active-green');
+    hint.textContent='Trykk på kartet for å plassere nøkkelboks';
+    hint.classList.add('visible');
+    map.getContainer().style.cursor='crosshair';
+    closeAllSheets();
+  } else if(t==='locate'){
+    document.getElementById('tool-locate').classList.add('active');
+    hint.classList.remove('visible');
+    map.getContainer().style.cursor='';
+    doLocate();
+  }
+}
+
+// ── CONFIRM PIN ───────────────────────────────────────────
+function cancelPinPlacement(){
+  document.getElementById('confirm-pin').classList.remove('visible');
+  if(pendingMarker){map.removeLayer(pendingMarker);pendingMarker=null;}
+  pendingLat=null;pendingLng=null;
+  setTool('select');
+}
+
+function confirmPinPlacement(){
+  document.getElementById('confirm-pin').classList.remove('visible');
+  addLat=pendingLat;addLng=pendingLng;
+  const addr=document.getElementById('confirm-pin-addr').textContent;
+  document.getElementById('a-adresse').value=addr;
+  document.getElementById('a-addr-ok').classList.add('visible');
+  openSheet('add-sheet');
+  setTool('select');
+}
+
+// ── PIN INFO SHEET ────────────────────────────────────────
+function openPinSheet(item){
+  if(currentTool!=='select')return;
+  closeAllSheets();
+  const color=AVD_COLORS[item.avdeling]||'#888';
+  const imgWrap=document.getElementById('pin-sheet-img-wrap');
+  if(item.bilde_url){
+    imgWrap.innerHTML=`<img src="${item.bilde_url}" class="pin-img" onclick="openFullscreen(this.src)" onerror="this.parentNode.innerHTML=''" style="cursor:pointer;"/>`;
+  } else {
+    imgWrap.innerHTML=`<div class="pin-img-placeholder"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>`;
+  }
+  document.getElementById('pin-address').textContent=item.adresse;
+  document.getElementById('pin-beskrivelse').textContent=item.beskrivelse;
+  const mw=document.getElementById('pin-merknad-wrap');
+  if(item.merknader){document.getElementById('pin-merknad').textContent=item.merknader;mw.style.display='block';}
+  else{mw.style.display='none';}
+  const badge=document.getElementById('pin-avd-badge');
+  badge.textContent=item.avdeling;
+  badge.style.cssText=`background:${color}22;color:${color};`;
+  document.getElementById('pin-meta-name').textContent=item.opprettet_av||'';
+  document.getElementById('pin-meta-date').textContent=new Date(item.created_at).toLocaleDateString('no');
+  openSheet('pin-sheet');
+}
+
+// ── ADD SHEET ─────────────────────────────────────────────
+function closeAddSheet(){
+  closeSheet('add-sheet');
+  if(pendingMarker){map.removeLayer(pendingMarker);pendingMarker=null;}
+  ['a-navn','a-adresse','a-beskrivelse','a-merknader'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('a-avdeling').value='';
+  document.getElementById('a-bilde').value='';
+  document.getElementById('a-bilde-prev').style.display='none';
+  document.getElementById('a-bilde-ph').style.display='block';
+  document.getElementById('a-addr-ok').classList.remove('visible');
+  document.getElementById('a-ac').classList.remove('visible');
+  addLat=null;addLng=null;window._addBilde=null;
+}
+
+async function submitAdd(){
+  const navn=document.getElementById('a-navn').value.trim();
+  const adresse=document.getElementById('a-adresse').value.trim();
+  const avdeling=document.getElementById('a-avdeling').value;
+  const beskrivelse=document.getElementById('a-beskrivelse').value.trim();
+  const merknader=document.getElementById('a-merknader').value.trim();
+  if(!navn||!adresse||!avdeling||!beskrivelse){showToast('Fyll ut alle obligatoriske felt');return;}
+  if(!addLat||!addLng){showToast('Velg adresse fra forslagslisten eller bruk posisjonsknappen');return;}
+  const btn=document.getElementById('a-submit');
+  btn.disabled=true;btn.textContent='Registrerer...';
+  let bilde_url=null;
+  if(window._addBilde){try{bilde_url=await uploadBilde(window._addBilde);}catch{showToast('Bilde feilet, fortsetter uten');}}
+  try{
+    const saved=await insertData({adresse,avdeling,beskrivelse,merknader,breddegrad:addLat,lengdegrad:addLng,opprettet_av:navn,bilde_url});
+    allData.unshift(saved);
+    renderMarkers();
+    if(pendingMarker){map.removeLayer(pendingMarker);pendingMarker=null;}
+    closeAddSheet();
+    map.flyTo([addLat,addLng],17,{duration:0.8});
+    showToast('Nøkkelboks registrert');
+    localStorage.setItem('nb_navn',navn);
+  }catch(e){showToast('Kunne ikke lagre – prøv igjen');console.error(e);}
+  btn.disabled=false;btn.textContent='Registrer nøkkelboks';
+}
+
+// ── EDIT SHEET ────────────────────────────────────────────
+function openEditModal(id){
+  const item=allData.find(d=>d.id===id);if(!item)return;
+  editId=id;editLat=item.breddegrad;editLng=item.lengdegrad;window._editBilde=null;
+  document.getElementById('e-adresse').value=item.adresse||'';
+  document.getElementById('e-avdeling').value=item.avdeling||'';
+  document.getElementById('e-beskrivelse').value=item.beskrivelse||'';
+  document.getElementById('e-merknader').value=item.merknader||'';
+  const prev=document.getElementById('e-bilde-prev');
+  const ph=document.getElementById('e-bilde-ph');
+  if(item.bilde_url){prev.src=item.bilde_url;prev.style.display='block';ph.style.display='none';}
+  else{prev.style.display='none';ph.style.display='block';}
+  document.getElementById('e-addr-ok').classList.remove('visible');
+  document.getElementById('e-bilde').value='';
+  closeSheet('list-sheet');
+  setTimeout(()=>openSheet('edit-sheet'),50);
+}
+
+function closeEditSheet(){
+  closeSheet('edit-sheet');
+  editId=null;editLat=null;editLng=null;window._editBilde=null;
+  document.getElementById('e-bilde').value='';
+}
+
+async function submitEdit(){
+  if(!editId)return;
+  const btn=document.getElementById('e-submit');
+  btn.disabled=true;btn.textContent='Lagrer...';
+  const patch={
+    adresse:document.getElementById('e-adresse').value.trim(),
+    avdeling:document.getElementById('e-avdeling').value,
+    beskrivelse:document.getElementById('e-beskrivelse').value.trim(),
+    merknader:document.getElementById('e-merknader').value.trim(),
+    breddegrad:editLat,lengdegrad:editLng
+  };
+  if(window._editBilde){try{patch.bilde_url=await uploadBilde(window._editBilde);}catch{showToast('Bilde feilet, lagrer uten');}}
+  try{
+    const updated=await patchData(editId,patch);
+    const idx=allData.findIndex(d=>d.id===editId);
+    if(idx>=0)allData[idx]={...allData[idx],...updated};
+    renderMarkers();
+    closeEditSheet();
+    showToast('Endringer lagret');
+  }catch(e){showToast('Kunne ikke lagre');console.error(e);}
+  btn.disabled=false;btn.textContent='Lagre endringer';
+}
+
+// ── LIST ─────────────────────────────────────────────────
+function openList(){
+  renderFilterRow();
+  renderList(allData);
+  document.getElementById('list-search').value='';
+  openSheet('list-sheet');
+}
+
+function renderFilterRow(){
+  const row=document.getElementById('filter-row');row.innerHTML='';
   const all=document.createElement('button');
   all.className='fchip'+(activeFilter==='Alle'?' active':'');
   if(activeFilter==='Alle')all.style.cssText='background:#1a56a0;color:#fff;border-color:#1a56a0;';
   all.textContent='Alle';
-  all.onclick=()=>{activeFilter='Alle';renderFilters();renderMarkers();};
+  all.onclick=()=>{activeFilter='Alle';renderFilterRow();renderMarkers();renderList(allData);};
   row.appendChild(all);
   AVD_LIST.forEach(avd=>{
     const color=AVD_COLORS[avd];
@@ -435,451 +815,245 @@ function renderFilters(){
     c.className='fchip'+(activeFilter===avd?' active':'');
     if(activeFilter===avd)c.style.cssText=`background:${color};color:#fff;border-color:${color};`;
     c.innerHTML=`<span class="fchip-dot" style="background:${color}"></span>${avd}`;
-    c.onclick=()=>{activeFilter=avd;renderFilters();renderMarkers();};
+    c.onclick=()=>{activeFilter=avd;renderFilterRow();renderMarkers();renderList(allData.filter(d=>d.avdeling===avd));};
     row.appendChild(c);
   });
 }
 
-function updateCount(){document.getElementById('count-badge').textContent=allData.length+' registrert';}
-
-function setView(v){
-  document.getElementById('nav-kart').classList.toggle('active',v==='kart');
-  document.getElementById('nav-liste').classList.toggle('active',v==='liste');
-  document.getElementById('liste-view').style.display=v==='liste'?'block':'none';
-  document.getElementById('top-controls').style.display=v==='kart'?'block':'none';
-  document.getElementById('map').style.display=v==='kart'?'block':'none';
-  document.getElementById('loc-btn').style.display=v==='kart'?'flex':'none';
-  document.getElementById('nearest-btn').style.display=v==='kart'?'flex':'none';
-  document.getElementById('nearest-toast').style.display='none';
-  if(v==='liste'){
-    document.getElementById('liste-view').style.top='56px';
-    document.getElementById('liste-search-input').value='';
-    renderListe(allData);
-  }
-  if(v==='kart')setTimeout(()=>{setMapTop();map.invalidateSize();},100);
-}
-
-function renderListe(data){
-  const c=document.getElementById('liste-content');
-  if(!data.length){c.innerHTML='<div style="text-align:center;padding:40px;color:var(--gray-500);font-size:14px;">Ingen nøkkelbokser funnet</div>';return;}
+function renderList(data){
+  const c=document.getElementById('list-content');
+  if(!data.length){c.innerHTML='<div style="text-align:center;padding:40px;color:#888;font-size:14px;">Ingen nøkkelbokser funnet</div>';return;}
   c.innerHTML=data.map(item=>{
     const color=AVD_COLORS[item.avdeling]||'#888';
     const dato=new Date(item.created_at).toLocaleDateString('no');
-    return`<div style="background:#fff;border-radius:10px;margin-bottom:10px;border:1px solid var(--gray-100);overflow:hidden;">
-      ${item.bilde_url?`<img src="${item.bilde_url}" style="width:100%;height:80px;object-fit:cover;display:block;cursor:pointer;border-radius:10px 10px 0 0;" onclick="openFullscreen(this.src)" onerror="this.style.display='none'"/>`:''}
-      <div style="padding:10px 12px 12px;">
-        <div style="font-weight:600;font-size:15px;margin-bottom:10px;">${item.adresse}</div>
-        <div style="margin-bottom:8px;">
-          <div style="font-size:10px;font-weight:600;color:var(--gray-500);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:2px;">Beskrivelse</div>
-          <div style="font-size:13px;color:var(--gray-700);line-height:1.4;">${item.beskrivelse}</div>
-        </div>
-        ${item.merknader?`<div style="margin-bottom:8px;">
-          <div style="font-size:10px;font-weight:600;color:var(--gray-500);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:2px;">Merknad</div>
-          <div style="font-size:13px;color:var(--gray-700);">${item.merknader}</div>
-        </div>`:''}
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+    return`<div class="lcard">
+      ${item.bilde_url?`<img src="${item.bilde_url}" class="lcard-img" onclick="openFullscreen(this.src)" onerror="this.style.display='none'"/>`:''}
+      <div class="lcard-body">
+        <div class="lcard-addr">${item.adresse}</div>
+        <div class="lcard-field"><div class="lcard-field-label">Beskrivelse</div><div class="lcard-field-val">${item.beskrivelse}</div></div>
+        ${item.merknader?`<div class="lcard-field"><div class="lcard-field-label">Merknad</div><div class="lcard-field-val">${item.merknader}</div></div>`:''}
+        <div class="lcard-footer">
           <span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:${color}22;color:${color}">${item.avdeling}</span>
-          <span style="font-size:11px;color:var(--gray-300);">${item.opprettet_av||''} · ${dato}</span>
+          <span style="font-size:10px;color:#bbb;">${item.opprettet_av||''} · ${dato}</span>
         </div>
-        <button onclick="flyTo(${item.breddegrad},${item.lengdegrad})" style="width:100%;padding:8px;background:var(--blue-light);color:var(--blue);border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font);">Vis på kart</button>
+        <div class="lcard-actions">
+          <button class="lcard-btn lcard-btn-map" onclick="flyToFromList(${item.breddegrad},${item.lengdegrad})">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Vis på kart
+          </button>
+          <button class="lcard-btn lcard-btn-edit" onclick="openEditModal(${item.id})">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Rediger
+          </button>
+        </div>
       </div>
     </div>`;
   }).join('');
 }
 
-function filterListe(q){
-  if(!q.trim()){renderListe(allData);return;}
-  renderListe(allData.filter(d=>
-    (d.adresse||'').toLowerCase().includes(q.toLowerCase())||
-    (d.avdeling||'').toLowerCase().includes(q.toLowerCase())||
-    (d.beskrivelse||'').toLowerCase().includes(q.toLowerCase())
-  ));
+function filterList(q){
+  if(!q.trim()){renderList(activeFilter==='Alle'?allData:allData.filter(d=>d.avdeling===activeFilter));return;}
+  const base=activeFilter==='Alle'?allData:allData.filter(d=>d.avdeling===activeFilter);
+  renderList(base.filter(d=>(d.adresse||'').toLowerCase().includes(q.toLowerCase())||(d.avdeling||'').toLowerCase().includes(q.toLowerCase())||(d.beskrivelse||'').toLowerCase().includes(q.toLowerCase())));
 }
 
-function flyTo(lat,lng){
-  setView('kart');
-  setTimeout(()=>{if(lat&&lng)map.flyTo([lat,lng],17,{duration:1});},150);
+function flyToFromList(lat,lng){
+  closeSheet('list-sheet');
+  setTimeout(()=>{if(lat&&lng)map.flyTo([lat,lng],17,{duration:0.8});},200);
 }
 
-// KART-SØK
-const searchInput=document.getElementById('search-input');
-const searchResults=document.getElementById('search-results');
-const searchClear=document.getElementById('search-clear');
-let searchTimeout;
-
-searchInput.addEventListener('input',function(){
-  clearTimeout(searchTimeout);
-  const val=this.value.trim();
-  searchClear.classList.toggle('visible',val.length>0);
-  if(val.length<2){searchResults.classList.remove('visible');return;}
-  searchTimeout=setTimeout(()=>doMapSearch(val),300);
+// ── SEARCH ────────────────────────────────────────────────
+const si=document.getElementById('search-input');
+const sr=document.getElementById('search-results');
+const sc=document.getElementById('search-clear');
+let sT;
+si.addEventListener('input',function(){
+  clearTimeout(sT);
+  const v=this.value.trim();
+  sc.classList.toggle('visible',v.length>0);
+  if(v.length<2){sr.classList.remove('visible');return;}
+  sT=setTimeout(()=>doSearch(v),300);
 });
-searchInput.addEventListener('blur',()=>setTimeout(()=>searchResults.classList.remove('visible'),200));
+si.addEventListener('blur',()=>setTimeout(()=>sr.classList.remove('visible'),200));
 
-function clearSearch(){
-  searchInput.value='';
-  searchClear.classList.remove('visible');
-  searchResults.classList.remove('visible');
-}
+function clearSearch(){si.value='';sc.classList.remove('visible');sr.classList.remove('visible');}
 
-async function doMapSearch(q){
+async function doSearch(q){
   const local=allData.filter(d=>(d.adresse||'').toLowerCase().includes(q.toLowerCase()));
   let html=local.slice(0,3).map(item=>{
-    const color=AVD_COLORS[item.avdeling]||'#888';
-    return`<div class="sri" onclick="flyTo(${item.breddegrad},${item.lengdegrad});searchResults.classList.remove('visible');searchInput.value='${(item.adresse||'').replace(/'/g,"\\'")}';searchClear.classList.add('visible')">
-      <div class="sri-icon" style="background:${color}22;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2.5" style="width:13px;height:13px;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-      </div>
-      <div><div class="sri-addr">${item.adresse}</div><div class="sri-sub">${item.avdeling} · Nøkkelboks</div></div>
+    const c=AVD_COLORS[item.avdeling]||'#888';
+    return`<div class="sr-item" onclick="sr.classList.remove('visible');map.flyTo([${item.breddegrad},${item.lengdegrad}],17);openPinSheet(allData.find(d=>d.id===${item.id}))">
+      <div class="sr-icon" style="background:${c}22;"><svg viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+      <div><div class="sr-addr">${item.adresse}</div><div class="sr-sub">${item.avdeling} · Nøkkelboks</div></div>
     </div>`;
   }).join('');
   try{
     const places=await searchKartverket(q);
     places.forEach(p=>{
-      html+=`<div class="sri" onclick="map.flyTo([${p.lat},${p.lng}],17);searchResults.classList.remove('visible');searchInput.value='${p.tekst.replace(/'/g,"\\'")}';searchClear.classList.add('visible')">
-        <div class="sri-icon" style="background:var(--gray-100);">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--gray-500)" stroke-width="2" style="width:13px;height:13px;"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.4 7 11.5 7.74 12.07a1 1 0 0 0 1.27 0C13.9 21.5 20 15.4 20 10a8 8 0 0 0-8-8z"/></svg>
-        </div>
-        <div><div class="sri-addr">${p.tekst}</div><div class="sri-sub">${p.sted}</div></div>
+      html+=`<div class="sr-item" onclick="sr.classList.remove('visible');map.flyTo([${p.lat},${p.lng}],17);si.value='${p.tekst.replace(/'/g,"\\'")}';sc.classList.add('visible')">
+        <div class="sr-icon" style="background:#f0f0f0;"><svg viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.4 7 11.5 7.74 12.07a1 1 0 0 0 1.27 0C13.9 21.5 20 15.4 20 10a8 8 0 0 0-8-8z"/></svg></div>
+        <div><div class="sr-addr">${p.tekst}</div><div class="sr-sub">${p.sted}</div></div>
       </div>`;
     });
   }catch{}
-  if(!html)html='<div class="sri" style="color:var(--gray-500);cursor:default;">Ingen treff</div>';
-  searchResults.innerHTML=html;
-  searchResults.classList.add('visible');
+  if(!html)html='<div class="sr-item" style="color:#888;cursor:default;">Ingen treff</div>';
+  sr.innerHTML=html;sr.classList.add('visible');
 }
 
-// ADRESSE AUTOCOMPLETE I SKJEMA
-let acTimeout;
-async function adresseAC(q){
-  const list=document.getElementById('ac-list');
-  const sel=document.getElementById('addr-selected');
-  currentLat=null;currentLng=null;
-  sel.classList.remove('visible');
-  if(q.length<3){list.classList.remove('visible');return;}
-  clearTimeout(acTimeout);
-  acTimeout=setTimeout(async()=>{
+// ── ADRESSE AC ────────────────────────────────────────────
+let acT;
+async function adresseAC(q,listId,okId,prefix){
+  const list=document.getElementById(listId);
+  if(q.length<3){list.classList.remove('visible');if(prefix==='a'){addLat=null;addLng=null;}else{editLat=null;editLng=null;}document.getElementById(okId).classList.remove('visible');return;}
+  clearTimeout(acT);
+  acT=setTimeout(async()=>{
     try{
       const places=await searchKartverket(q);
       if(!places.length){list.classList.remove('visible');return;}
       list.innerHTML=places.map(p=>`
-        <div class="ac-item" onclick="velgAdresse('${p.tekst.replace(/'/g,"\\'")}',${p.lat},${p.lng})">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.4 7 11.5 7.74 12.07a1 1 0 0 0 1.27 0C13.9 21.5 20 15.4 20 10a8 8 0 0 0-8-8z"/></svg>
+        <div class="ac-item" onclick="selectAddr('${p.tekst.replace(/'/g,"\\'")}',${p.lat},${p.lng},'${listId}','${okId}','${prefix}')">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="10" r="3"/><path d="M12 2a8 8 0 0 0-8 8c0 5.4 7 11.5 7.74 12.07a1 1 0 0 0 1.27 0C13.9 21.5 20 15.4 20 10a8 8 0 0 0-8-8z"/></svg>
           <div><div class="ac-main">${p.tekst}</div><div class="ac-sub">${p.sted}</div></div>
         </div>`).join('');
       list.classList.add('visible');
-    }catch(e){console.error(e);}
+    }catch{}
   },300);
 }
 
-function velgAdresse(navn,lat,lng){
-  document.getElementById('f-adresse').value=navn;
-  currentLat=parseFloat(lat);
-  currentLng=parseFloat(lng);
-  document.getElementById('ac-list').classList.remove('visible');
-  document.getElementById('addr-selected').classList.add('visible');
+function selectAddr(navn,lat,lng,listId,okId,prefix){
+  if(prefix==='a'){document.getElementById('a-adresse').value=navn;addLat=parseFloat(lat);addLng=parseFloat(lng);}
+  else{document.getElementById('e-adresse').value=navn;editLat=parseFloat(lat);editLng=parseFloat(lng);}
+  document.getElementById(listId).classList.remove('visible');
+  document.getElementById(okId).classList.add('visible');
 }
 
-function previewBilde(input){
-  const file=input.files[0];
-  if(!file)return;
-  window._bildeFile=file;
-  const img=document.getElementById('bilde-preview-img');
-  img.src=URL.createObjectURL(file);
-  img.style.display='block';
-  document.getElementById('bilde-placeholder').style.display='none';
-}
-
-function openModal(){document.getElementById('modal-overlay').classList.add('visible');}
-function closeModal(){
-  document.getElementById('modal-overlay').classList.remove('visible');
-  ['f-navn','f-adresse','f-beskrivelse','f-merknader'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('f-avdeling').value='';
-  document.getElementById('f-bilde').value='';
-  window._bildeFile=null;
-  document.getElementById('bilde-preview-img').style.display='none';
-  document.getElementById('bilde-placeholder').style.display='block';
-  document.getElementById('ac-list').classList.remove('visible');
-  document.getElementById('addr-selected').classList.remove('visible');
-  currentLat=null;currentLng=null;
-}
-function closeModalOutside(e){if(e.target===document.getElementById('modal-overlay'))closeModal();}
-
+// ── GPS ───────────────────────────────────────────────────
 async function useGPS(){
   if(!navigator.geolocation){showToast('GPS ikke tilgjengelig');return;}
   showToast('Henter din posisjon...');
   navigator.geolocation.getCurrentPosition(async pos=>{
-    currentLat=pos.coords.latitude;
-    currentLng=pos.coords.longitude;
-    try{
-      const r=await fetch(`https://ws.geonorge.no/adresser/v1/punktsok?lat=${currentLat}&lon=${currentLng}&radius=50&utkoordsys=4258`);
-      const d=await r.json();
-      if(d.adresser&&d.adresser.length>0){
-        const a=d.adresser[0];
-        const addr=`${a.adressenavn} ${a.nummer||''}${a.bokstav||''}`.trim();
-        document.getElementById('f-adresse').value=addr;
-      } else {
-        document.getElementById('f-adresse').value=`${currentLat.toFixed(5)}, ${currentLng.toFixed(5)}`;
-      }
-      document.getElementById('addr-selected').classList.add('visible');
-    }catch{
-      document.getElementById('f-adresse').value=`${currentLat.toFixed(5)}, ${currentLng.toFixed(5)}`;
-      document.getElementById('addr-selected').classList.add('visible');
-    }
+    addLat=pos.coords.latitude;addLng=pos.coords.longitude;
+    const addr=await reverseGeo(addLat,addLng);
+    document.getElementById('a-adresse').value=addr;
+    document.getElementById('a-addr-ok').classList.add('visible');
     showToast('Posisjon hentet');
-  },()=>showToast('Kunne ikke hente posisjon'));
+  },()=>showToast('Kunne ikke hente posisjon – sjekk tillatelser i nettleseren'));
 }
 
-async function submitForm(){
-  const navn=document.getElementById('f-navn').value.trim();
-  const adresse=document.getElementById('f-adresse').value.trim();
-  const avdeling=document.getElementById('f-avdeling').value;
-  const beskrivelse=document.getElementById('f-beskrivelse').value.trim();
-  const merknader=document.getElementById('f-merknader').value.trim();
-  const bildeFile=window._bildeFile||document.getElementById('f-bilde').files[0];
-  if(!navn||!adresse||!avdeling||!beskrivelse){showToast('Fyll ut alle obligatoriske felt');return;}
-  if(!currentLat||!currentLng){showToast('Velg en adresse fra forslagslisten');return;}
-  const btn=document.getElementById('submit-btn');
-  btn.disabled=true;btn.textContent='Registrerer...';
-  let bilde_url=null;
-  if(bildeFile){
-    try{bilde_url=await uploadBilde(bildeFile);}
-    catch(e){console.error(e);showToast('Bilde feilet, fortsetter uten');}
-  }
-  try{
-    const saved=await saveData({navn,adresse,avdeling,beskrivelse,merknader,lat:currentLat,lng:currentLng,bilde_url});
-    allData.unshift(saved);
-    renderMarkers();updateCount();
-    const lat=currentLat,lng=currentLng;
-    closeModal();
-    map.flyTo([lat,lng],17,{duration:1});
-    showToast('Nøkkelboks registrert');
-  }catch(e){
-    showToast('Kunne ikke lagre – prøv igjen');
-    console.error(e);
-  }
-  btn.disabled=false;btn.textContent='Registrer nøkkelboks';
+// ── LOCATE ────────────────────────────────────────────────
+function doLocate(){
+  if(!navigator.geolocation){showToast('GPS ikke tilgjengelig');setTool('select');return;}
+  navigator.geolocation.getCurrentPosition(pos=>{
+    userLat=pos.coords.latitude;userLng=pos.coords.longitude;
+    if(userMarker)map.removeLayer(userMarker);
+    userMarker=L.marker([userLat,userLng],{icon:L.divIcon({className:'',html:'<div class="user-dot-el"></div>',iconSize:[16,16],iconAnchor:[8,8]})}).addTo(map);
+    map.flyTo([userLat,userLng],15,{duration:0.8});
+    showNearest();
+    setTool('select');
+  },()=>{showToast('Kunne ikke hente posisjon – sjekk tillatelser i nettleseren');setTool('select');});
 }
 
+function showNearest(){
+  if(!userLat||!userLng||!allData.length)return;
+  let nearest=null,minD=Infinity;
+  allData.forEach(item=>{
+    if(!item.breddegrad||!item.lengdegrad)return;
+    const d=Math.sqrt(Math.pow(item.breddegrad-userLat,2)+Math.pow(item.lengdegrad-userLng,2));
+    if(d<minD){minD=d;nearest=item;}
+  });
+  if(!nearest)return;
+  const m=Math.round(minD*111000);
+  const banner=document.getElementById('nearest-banner');
+  document.getElementById('nearest-text').textContent=`Nærmeste nøkkelboks: ${nearest.adresse} (${m<1000?m+' m':((m/1000).toFixed(1)+' km')})`;
+  banner.classList.add('visible');
+  setTimeout(()=>banner.classList.remove('visible'),6000);
+}
+
+// ── IMAGE ─────────────────────────────────────────────────
+function previewImg(inputId,prevId,phId,key){
+  const file=document.getElementById(inputId).files[0];
+  if(!file)return;
+  window[key]=file;
+  const img=document.getElementById(prevId);
+  img.src=URL.createObjectURL(file);
+  img.style.display='block';
+  document.getElementById(phId).style.display='none';
+}
+function openFullscreen(src){document.getElementById('fullscreen-img').src=src;document.getElementById('fullscreen').classList.add('visible');}
+function closeFullscreen(){document.getElementById('fullscreen').classList.remove('visible');}
+
+// ── SHEET UTILS ───────────────────────────────────────────
+function openSheet(id){document.getElementById(id).classList.add('open');}
+function closeSheet(id){document.getElementById(id).classList.remove('open');}
+function closeAllSheets(){['pin-sheet','add-sheet','edit-sheet','list-sheet'].forEach(closeSheet);}
+
+// ── ONBOARDING ────────────────────────────────────────────
+function obNext(){
+  document.getElementById(`ob-${obStep}`).classList.remove('active');
+  obStep++;
+  document.getElementById(`ob-${obStep}`).classList.add('active');
+}
+function obDone(){
+  document.getElementById('onboarding').style.display='none';
+  localStorage.setItem('nb_ob_done','1');
+}
+
+// ── TOAST ─────────────────────────────────────────────────
 function showToast(msg){
   const t=document.getElementById('toast');
   t.textContent=msg;t.classList.add('visible');
   setTimeout(()=>t.classList.remove('visible'),3000);
 }
 
+// ── OFFLINE ───────────────────────────────────────────────
+window.addEventListener('online',()=>document.getElementById('offline-banner').classList.remove('visible'));
+window.addEventListener('offline',()=>document.getElementById('offline-banner').classList.add('visible'));
+if(!navigator.onLine)document.getElementById('offline-banner').classList.add('visible');
 
-let editingId=null;
-window._editBildeFile=null;
-
-async function deleteItem(id){
-  try{
-    const digest=null;
-    const r=await sbFetch(`${SB_TABLE}?id=eq.${id}`,{method:'DELETE',headers:{'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`}});
-    allData=allData.filter(d=>d.id!==id);
-    renderMarkers();renderListe(allData);updateCount();
-    map.closePopup();
-    showToast('Nøkkelboks slettet');
-  }catch(e){showToast('Kunne ikke slette');console.error(e);}
+// ── PWA ───────────────────────────────────────────────────
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
 }
 
-function confirmDelete(id,adresse){
-  document.getElementById('confirm-sub').textContent=`"${adresse}" vil bli permanent slettet.`;
-  document.getElementById('confirm-overlay').classList.add('visible');
-  document.getElementById('confirm-delete-btn').onclick=async()=>{
-    closeConfirm();
-    await deleteItem(id);
-  };
-}
-function closeConfirm(){document.getElementById('confirm-overlay').classList.remove('visible');}
+let deferredInstall=null;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault();deferredInstall=e;
+  const b=document.getElementById('install-banner');
+  if(b)b.classList.add('visible');
+});
 
-function openEditModal(id){
-  const item=allData.find(d=>d.id===id);
-  if(!item)return;
-  editingId=id;
-  window._editBildeFile=null;
-  document.getElementById('e-adresse').value=item.adresse||'';
-  document.getElementById('e-avdeling').value=item.avdeling||'';
-  document.getElementById('e-beskrivelse').value=item.beskrivelse||'';
-  document.getElementById('e-merknader').value=item.merknader||'';
-  const prev=document.getElementById('e-bilde-preview');
-  if(item.bilde_url){
-    prev.src=item.bilde_url;prev.style.display='block';
-    document.getElementById('e-bilde-placeholder').style.display='none';
-  } else {
-    prev.style.display='none';
-    document.getElementById('e-bilde-placeholder').style.display='block';
-  }
-  document.getElementById('edit-modal-overlay').classList.add('visible');
-  map.closePopup();
-}
-function closeEditModal(){
-  document.getElementById('edit-modal-overlay').classList.remove('visible');
-  editingId=null;window._editBildeFile=null;
-  document.getElementById('e-bilde').value='';
-}
-function closeEditOutside(e){if(e.target===document.getElementById('edit-modal-overlay'))closeEditModal();}
-
-function previewEditBilde(input){
-  const file=input.files[0];if(!file)return;
-  window._editBildeFile=file;
-  const prev=document.getElementById('e-bilde-preview');
-  prev.src=URL.createObjectURL(file);prev.style.display='block';
-  document.getElementById('e-bilde-placeholder').style.display='none';
-}
-
-async function submitEdit(){
-  if(!editingId)return;
-  const btn=document.getElementById('edit-submit-btn');
-  btn.disabled=true;btn.textContent='Lagrer...';
-  const adresse=document.getElementById('e-adresse').value.trim();
-  const avdeling=document.getElementById('e-avdeling').value;
-  const beskrivelse=document.getElementById('e-beskrivelse').value.trim();
-  const merknader=document.getElementById('e-merknader').value.trim();
-  let bilde_url=undefined;
-  if(window._editBildeFile){
-    try{bilde_url=await uploadBilde(window._editBildeFile);}
-    catch(e){showToast('Bilde feilet, lagrer uten');}
-  }
-  const patch={adresse,avdeling,beskrivelse,merknader};
-  if(bilde_url!==undefined)patch.bilde_url=bilde_url;
-  try{
-    const r=await sbFetch(`${SB_TABLE}?id=eq.${editingId}`,{
-      method:'PATCH',
-      headers:{'apikey':SB_KEY,'Authorization':`Bearer ${SB_KEY}`,'Content-Type':'application/json','Prefer':'return=representation'},
-      body:JSON.stringify(patch)
-    });
-    if(!r.ok)throw new Error(await r.text());
-    const updated=(await r.json())[0];
-    const idx=allData.findIndex(d=>d.id===editingId);
-    if(idx>=0)allData[idx]={...allData[idx],...updated};
-    renderMarkers();renderListe(allData);
-    closeEditModal();
-    showToast('Endringer lagret');
-  }catch(e){showToast('Kunne ikke lagre');console.error(e);}
-  btn.disabled=false;btn.textContent='Lagre endringer';
-}
-
-function openFullscreen(src){
-  document.getElementById('fullscreen-img').src=src;
-  document.getElementById('img-fullscreen').classList.add('visible');
-}
-function closeFullscreen(){
-  document.getElementById('img-fullscreen').classList.remove('visible');
-}
-
-let userMarker=null,userLat=null,userLng=null;
-
-function locateMe(){
-  if(!navigator.geolocation){showToast('GPS ikke tilgjengelig');return;}
-  navigator.geolocation.getCurrentPosition(pos=>{
-    userLat=pos.coords.latitude;
-    userLng=pos.coords.longitude;
-    if(userMarker)map.removeLayer(userMarker);
-    userMarker=L.marker([userLat,userLng],{
-      icon:L.divIcon({className:'',html:'<div class="user-dot"></div>',iconSize:[16,16],iconAnchor:[8,8]})
-    }).addTo(map);
-    map.flyTo([userLat,userLng],15,{duration:1});
-  },()=>showToast('Kunne ikke hente posisjon'));
-}
-
-function findNearest(){
-  if(!userLat||!userLng){
-    showToast('Trykk først på posisjon-knappen');return;
-  }
-  if(!allData.length){showToast('Ingen nøkkelbokser registrert');return;}
-  let nearest=null,minDist=Infinity;
-  allData.forEach(item=>{
-    if(!item.breddegrad||!item.lengdegrad)return;
-    const d=Math.sqrt(Math.pow(item.breddegrad-userLat,2)+Math.pow(item.lengdegrad-userLng,2));
-    if(d<minDist){minDist=d;nearest=item;}
-  });
-  if(!nearest){showToast('Ingen nøkkelbokser funnet');return;}
-  const distM=Math.round(minDist*111000);
-  const toast=document.getElementById('nearest-toast');
-  toast.textContent=distM<1000?`Nærmeste: ${nearest.adresse} (${distM}m)`:`Nærmeste: ${nearest.adresse} (${(distM/1000).toFixed(1)}km)`;
-  toast.classList.add('visible');
-  setTimeout(()=>toast.classList.remove('visible'),4000);
-  map.flyTo([nearest.breddegrad,nearest.lengdegrad],17,{duration:1.2});
-}
-
-function openBildeChoice(){document.getElementById('bilde-choice-overlay').classList.add('visible');}
-function closeBildeChoice(){document.getElementById('bilde-choice-overlay').classList.remove('visible');}
-
+// ── INIT ──────────────────────────────────────────────────
 async function init(){
   initMap();
-  renderFilters();
-  try{allData=await loadData();}
-  catch(e){showToast('Kunne ikke laste data');console.error(e);allData=[];}
-  document.getElementById('loading').style.display='none';
+  const savedName=localStorage.getItem('nb_navn');
+  if(savedName)document.getElementById('a-navn').value=savedName;
+  try{
+    allData=await loadData();
+  }catch(e){
+    showToast('Kunne ikke laste data – sjekk internettforbindelsen');
+    console.error(e);allData=[];
+  }
+  document.getElementById('loading-screen').style.display='none';
   renderMarkers();
-  updateCount();
-  setTimeout(setMapTop,50);
-  setTimeout(setMapTop,300);
-  setTimeout(setMapTop,800);
+  if(localStorage.getItem('nb_ob_done')){
+    document.getElementById('onboarding').style.display='none';
+  }
 }
 
 init();
 </script>
 
-<!-- CONFIRM DELETE -->
-<div class="confirm-overlay" id="confirm-overlay">
-  <div class="confirm-box">
-    <div class="confirm-title">Slett nøkkelboks?</div>
-    <div class="confirm-sub" id="confirm-sub">Dette kan ikke angres.</div>
-    <div class="confirm-actions">
-      <button class="confirm-cancel" onclick="closeConfirm()">Avbryt</button>
-      <button class="confirm-delete" id="confirm-delete-btn">Slett</button>
-    </div>
+<!-- INSTALL BANNER -->
+<div class="install-banner" id="install-banner">
+  <div style="width:36px;height:36px;background:#e8f0fb;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#1a56a0" stroke-width="2" width="18" height="18"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
   </div>
-</div>
-
-<!-- EDIT MODAL -->
-<div class="edit-modal-overlay" id="edit-modal-overlay" onclick="closeEditOutside(event)">
-  <div class="edit-modal">
-    <div class="modal-header">
-      <div class="modal-title">Rediger nøkkelboks</div>
-      <button class="modal-close" onclick="closeEditModal()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-      </button>
-    </div>
-    <div class="form-group">
-      <div class="form-label">Adresse</div>
-      <input type="text" id="e-adresse" style="width:100%;padding:10px 12px;border:1.5px solid var(--gray-100);border-radius:8px;font-family:var(--font);font-size:14px;background:var(--gray-50);outline:none;"/>
-    </div>
-    <div class="form-group">
-      <div class="form-label">Avdeling</div>
-      <select id="e-avdeling" style="width:100%;padding:10px 12px;border:1.5px solid var(--gray-100);border-radius:8px;font-family:var(--font);font-size:14px;background:var(--gray-50);outline:none;">
-        <option>Demenslaget</option><option>Nattpatruljen</option><option>Nord</option>
-        <option>Sentrum 3</option><option>Sør</option><option>Vest 1</option>
-        <option>Vest 3</option><option>Øst 1</option><option>Innsatsteamet</option><option>Annet</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <div class="form-label">Beskrivelse</div>
-      <textarea id="e-beskrivelse" style="height:80px;resize:none;width:100%;padding:10px 12px;border:1.5px solid var(--gray-100);border-radius:8px;font-family:var(--font);font-size:14px;background:var(--gray-50);outline:none;"></textarea>
-    </div>
-    <div class="form-group">
-      <div class="form-label">Merknader <span class="opt">(valgfritt)</span></div>
-      <input type="text" id="e-merknader" style="width:100%;padding:10px 12px;border:1.5px solid var(--gray-100);border-radius:8px;font-family:var(--font);font-size:14px;background:var(--gray-50);outline:none;"/>
-    </div>
-    <div class="form-group">
-      <div class="form-label">Bilde <span class="opt">(valgfritt)</span></div>
-      <div class="bilde-area" onclick="document.getElementById('e-bilde').click()">
-        <div class="bilde-placeholder" id="e-bilde-placeholder">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:24px;height:24px;color:var(--gray-300);display:block;margin:0 auto 6px;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-          <p style="font-size:13px;font-weight:500;color:var(--blue);">Legg til / bytt bilde</p>
-        </div>
-        <img id="e-bilde-preview" style="width:100%;height:120px;object-fit:cover;display:none;cursor:pointer;border-radius:8px;" onclick="event.stopPropagation();openFullscreen(this.src)"/>
-        <input type="file" id="e-bilde" accept="image/*" onchange="previewEditBilde(this)" style="display:none;"/>
-      </div>
-    </div>
-    <button class="submit-btn" id="edit-submit-btn" onclick="submitEdit()">Lagre endringer</button>
+  <div class="install-banner-text">
+    <strong>Legg til på hjemskjerm</strong>
+    Åpne appen raskere
   </div>
+  <button class="install-btn" onclick="deferredInstall&&deferredInstall.prompt();document.getElementById('install-banner').classList.remove('visible')">Legg til</button>
+  <button class="install-dismiss" onclick="document.getElementById('install-banner').classList.remove('visible')">×</button>
 </div>
-
-<div class="img-fullscreen" id="img-fullscreen" onclick="closeFullscreen()">
-  <img id="fullscreen-img" src=""/>
-</div>
-
 </body>
 </html>
