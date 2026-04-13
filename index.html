@@ -31,50 +31,48 @@ input,textarea{font-size:16px!important;font-family:var(--font);}
 button{cursor:pointer;font-family:var(--font);touch-action:manipulation;}
 #map{position:fixed;inset:0;z-index:1;}
 
-/* SEARCH */
+/* ── SEARCH ───────────────────────────────────────────── */
 .search-wrap{position:fixed;top:12px;left:12px;right:12px;z-index:600;display:flex;gap:8px;align-items:flex-start;}
-.search-bar{flex:1;background:var(--g0);border-radius:24px;box-shadow:var(--sm);display:flex;align-items:center;overflow:visible;position:relative;}
-.search-bar input{flex:1;padding:12px 14px 12px 40px;border:none;background:transparent;color:var(--g9);font-size:15px;outline:none;border-radius:24px;}
+.search-bar{flex:1;background:var(--g0);border-radius:26px;box-shadow:var(--sm);display:flex;align-items:center;overflow:visible;position:relative;min-height:48px;}
+.search-bar input{flex:1;padding:13px 16px 13px 48px;border:none;background:transparent;color:var(--g9);font-size:15px;outline:none;border-radius:26px;}
 .search-bar input::placeholder{color:var(--g4);font-size:14px;}
-.si{position:absolute;left:13px;top:50%;transform:translateY(-50%);pointer-events:none;}
-.si svg{width:15px;height:15px;stroke:var(--g4);}
-.sclear{padding:0 12px;background:none;border:none;color:var(--g4);font-size:20px;line-height:1;display:none;}
+.search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);pointer-events:none;display:flex;align-items:center;justify-content:center;}
+.search-icon svg{width:20px;height:20px;stroke:var(--g5);stroke-width:2.2;}
+.sclear{padding:0 14px;background:none;border:none;color:var(--g4);font-size:22px;line-height:1;display:none;}
 .sclear.v{display:block;}
 .sresults{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--g0);border-radius:var(--r);box-shadow:var(--sm);overflow:hidden;display:none;max-height:240px;overflow-y:auto;z-index:10;}
 .sresults.v{display:block;}
-.sri{padding:10px 13px;display:flex;align-items:center;gap:9px;cursor:pointer;border-bottom:1px solid var(--g2);}
+.sri{padding:11px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;border-bottom:1px solid var(--g2);}
 .sri:last-child{border-bottom:none;}
 .sri:active{background:var(--blue-ll);}
-.sri-ic{width:26px;height:26px;border-radius:50%;background:var(--blue-ll);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.sri-ic svg{width:12px;height:12px;}
+.sri-ic{width:30px;height:30px;border-radius:50%;background:var(--blue-ll);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sri-ic svg{width:14px;height:14px;}
 .sri-a{font-size:13px;font-weight:500;color:var(--g9);}
 .sri-b{font-size:11px;color:var(--g5);margin-top:1px;}
-.info-btn{width:44px;height:44px;background:var(--g0);border:none;border-radius:50%;box-shadow:var(--sm);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.info-btn{width:48px;height:48px;background:var(--g0);border:none;border-radius:50%;box-shadow:var(--sm);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.info-btn svg{width:22px;height:22px;}
 
-/* TOOLBAR */
+/* ── TOOLBAR ──────────────────────────────────────────── */
 .toolbar{position:fixed;right:12px;top:50%;transform:translateY(-50%);z-index:500;display:flex;flex-direction:column;gap:8px;}
-.tbtn{width:48px;height:48px;background:var(--g0);border:none;border-radius:var(--r);box-shadow:var(--ss);display:flex;align-items:center;justify-content:center;transition:background 0.15s,box-shadow 0.15s;position:relative;touch-action:manipulation;}
-.tbtn svg{width:22px;height:22px;stroke:var(--g6);}
-.tbtn.on-add,.tbtn.on-loc,.tbtn.on-near{background:var(--blue);box-shadow:0 2px 12px rgba(26,86,160,0.4);}
-.tbtn.on-add svg,.tbtn.on-loc svg,.tbtn.on-near svg{stroke:#fff;}
+.tbtn{width:48px;height:48px;background:var(--g0);border:none;border-radius:var(--r);box-shadow:var(--ss);display:flex;align-items:center;justify-content:center;transition:background 0.18s,box-shadow 0.18s;position:relative;touch-action:manipulation;}
+.tbtn svg{width:22px;height:22px;stroke:var(--g6);transition:stroke 0.18s;}
+.tbtn.active{background:var(--blue);box-shadow:0 2px 12px rgba(26,86,160,0.4);}
+.tbtn.active svg{stroke:#fff;}
+.tbtn.active-2{background:#0e6b3a;box-shadow:0 2px 12px rgba(30,138,76,0.4);}
+.tbtn.active-2 svg{stroke:#fff;}
 .tip{position:absolute;right:calc(100% + 8px);top:50%;transform:translateY(-50%);background:rgba(20,20,20,0.82);color:#fff;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:500;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity 0.15s;}
 .tbtn:hover .tip,.tbtn:focus .tip{opacity:1;}
 
+/* ── HINTS/BANNERS ───────────────────────────────────── */
 .tool-hint{position:fixed;top:68px;left:50%;transform:translateX(-50%);z-index:590;background:rgba(26,86,160,0.92);color:#fff;padding:8px 16px;border-radius:20px;font-size:13px;font-weight:500;white-space:nowrap;display:none;pointer-events:none;box-shadow:var(--ss);}
 .tool-hint.v{display:block;}
 .move-banner{position:fixed;top:68px;left:12px;right:68px;z-index:590;background:rgba(192,57,43,0.93);color:#fff;padding:9px 16px;border-radius:20px;font-size:13px;font-weight:500;text-align:center;display:none;pointer-events:none;box-shadow:var(--ss);}
 .move-banner.v{display:block;}
+/* location state badge under toggle button */
+.loc-badge{position:fixed;right:12px;z-index:499;background:var(--g0);border-radius:8px;box-shadow:var(--ss);padding:4px 8px;font-size:10px;font-weight:600;color:var(--blue);white-space:nowrap;display:none;text-align:center;max-width:90px;}
+.loc-badge.v{display:block;}
 
-/* NEAREST BANNER */
-.nb-banner{position:fixed;left:12px;right:68px;z-index:500;background:var(--g0);border-radius:var(--r);box-shadow:var(--sm);padding:11px 32px 11px 38px;display:none;bottom:calc(var(--sb) + 14px);}
-.nb-banner.v{display:block;}
-.nb-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);}
-.nb-icon svg{width:16px;height:16px;stroke:var(--blue);}
-.nb-close{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--g4);font-size:18px;line-height:1;padding:2px 4px;}
-.nb-title{font-size:10px;font-weight:600;color:var(--g5);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:2px;}
-.nb-val{font-size:13px;font-weight:500;color:var(--g9);}
-
-/* CONFIRM PLACEMENT */
+/* ── CONFIRM PLACEMENT ───────────────────────────────── */
 .conf-ov{position:fixed;inset:0;z-index:800;background:rgba(0,0,0,0.38);display:none;align-items:flex-end;justify-content:center;padding-bottom:calc(var(--sb) + 16px);}
 .conf-ov.v{display:flex;}
 .conf-card{background:var(--g0);border-radius:var(--rl);width:calc(100% - 24px);max-width:420px;padding:18px 18px 16px;box-shadow:var(--sl);}
@@ -84,7 +82,7 @@ button{cursor:pointer;font-family:var(--font);touch-action:manipulation;}
 .btn-cancel{flex:1;padding:12px;background:var(--g2);border:none;border-radius:var(--r);font-size:14px;font-weight:600;color:var(--g6);}
 .btn-go{flex:2;padding:12px;background:var(--blue);border:none;border-radius:var(--r);font-size:14px;font-weight:600;color:#fff;}
 
-/* GENERIC DIALOG */
+/* ── GENERIC DIALOG ──────────────────────────────────── */
 .dlg-ov{position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,0.48);display:none;align-items:center;justify-content:center;padding:20px;}
 .dlg-ov.v{display:flex;}
 .dlg-card{background:var(--g0);border-radius:var(--rl);width:100%;max-width:320px;padding:24px 20px 18px;box-shadow:var(--sl);text-align:center;}
@@ -96,7 +94,29 @@ button{cursor:pointer;font-family:var(--font);touch-action:manipulation;}
 .dlg-ok{flex:1;padding:11px;border:none;border-radius:var(--r);font-size:14px;font-weight:600;color:#fff;background:var(--blue);}
 .dlg-ok.red{background:var(--red);}
 
-/* SHEET */
+/* ── PIN POPUP CARD ──────────────────────────────────── */
+.pin-popup{position:fixed;z-index:650;display:none;pointer-events:none;}
+.pin-popup.v{display:block;pointer-events:auto;}
+.pp-card{background:var(--g0);border-radius:14px;box-shadow:0 4px 24px rgba(0,0,0,0.18);width:240px;overflow:hidden;position:relative;}
+/* tail pointing down */
+.pp-tail{width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;border-top:9px solid #fff;margin:0 auto;display:block;filter:drop-shadow(0 2px 2px rgba(0,0,0,0.08));}
+.pp-img{width:100%;height:120px;object-fit:cover;display:block;cursor:pointer;}
+.pp-ph{width:100%;height:60px;background:var(--g1);display:flex;align-items:center;justify-content:center;}
+.pp-ph svg{width:20px;height:20px;stroke:var(--g3);}
+.pp-body{padding:10px 12px 8px;}
+.pp-addr{font-size:13px;font-weight:700;line-height:1.3;margin-bottom:6px;}
+.pp-avd{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;background:var(--blue-ll);color:var(--blue);margin-bottom:6px;}
+.pp-desc{font-size:12px;color:var(--g6);line-height:1.4;margin-bottom:4px;}
+.pp-merk{font-size:11px;color:var(--g5);line-height:1.4;margin-bottom:6px;}
+.pp-edit{width:100%;padding:8px;background:var(--blue-ll);color:var(--blue);border:none;border-radius:8px;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:5px;margin-bottom:2px;}
+.pp-edit svg{width:12px;height:12px;stroke:var(--blue);}
+.pp-close{position:absolute;top:7px;right:7px;width:24px;height:24px;background:rgba(0,0,0,0.35);border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.pp-close svg{width:11px;height:11px;stroke:#fff;stroke-width:2.5;}
+/* lock button on popup */
+.pp-lock{position:absolute;top:7px;left:7px;width:28px;height:28px;background:rgba(255,255,255,0.92);border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:var(--ss);cursor:pointer;}
+.pp-lock svg{width:14px;height:14px;}
+
+/* ── SHEET ───────────────────────────────────────────── */
 .sheet{position:fixed;left:0;right:0;bottom:0;z-index:700;background:var(--g0);border-radius:var(--rl) var(--rl) 0 0;box-shadow:var(--sl);transform:translateY(100%);transition:transform 0.28s cubic-bezier(0.4,0,0.2,1);padding-bottom:calc(var(--sb) + 8px);}
 .sheet.open{transform:translateY(0);}
 .sh-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 0;}
@@ -104,28 +124,7 @@ button{cursor:pointer;font-family:var(--font);touch-action:manipulation;}
 .sh-x{width:30px;height:30px;background:var(--g2);border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;}
 .sh-x svg{width:14px;height:14px;stroke:var(--g6);}
 
-/* PIN SHEET */
-#pin-sheet{max-height:62vh;overflow-y:auto;-webkit-overflow-scrolling:touch;}
-.ps-img{width:100%;height:180px;object-fit:cover;display:block;cursor:pointer;}
-.ps-ph{width:100%;height:90px;background:var(--g1);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;}
-.ps-ph svg{width:24px;height:24px;stroke:var(--g3);}
-.ps-ph span{font-size:11px;color:var(--g4);}
-.ps-body{padding:12px 16px 10px;}
-.ps-addr{font-size:17px;font-weight:700;margin-bottom:10px;line-height:1.3;}
-.ps-fl{font-size:10px;font-weight:600;color:var(--g5);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:2px;}
-.ps-fv{font-size:14px;color:var(--g6);line-height:1.45;margin-bottom:8px;}
-.ps-foot{display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid var(--g2);margin-bottom:12px;}
-.avd-pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:var(--blue-ll);color:var(--blue);}
-.ps-meta-date{font-size:10px;color:var(--g4);}
-.ps-actions{display:flex;gap:8px;padding:0 16px 14px;}
-.ps-btn{flex:1;padding:10px;border:none;border-radius:var(--r);font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px;}
-.ps-btn svg{width:14px;height:14px;}
-.ps-btn-edit{background:var(--blue-ll);color:var(--blue);}
-.ps-btn-edit svg{stroke:var(--blue);}
-.ps-btn-del{background:var(--red-l);color:var(--red);}
-.ps-btn-del svg{stroke:var(--red);}
-
-/* FORM SHEETS */
+/* ── ADD / EDIT SHEETS ───────────────────────────────── */
 #add-sheet,#edit-sheet{max-height:90dvh;overflow-y:auto;-webkit-overflow-scrolling:touch;}
 .fb{padding:10px 16px 16px;}
 .fg{margin-bottom:13px;position:relative;}
@@ -153,8 +152,6 @@ button{cursor:pointer;font-family:var(--font);touch-action:manipulation;}
 .avd-item:active{background:var(--blue-ll);}
 .pos-btn{width:100%;padding:10px 12px;background:var(--blue-ll);color:var(--blue);border:1.5px solid var(--blue-l);border-radius:var(--r);font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:7px;margin-top:7px;}
 .pos-btn svg{width:15px;height:15px;stroke:var(--blue);}
-
-/* IMAGE UPLOAD */
 .img-up{border:1.5px dashed var(--g3);border-radius:var(--r);overflow:hidden;cursor:pointer;background:var(--g1);}
 .img-up:active{border-color:var(--blue);}
 .img-up-ph{padding:14px;text-align:center;}
@@ -168,8 +165,10 @@ button{cursor:pointer;font-family:var(--font);touch-action:manipulation;}
 .sub-btn{width:100%;padding:13px;background:var(--blue);color:#fff;border:none;border-radius:var(--r);font-size:15px;font-weight:600;margin-top:6px;}
 .sub-btn:active{background:var(--blue-d);}
 .sub-btn:disabled{background:var(--g3);color:var(--g5);}
+.del-btn{width:100%;padding:12px;background:var(--red-l);color:var(--red);border:1.5px solid #f5c6c0;border-radius:var(--r);font-size:14px;font-weight:600;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:6px;}
+.del-btn svg{width:15px;height:15px;stroke:var(--red);}
 
-/* ONBOARDING */
+/* ── ONBOARDING ──────────────────────────────────────── */
 .ob-ov{position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,0.62);display:none;align-items:flex-end;justify-content:center;padding:0 12px calc(var(--sb) + 20px);}
 .ob-ov.v{display:flex;}
 .ob-card{background:var(--g0);border-radius:var(--rl);width:100%;max-width:420px;padding:22px 20px 18px;box-shadow:var(--sl);}
@@ -192,12 +191,10 @@ button{cursor:pointer;font-family:var(--font);touch-action:manipulation;}
 .ob-dot.on{background:var(--blue);}
 .ob-next{padding:11px 22px;background:var(--blue);color:#fff;border:none;border-radius:var(--r);font-size:14px;font-weight:600;}
 
-/* FULLSCREEN */
+/* ── MISC ─────────────────────────────────────────────── */
 .fs{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.94);display:none;align-items:center;justify-content:center;cursor:pointer;}
 .fs.v{display:flex;}
 .fs img{max-width:95vw;max-height:90vh;object-fit:contain;border-radius:var(--r);}
-
-/* TOAST */
 .toast{position:fixed;left:50%;transform:translateX(-50%) translateY(12px);background:rgba(20,20,20,0.9);color:#fff;padding:9px 18px;border-radius:20px;font-size:13px;font-weight:500;z-index:5000;opacity:0;transition:all 0.2s;pointer-events:none;white-space:nowrap;max-width:calc(100vw - 32px);overflow:hidden;text-overflow:ellipsis;bottom:calc(var(--sb) + 14px);}
 .toast.v{opacity:1;transform:translateX(-50%) translateY(0);}
 .offline{position:fixed;top:0;left:0;right:0;z-index:6000;background:var(--red);color:#fff;text-align:center;padding:9px 12px;font-size:13px;font-weight:500;display:none;}
@@ -208,15 +205,19 @@ button{cursor:pointer;font-family:var(--font);touch-action:manipulation;}
 .load p{color:rgba(255,255,255,0.75);font-size:14px;font-weight:500;}
 @keyframes spin{to{transform:rotate(360deg);}}
 
-/* USER DOT */
+/* ── MAP ELEMENTS ────────────────────────────────────── */
 .user-dot{width:18px;height:18px;background:#4285f4;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 5px rgba(66,133,244,0.22);}
+.near-pulse-wrap{position:relative;width:44px;height:44px;display:flex;align-items:center;justify-content:center;}
+.near-pulse-ring{position:absolute;inset:0;border-radius:50%;background:rgba(26,86,160,0.18);animation:npexpand 1.4s ease-out infinite;}
+.near-pulse-dot{width:20px;height:20px;background:var(--blue);border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 0 rgba(26,86,160,0.5);animation:nppulse 1.4s ease-out infinite;z-index:1;}
+@keyframes nppulse{0%{box-shadow:0 0 0 0 rgba(26,86,160,0.6);}70%{box-shadow:0 0 0 14px rgba(26,86,160,0);}100%{box-shadow:0 0 0 0 rgba(26,86,160,0);}}
+@keyframes npexpand{0%{transform:scale(0.6);opacity:0.7;}70%{transform:scale(2);opacity:0;}100%{transform:scale(2);opacity:0;}}
 
-/* NEAREST PULSE */
-.near-pulse{position:relative;width:40px;height:40px;display:flex;align-items:center;justify-content:center;}
-.near-pulse-dot{width:18px;height:18px;background:var(--blue);border-radius:50%;border:3px solid #fff;animation:pulse-ring 1.5s ease-out 3;}
-.near-pulse-ring{position:absolute;inset:0;border-radius:50%;background:rgba(26,86,160,0.25);animation:pulse-expand 1.5s ease-out 3;}
-@keyframes pulse-ring{0%{box-shadow:0 0 0 0 rgba(26,86,160,0.6);}70%{box-shadow:0 0 0 16px rgba(26,86,160,0);}100%{box-shadow:0 0 0 0 rgba(26,86,160,0);}}
-@keyframes pulse-expand{0%{transform:scale(0.5);opacity:0.8;}70%{transform:scale(2.2);opacity:0;}100%{transform:scale(2.2);opacity:0;}}
+/* ── LOCK ANIMATION ──────────────────────────────────── */
+@keyframes lockShake{0%{transform:rotate(0);}20%{transform:rotate(-12deg);}40%{transform:rotate(12deg);}60%{transform:rotate(-8deg);}80%{transform:rotate(8deg);}100%{transform:rotate(0);}}
+@keyframes unlockBounce{0%{transform:scale(1);}40%{transform:scale(1.3);}70%{transform:scale(0.9);}100%{transform:scale(1);}}
+.lock-anim{animation:lockShake 0.4s ease;}
+.unlock-anim{animation:unlockBounce 0.35s ease;}
 </style>
 </head>
 <body>
@@ -233,42 +234,49 @@ button{cursor:pointer;font-family:var(--font);touch-action:manipulation;}
 <!-- SEARCH + INFO -->
 <div class="search-wrap">
   <div class="search-bar">
-    <span class="si"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></span>
+    <span class="search-icon">
+      <svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    </span>
     <input type="text" id="si" placeholder="Søk adresse eller sted..." autocomplete="off"/>
     <button class="sclear" id="sclear" onclick="clearSearch()">×</button>
     <div class="sresults" id="sresults"></div>
   </div>
   <button class="info-btn" onclick="showOb()" title="Hjelp">
-    <svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" width="20" height="20"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="11"/><circle cx="12" cy="8" r="1" fill="var(--blue)" stroke="none"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" width="22" height="22"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="11"/><circle cx="12" cy="8" r="1" fill="var(--blue)" stroke="none"/></svg>
   </button>
 </div>
 
 <!-- TOOLBAR -->
 <div class="toolbar">
+  <!-- Register -->
   <button class="tbtn" id="tb-add" onclick="setTool('add')">
     <div class="tip">Registrer nøkkelboks</div>
-    <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><line x1="12" y1="7" x2="12" y2="13"/><line x1="9" y1="10" x2="15" y2="10"/></svg>
+    <!-- key + plus icon -->
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2">
+      <circle cx="7" cy="17" r="3"/>
+      <path d="M10 14l8-8"/>
+      <path d="M16 8l2 2"/>
+      <path d="M14 10l2 2"/>
+      <circle cx="19" cy="5" r="2" fill="currentColor" stroke="none"/>
+      <line x1="19" y1="3" x2="19" y2="7" stroke="var(--g0)" stroke-width="1.2"/>
+      <line x1="17" y1="5" x2="21" y2="5" stroke="var(--g0)" stroke-width="1.2"/>
+    </svg>
   </button>
-  <button class="tbtn" id="tb-loc" onclick="toggleLocate()">
-    <div class="tip">Min posisjon</div>
-    <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M1 12h4M19 12h4"/></svg>
-  </button>
-  <button class="tbtn" id="tb-near" onclick="setTool('nearest')">
-    <div class="tip">Nærmeste nøkkelboks</div>
-    <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49"/><path d="M7.76 16.24a6 6 0 0 1 0-8.49"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M4.93 19.07a10 10 0 0 1 0-14.14"/></svg>
+  <!-- 3-state location toggle -->
+  <button class="tbtn" id="tb-loc" onclick="cycleLocate()">
+    <div class="tip" id="tb-loc-tip">Min posisjon</div>
+    <svg id="tb-loc-icon" viewBox="0 0 24 24" fill="none" stroke-width="2">
+      <circle cx="12" cy="12" r="3"/>
+      <path d="M12 1v4M12 19v4M1 12h4M19 12h4"/>
+    </svg>
   </button>
 </div>
+
+<!-- LOC STATE BADGE -->
+<div class="loc-badge" id="loc-badge"></div>
 
 <div class="tool-hint" id="tool-hint">Trykk på kartet for å plassere nøkkelboks</div>
 <div class="move-banner" id="move-banner">Dra pinnen til ny posisjon · Trykk 🔒 for å lagre</div>
-
-<!-- NEAREST BANNER -->
-<div class="nb-banner" id="nb-banner">
-  <span class="nb-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49"/><path d="M7.76 16.24a6 6 0 0 1 0-8.49"/></svg></span>
-  <div class="nb-title">Nærmeste nøkkelboks</div>
-  <div class="nb-val" id="nb-val"></div>
-  <button class="nb-close" onclick="document.getElementById('nb-banner').classList.remove('v')">×</button>
-</div>
 
 <!-- CONFIRM PLACEMENT -->
 <div class="conf-ov" id="conf-ov">
@@ -295,35 +303,31 @@ button{cursor:pointer;font-family:var(--font);touch-action:manipulation;}
   </div>
 </div>
 
-<!-- PIN SHEET -->
-<div class="sheet" id="pin-sheet">
-  <div class="sh-hdr">
-    <div class="sh-title" id="ps-title"></div>
-    <button class="sh-x" onclick="closeSheet('pin-sheet')"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-  </div>
-  <div id="ps-img-wrap"></div>
-  <div class="ps-body">
-    <div class="ps-addr" id="ps-addr"></div>
-    <div class="ps-fl">Avdeling</div>
-    <div class="ps-fv" id="ps-avd-val"></div>
-    <div class="ps-fl">Beskrivelse</div>
-    <div class="ps-fv" id="ps-besk"></div>
-    <div id="ps-mw"><div class="ps-fl">Merknad</div><div class="ps-fv" id="ps-merk"></div></div>
-    <div class="ps-foot">
-      <div class="avd-pill" id="ps-avd"></div>
-      <div class="ps-meta-date" id="ps-date"></div>
+<!-- PIN POPUP -->
+<div class="pin-popup" id="pin-popup">
+  <div class="pp-card">
+    <button class="pp-lock" id="pp-lock" onclick="handleLockClick()">
+      <svg id="pp-lock-svg" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2.2">
+        <rect x="3" y="11" width="18" height="11" rx="2"/>
+        <path id="pp-lock-path" d="M7 11V7a5 5 0 0 1 10 0v4"/>
+      </svg>
+    </button>
+    <button class="pp-close" onclick="closePopup()">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div id="pp-img-wrap"></div>
+    <div class="pp-body">
+      <div class="pp-addr" id="pp-addr"></div>
+      <div class="pp-avd" id="pp-avd"></div>
+      <div class="pp-desc" id="pp-desc"></div>
+      <div class="pp-merk" id="pp-merk" style="display:none;"></div>
+      <button class="pp-edit" onclick="openEdit(currentPinId)">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        Rediger nøkkelboks
+      </button>
     </div>
   </div>
-  <div class="ps-actions">
-    <button class="ps-btn ps-btn-edit" onclick="openEdit(currentPinId)">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-      Rediger
-    </button>
-    <button class="ps-btn ps-btn-del" onclick="confirmDeletePin(currentPinId)">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-      Slett
-    </button>
-  </div>
+  <span class="pp-tail"></span>
 </div>
 
 <!-- ADD SHEET -->
@@ -351,15 +355,12 @@ button{cursor:pointer;font-family:var(--font);touch-action:manipulation;}
         onblur="setTimeout(()=>document.getElementById('a-avd-list').classList.remove('v'),200)"/>
       <div class="avd-list" id="a-avd-list"></div>
     </div>
-    <div class="fg"><div class="fl">Beskrivelse <span class="req">*</span></div><textarea id="a-besk" placeholder="Beskriv nøyaktig hvor nøkkelboksen er plassert, f.eks. ved hovedinngang, veggen til venstre for døren"></textarea></div>
+    <div class="fg"><div class="fl">Beskrivelse <span class="req">*</span></div><textarea id="a-besk" placeholder="Beskriv nøyaktig hvor nøkkelboksen er plassert, f.eks. ved hovedinngang til venstre for døren"></textarea></div>
     <div class="fg"><div class="fl">Merknader <span class="opt">(valgfritt)</span></div><input type="text" id="a-merk" placeholder="F.eks. 1 nøkkel for hovedinngang"/></div>
     <div class="fg">
       <div class="fl">Bilde <span class="opt">(valgfritt)</span></div>
       <div class="img-up" onclick="document.getElementById('a-img-f').click()">
-        <div class="img-up-ph" id="a-img-ph">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-          <p>Legg til bilde</p><span>Trykk for kamera eller galleri</span>
-        </div>
+        <div class="img-up-ph" id="a-img-ph"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><p>Legg til bilde</p><span>Trykk for kamera eller galleri</span></div>
         <img id="a-img-p" class="img-up-prev" onclick="event.stopPropagation();openFS(this.src)"/>
         <div class="img-up-change" id="a-img-ch">Trykk for å bytte bilde</div>
         <input type="file" id="a-img-f" accept="image/*" onchange="onImg('a')" style="display:none;"/>
@@ -377,12 +378,6 @@ button{cursor:pointer;font-family:var(--font);touch-action:manipulation;}
   </div>
   <div class="fb">
     <div class="fg">
-      <div class="fl">Adresse</div>
-      <input type="text" id="e-adr" placeholder="Søk etter adresse..." autocomplete="off" oninput="doAC(this.value,'e-ac','e-ok','e')"/>
-      <div class="ac-list" id="e-ac"></div>
-      <div class="aok" id="e-ok"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>Ny adresse bekreftet</div>
-    </div>
-    <div class="fg">
       <div class="fl">Avdeling</div>
       <input type="text" id="e-avd" placeholder="Hvilken avdeling tilhører nøkkelboksen?" autocomplete="off"
         oninput="doAvdAC(this.value,'e-avd-list')"
@@ -395,16 +390,17 @@ button{cursor:pointer;font-family:var(--font);touch-action:manipulation;}
     <div class="fg">
       <div class="fl">Bilde <span class="opt">(valgfritt)</span></div>
       <div class="img-up" onclick="document.getElementById('e-img-f').click()">
-        <div class="img-up-ph" id="e-img-ph">
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-          <p>Legg til bilde</p><span>Trykk for kamera eller galleri</span>
-        </div>
+        <div class="img-up-ph" id="e-img-ph"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><p>Legg til bilde</p><span>Trykk for kamera eller galleri</span></div>
         <img id="e-img-p" class="img-up-prev" onclick="event.stopPropagation();openFS(this.src)"/>
         <div class="img-up-change" id="e-img-ch">Trykk for å bytte bilde</div>
         <input type="file" id="e-img-f" accept="image/*" onchange="onImg('e')" style="display:none;"/>
       </div>
     </div>
     <button class="sub-btn" id="e-sub" onclick="submitEdit()">Lagre endringer</button>
+    <button class="del-btn" onclick="confirmDeletePin(editId)">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+      Slett nøkkelboks
+    </button>
   </div>
 </div>
 
@@ -414,43 +410,43 @@ button{cursor:pointer;font-family:var(--font);touch-action:manipulation;}
     <div class="ob-step on" id="ob-0">
       <div class="ob-icon" style="background:var(--blue-l);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" width="26" height="26"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
       <div class="ob-title">Nøkkelbokser – Rana kommune</div>
-      <div class="ob-text">Finn kommunale nøkkelbokser raskt på kartet. Søk på en adresse, registrer nye bokser, og rediger direkte ved å trykke på en pin.</div>
+      <div class="ob-text">Finn kommunale nøkkelbokser raskt på kartet. Søk på adresse, registrer nye bokser, og rediger direkte ved å trykke på en pin.</div>
       <div class="ob-foot"><div class="ob-dots"><div class="ob-dot on"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div></div><button class="ob-next" onclick="obNext()">Neste</button></div>
     </div>
     <div class="ob-step" id="ob-1">
-      <div class="ob-icon" style="background:var(--blue-l);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" width="26" height="26"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><line x1="12" y1="7" x2="12" y2="13"/><line x1="9" y1="10" x2="15" y2="10"/></svg></div>
+      <div class="ob-icon" style="background:var(--blue-l);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" width="26" height="26"><circle cx="7" cy="17" r="3"/><path d="M10 14l8-8"/><path d="M16 8l2 2"/><path d="M14 10l2 2"/></svg></div>
       <div class="ob-title">Registrer ny nøkkelboks</div>
-      <div class="ob-text">Trykk på <strong>+pin-knappen</strong> til høyre, trykk deretter på kartet der nøkkelboksen er. Bekreft plasseringen og fyll inn avdeling og beskrivelse.<br><br>Bruk <strong>søkefeltet</strong> øverst for å finne en adresse – en blå pin markerer stedet på kartet.</div>
+      <div class="ob-text">Trykk på <strong>nøkkel+-knappen</strong> til høyre, deretter trykk på kartet der nøkkelboksen er. Bekreft og fyll inn avdeling og beskrivelse.<br><br>Bruk <strong>søkefeltet</strong> øverst for å finne en adresse – en blå pin markerer stedet.</div>
       <div class="ob-foot"><div class="ob-dots"><div class="ob-dot"></div><div class="ob-dot on"></div><div class="ob-dot"></div><div class="ob-dot"></div></div><button class="ob-next" onclick="obNext()">Neste</button></div>
     </div>
     <div class="ob-step" id="ob-2">
       <div class="ob-icon" style="background:var(--blue-l);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" width="26" height="26"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M1 12h4M19 12h4"/></svg></div>
       <div class="ob-title">Posisjon og nærmeste</div>
-      <div class="ob-text"><strong>Min posisjon</strong> (crosshair-knappen) sentrerer kartet på deg og viser en blå prikk. Trykk igjen for å skru av.<br><br><strong>Nærmeste nøkkelboks</strong> (radar-knappen) finner og flyr til nærmeste boks fra der du er, og viser avstand i meter.</div>
+      <div class="ob-text">Posisjons-knappen har tre trinn:<br><br><strong>1× trykk</strong> – viser din posisjon som blå prikk og sentrerer kartet.<br><strong>2× trykk</strong> – finner nærmeste nøkkelboks, highlighter den og viser avstand.<br><strong>3× trykk</strong> – skrur alt av.</div>
       <div class="ob-foot"><div class="ob-dots"><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot on"></div><div class="ob-dot"></div></div><button class="ob-next" onclick="obNext()">Neste</button></div>
     </div>
     <div class="ob-step" id="ob-3">
       <div class="ob-icon" style="background:var(--blue-l);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" width="26" height="26"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
       <div class="ob-title">Rediger og flytt nøkkelbokser</div>
-      <div class="ob-text">Trykk på en <strong>nøkkel-pin</strong> for å se informasjon. Derfra kan du redigere innhold eller slette boksen.<br><br>For å <strong>flytte pinnen</strong>: trykk på 🔒 på pinnen → bekreft → dra til ny posisjon → trykk 🔒 igjen for å lagre.</div>
+      <div class="ob-text">Trykk på en <strong>nøkkel-pin</strong> for å se informasjon i et kompakt kort. Trykk <strong>Rediger</strong> for å endre avdeling, beskrivelse eller bilde.<br><br>For å <strong>flytte pinnen</strong>: trykk på 🔒-ikonet i kortet → bekreft → dra til ny posisjon → trykk 🔒 igjen for å lagre.</div>
       <div class="ob-foot"><div class="ob-dots"><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot on"></div></div><button class="ob-next" onclick="obNext()">Neste</button></div>
     </div>
     <div class="ob-step" id="ob-4">
       <div class="ob-icon" style="background:var(--blue-l);"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" width="26" height="26"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
       <div class="ob-title">Legg til på hjemskjerm</div>
-      <div class="ob-text">Installer appen på telefonen for raskere tilgang og fullskjerm uten nettleserlinjen.</div>
+      <div class="ob-text">Installer appen for raskere tilgang og fullskjerm uten nettleserlinjen.</div>
       <div id="ob-pwa-wrap" style="display:none;"><div class="ob-pwa">
-        <div class="ob-pwa-row"><div class="ob-pwa-step">1</div><div class="ob-pwa-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div><div class="ob-pwa-text">Trykk på <strong>Del</strong>-ikonet nederst i Safari</div></div>
+        <div class="ob-pwa-row"><div class="ob-pwa-step">1</div><div class="ob-pwa-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div><div class="ob-pwa-text">Trykk på <strong>Del</strong>-ikonet i Safari</div></div>
         <div class="ob-pwa-row"><div class="ob-pwa-step">2</div><div class="ob-pwa-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div><div class="ob-pwa-text">Velg <strong>«Legg til på Hjem-skjerm»</strong></div></div>
         <div class="ob-pwa-row"><div class="ob-pwa-step">3</div><div class="ob-pwa-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div><div class="ob-pwa-text">Trykk <strong>Legg til</strong> øverst til høyre</div></div>
       </div></div>
       <div id="ob-android-wrap" style="display:none;"><div class="ob-pwa">
-        <div class="ob-pwa-row"><div class="ob-pwa-step">1</div><div class="ob-pwa-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></div><div class="ob-pwa-text">Trykk på <strong>menyikonet</strong> (tre prikker) i Chrome</div></div>
+        <div class="ob-pwa-row"><div class="ob-pwa-step">1</div><div class="ob-pwa-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></div><div class="ob-pwa-text">Trykk <strong>menyikonet</strong> (tre prikker) i Chrome</div></div>
         <div class="ob-pwa-row"><div class="ob-pwa-step">2</div><div class="ob-pwa-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div><div class="ob-pwa-text">Velg <strong>«Legg til på startskjermen»</strong></div></div>
       </div></div>
       <div id="ob-desktop-wrap" style="display:none;"><div class="ob-pwa">
-        <div class="ob-pwa-row"><div class="ob-pwa-step">1</div><div class="ob-pwa-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div><div class="ob-pwa-text">Trykk på <strong>installer-ikonet</strong> i adressefeltet i nettleseren</div></div>
-        <div class="ob-pwa-row"><div class="ob-pwa-step">2</div><div class="ob-pwa-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div><div class="ob-pwa-text">Klikk <strong>Installer</strong> i dialogen</div></div>
+        <div class="ob-pwa-row"><div class="ob-pwa-step">1</div><div class="ob-pwa-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg></div><div class="ob-pwa-text">Trykk <strong>installer-ikonet</strong> i adressefeltet</div></div>
+        <div class="ob-pwa-row"><div class="ob-pwa-step">2</div><div class="ob-pwa-icon"><svg viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg></div><div class="ob-pwa-text">Klikk <strong>Installer</strong></div></div>
       </div></div>
       <div class="ob-foot"><div class="ob-dots"><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot on"></div></div><button class="ob-next" onclick="obDone()">Kom i gang</button></div>
     </div>
@@ -471,11 +467,18 @@ let map, markers=[], allData=[], tool='none';
 let pendLat=null, pendLng=null, pendMark=null;
 let addLat=null, addLng=null;
 let editId=null, editLat=null, editLng=null;
-let userMark=null, userLat=null, userLng=null, locActive=false;
+let userMark=null, userLat=null, userLng=null;
+let nearMark=null, nearLine=null, nearLineTimer=null;
 let searchMark=null, currentPinId=null;
-let movingId=null;
-let obStep=0, _aFile=null, _eFile=null;
-let dlgCb=null;
+let movingId=null, movingMarker=null;
+// locState: 0=off, 1=my position, 2=nearest
+let locState=0;
+let obStep=0, _aFile=null, _eFile=null, dlgCb=null;
+
+// ── SVG HELPERS ───────────────────────────────────────────
+const KEY_SVG=`<svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="7" cy="17" r="3"/><path d="M10 14l8-8"/><path d="M16 8l2 2"/><path d="M14 10l2 2"/></svg>`;
+const LOCK_CLOSED=`<path d="M7 11V7a5 5 0 0 1 10 0v4"/>`;
+const LOCK_OPEN=`<path d="M7 11V7a5 5 0 0 1 9.9-1"/>`;
 
 // ── API ───────────────────────────────────────────────────
 async function sbF(path,o={}){
@@ -501,12 +504,7 @@ async function kv(q){
   try{
     const r=await fetch(`https://ws.geonorge.no/adresser/v1/sok?sok=${encodeURIComponent(q)}&kommunenummer=1833&treffPerSide=6&utkoordsys=4258`);
     const d=await r.json();
-    return(d.adresser||[]).map(a=>({
-      t:`${a.adressenavn} ${a.nummer||''}${a.bokstav||''}`.trim(),
-      s:a.poststed||'',
-      lat:a.representasjonspunkt?.lat,
-      lng:a.representasjonspunkt?.lon
-    })).filter(a=>a.lat&&a.lng);
+    return(d.adresser||[]).map(a=>({t:`${a.adressenavn} ${a.nummer||''}${a.bokstav||''}`.trim(),s:a.poststed||'',lat:a.representasjonspunkt?.lat,lng:a.representasjonspunkt?.lon})).filter(a=>a.lat&&a.lng);
   }catch{return[];}
 }
 async function revGeo(lat,lng){
@@ -518,40 +516,46 @@ async function revGeo(lat,lng){
   return`${lat.toFixed(5)}, ${lng.toFixed(5)}`;
 }
 
-// ── MAP ───────────────────────────────────────────────────
+// ── MAP INIT ──────────────────────────────────────────────
 function initMap(){
   map=L.map('map',{zoomControl:false,attributionControl:false,maxZoom:19,minZoom:8,zoomSnap:1,zoomDelta:1}).setView([66.3126,14.1434],14);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,maxNativeZoom:19}).addTo(map);
   L.control.attribution({position:'bottomleft',prefix:'© OpenStreetMap'}).addTo(map);
-  map.on('click', onMapClick);
-  map.on('click', ()=>document.getElementById('sresults').classList.remove('v'));
+  map.on('click',onMapClick);
+  map.on('click',()=>{
+    document.getElementById('sresults').classList.remove('v');
+    if(movingId===null) closePopup();
+  });
 }
 
 // ── KEY PIN ICON ──────────────────────────────────────────
-function keyPinIcon(unlocked){
-  const bc = unlocked ? '#c0392b' : '#777';
-  const lockPath = unlocked
-    // open lock
-    ? '<path d="M7 11V7a5 5 0 0 1 9.9-1" stroke="'+bc+'" stroke-width="2.2"/><rect x="3" y="11" width="18" height="11" rx="2" stroke="'+bc+'" stroke-width="2.2" fill="none"/>'
-    // closed lock
-    : '<path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="'+bc+'" stroke-width="2.2"/><rect x="3" y="11" width="18" height="11" rx="2" stroke="'+bc+'" stroke-width="2.2" fill="none"/>';
+function keyPinIcon(unlocked, highlight){
+  const bc = unlocked ? '#c0392b' : (highlight ? '#1a56a0' : '#777');
+  const bg = highlight ? '#e8f2ff' : '#fff';
+  const shadow = highlight
+    ? '0 0 0 4px rgba(26,86,160,0.25), 0 2px 8px rgba(26,86,160,0.4)'
+    : '0 1px 6px rgba(0,0,0,0.20)';
+  const lockPath = unlocked ? LOCK_OPEN : LOCK_CLOSED;
   return L.divIcon({
     className:'',
     html:`<div style="position:relative;width:28px;cursor:pointer;">
-      <div style="width:28px;height:28px;background:#fff;border-radius:50%;border:2px solid ${bc};box-shadow:0 1px 6px rgba(0,0,0,0.20);display:flex;align-items:center;justify-content:center;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2" width="14" height="14">
-          <circle cx="7.5" cy="15.5" r="3.5"/>
-          <path d="M11 12l9-9"/><path d="M17 6l2 2"/><path d="M15 8l2 2"/>
+      <div style="width:28px;height:28px;background:${bg};border-radius:50%;border:2px solid ${bc};box-shadow:${shadow};display:flex;align-items:center;justify-content:center;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="${highlight?'#1a56a0':'#555'}" stroke-width="2" width="14" height="14">
+          <circle cx="7" cy="17" r="3"/>
+          <path d="M10 14l8-8"/>
+          <path d="M16 8l2 2"/>
+          <path d="M14 10l2 2"/>
         </svg>
       </div>
       <div style="width:2px;height:6px;background:${bc};margin:0 auto;border-radius:0 0 2px 2px;"></div>
       <div style="position:absolute;top:-7px;right:-7px;width:17px;height:17px;background:#fff;border-radius:50%;border:1.5px solid ${bc};display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,0.15);">
-        <svg viewBox="0 0 24 24" fill="none" width="10" height="10">${lockPath}</svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="${bc}" stroke-width="2.2" width="10" height="10">
+          <rect x="3" y="11" width="18" height="11" rx="2"/>
+          ${lockPath}
+        </svg>
       </div>
     </div>`,
-    iconSize:[28,34],
-    iconAnchor:[14,34],
-    popupAnchor:[0,-38]
+    iconSize:[28,34],iconAnchor:[14,34],popupAnchor:[0,-38]
   });
 }
 
@@ -561,19 +565,20 @@ function renderMarkers(){
   markers=[];
   allData.forEach(item=>{
     if(!item.breddegrad||!item.lengdegrad)return;
+    const isMoving=(movingId===item.id);
     const m=L.marker([item.breddegrad,item.lengdegrad],{
-      icon:keyPinIcon(false),
-      draggable:false
+      icon:keyPinIcon(isMoving,false),
+      draggable:isMoving,
+      zIndexOffset:isMoving?1000:0
     }).addTo(map);
     m._nbId=item.id;
     m.on('click',e=>{
       L.DomEvent.stopPropagation(e);
       if(tool==='add')return;
       if(movingId===item.id){
-        // clicking lock while in move mode = save
-        confirmSaveMove(item.id, m);
+        confirmSaveMove(item.id,m);
       } else {
-        openPinSheet(item);
+        showPopup(item,m);
       }
     });
     markers.push(m);
@@ -582,19 +587,87 @@ function renderMarkers(){
 
 function findMarker(id){return markers.find(m=>m._nbId===id);}
 
-// ── MOVE MODE ─────────────────────────────────────────────
-function tryUnlockPin(id){
-  showDlg('🔓','Flytt nøkkelboks?','Lås opp for å dra pinnen til ny posisjon. Trykk på 🔒 igjen for å lagre ny plassering.',false,()=>startMoveMode(id));
+// ── POPUP ─────────────────────────────────────────────────
+function showPopup(item, leafletMarker){
+  currentPinId=item.id;
+  // image
+  const iw=document.getElementById('pp-img-wrap');
+  if(item.bilde_url){
+    iw.innerHTML=`<img src="${item.bilde_url}" class="pp-img" onclick="openFS(this.src)" onerror="this.parentNode.innerHTML='<div class=pp-ph><svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke-width=&quot;1.5&quot;><rect x=&quot;3&quot; y=&quot;3&quot; width=&quot;18&quot; height=&quot;18&quot; rx=&quot;2&quot;/><circle cx=&quot;8.5&quot; cy=&quot;8.5&quot; r=&quot;1.5&quot;/><polyline points=&quot;21 15 16 10 5 21&quot;/></svg></div>'">`;
+  } else {
+    iw.innerHTML=`<div class="pp-ph"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></div>`;
+  }
+  document.getElementById('pp-addr').textContent=item.adresse||'';
+  document.getElementById('pp-avd').textContent=item.avdeling||'Ukjent avdeling';
+  document.getElementById('pp-desc').textContent=item.beskrivelse||'';
+  const pm=document.getElementById('pp-merk');
+  if(item.merknader){pm.textContent=item.merknader;pm.style.display='block';}
+  else pm.style.display='none';
+  // lock state
+  setPopupLockState(false);
+  // position popup above pin
+  positionPopup(leafletMarker);
+  document.getElementById('pin-popup').classList.add('v');
 }
 
+function positionPopup(leafletMarker){
+  const pp=document.getElementById('pin-popup');
+  const pt=map.latLngToContainerPoint(leafletMarker.getLatLng());
+  const cardW=240, cardH=pp.querySelector('.pp-card').offsetHeight||260;
+  let left=pt.x - cardW/2;
+  let top=pt.y - cardH - 16; // 16px gap above pin tip
+  // clamp to viewport
+  const vw=window.innerWidth, vh=window.innerHeight;
+  left=Math.max(8,Math.min(left, vw-cardW-8));
+  if(top<60)top=pt.y+20; // flip below if too close to top
+  pp.style.left=left+'px';
+  pp.style.top=top+'px';
+}
+
+function closePopup(){
+  document.getElementById('pin-popup').classList.remove('v');
+  currentPinId=null;
+}
+
+// ── LOCK IN POPUP ─────────────────────────────────────────
+let popupLocked=true;
+function setPopupLockState(unlocked){
+  popupLocked=!unlocked;
+  const svg=document.getElementById('pp-lock-svg');
+  const path=document.getElementById('pp-lock-path');
+  if(unlocked){
+    svg.setAttribute('stroke','#c0392b');
+    path.setAttribute('d','M7 11V7a5 5 0 0 1 9.9-1');
+  } else {
+    svg.setAttribute('stroke','#555');
+    path.setAttribute('d','M7 11V7a5 5 0 0 1 10 0v4');
+  }
+}
+
+function handleLockClick(){
+  const btn=document.getElementById('pp-lock');
+  if(popupLocked){
+    // animate then confirm unlock
+    btn.querySelector('svg').classList.add('lock-anim');
+    setTimeout(()=>btn.querySelector('svg').classList.remove('lock-anim'),400);
+    showDlg('🔓','Flytt nøkkelboks?','Lås opp for å dra pinnen til ny posisjon. Trykk 🔒 igjen for å lagre.',false,()=>{
+      setPopupLockState(true); // now unlocked
+      startMoveMode(currentPinId);
+    });
+  } else {
+    // save move
+    const m=findMarker(movingId);
+    if(m) confirmSaveMove(movingId,m);
+  }
+}
+
+// ── MOVE MODE ─────────────────────────────────────────────
 function startMoveMode(id){
   movingId=id;
-  closeSheet('pin-sheet');
-  const m=findMarker(id);
-  if(!m)return;
-  m.setIcon(keyPinIcon(true));
-  m.dragging.enable();
+  closePopup();
+  renderMarkers(); // re-render with draggable
   document.getElementById('move-banner').classList.add('v');
+  showToast('Dra pinnen til ny posisjon');
 }
 
 function confirmSaveMove(id, marker){
@@ -615,14 +688,12 @@ function confirmSaveMove(id, marker){
 // ── MAP CLICK ─────────────────────────────────────────────
 async function onMapClick(e){
   if(tool!=='add')return;
-  closeAllSheets();
   const{lat,lng}=e.latlng;
   pendLat=lat;pendLng=lng;
   if(pendMark)map.removeLayer(pendMark);
-  // Blue placement marker
   pendMark=L.marker([lat,lng],{icon:L.divIcon({
     className:'',
-    html:`<div style="width:28px;height:28px;background:var(--blue);border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(26,86,160,0.4);display:flex;align-items:center;justify-content:center;">
+    html:`<div style="width:28px;height:28px;background:#1a56a0;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(26,86,160,0.4);display:flex;align-items:center;justify-content:center;">
       <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
     </div>`,
     iconSize:[28,28],iconAnchor:[14,14]
@@ -632,75 +703,143 @@ async function onMapClick(e){
   document.getElementById('conf-addr').textContent=await revGeo(lat,lng);
 }
 
-// ── TOOLS ─────────────────────────────────────────────────
+// ── TOOL ──────────────────────────────────────────────────
 function setTool(t){
   tool=t;
-  ['tb-add','tb-near'].forEach(id=>document.getElementById(id).className='tbtn');
+  document.getElementById('tb-add').className='tbtn';
   document.getElementById('tool-hint').classList.remove('v');
   map.getContainer().style.cursor='';
   if(t==='add'){
-    document.getElementById('tb-add').classList.add('on-add');
+    document.getElementById('tb-add').classList.add('active');
     document.getElementById('tool-hint').classList.add('v');
     map.getContainer().style.cursor='crosshair';
-    closeAllSheets();
-  } else if(t==='nearest'){
-    document.getElementById('tb-near').classList.add('on-near');
-    doNearest();
+    closePopup();
   }
 }
 
-// ── LOCATE (toggle) ───────────────────────────────────────
-function toggleLocate(){
-  if(locActive){
-    locActive=false;
-    document.getElementById('tb-loc').classList.remove('on-loc');
-    if(userMark){map.removeLayer(userMark);userMark=null;}
-    userLat=null;userLng=null;
+// ── 3-STATE LOCATE CYCLE ──────────────────────────────────
+// states: 0=off, 1=my position, 2=nearest
+const LOC_ICONS=[
+  // 0: off – crosshair
+  `<svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M1 12h4M19 12h4"/></svg>`,
+  // 1: my position active – filled crosshair
+  `<svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M1 12h4M19 12h4"/></svg>`,
+  // 2: nearest – radar
+  `<svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49"/><path d="M7.76 16.24a6 6 0 0 1 0-8.49"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M4.93 19.07a10 10 0 0 1 0-14.14"/></svg>`
+];
+const LOC_TIPS=['Min posisjon','Min posisjon','Nærmeste nøkkelboks'];
+const LOC_BADGE=['','Min posisjon','Nærmeste'];
+
+function updateLocBtn(){
+  const btn=document.getElementById('tb-loc');
+  const icon=document.getElementById('tb-loc-icon');
+  const tip=document.getElementById('tb-loc-tip');
+  const badge=document.getElementById('loc-badge');
+  btn.className='tbtn';
+  if(locState===1)btn.classList.add('active');
+  if(locState===2)btn.classList.add('active-2');
+  icon.outerHTML; // force re-render via innerHTML below
+  btn.querySelector('svg') && btn.querySelector('svg').remove();
+  const tmp=document.createElement('div');
+  tmp.innerHTML=LOC_ICONS[locState];
+  btn.insertBefore(tmp.firstChild,btn.querySelector('.tip'));
+  tip.textContent=LOC_TIPS[locState];
+  if(locState>0){
+    badge.textContent=LOC_BADGE[locState];
+    badge.classList.add('v');
+    // position badge below button
+    const btnRect=btn.getBoundingClientRect();
+    badge.style.top=(btnRect.bottom+4)+'px';
+    badge.style.right='12px';
+  } else {
+    badge.classList.remove('v');
+  }
+}
+
+function clearNearVisuals(){
+  if(nearMark){map.removeLayer(nearMark);nearMark=null;}
+  if(nearLine){map.removeLayer(nearLine);nearLine=null;}
+  if(nearLineTimer){clearTimeout(nearLineTimer);nearLineTimer=null;}
+  // reset all markers to non-highlighted
+  markers.forEach(m=>{
+    const item=allData.find(d=>d.id===m._nbId);
+    if(item)m.setIcon(keyPinIcon(false,false));
+  });
+}
+
+function clearLocVisuals(){
+  if(userMark){map.removeLayer(userMark);userMark=null;}
+  userLat=null;userLng=null;
+  clearNearVisuals();
+}
+
+async function cycleLocate(){
+  locState=(locState+1)%3;
+  updateLocBtn();
+  if(locState===0){
+    clearLocVisuals();
     return;
   }
-  if(!navigator.geolocation){showToast('GPS ikke tilgjengelig');return;}
-  navigator.geolocation.getCurrentPosition(pos=>{
-    userLat=pos.coords.latitude;userLng=pos.coords.longitude;
-    if(userMark)map.removeLayer(userMark);
-    userMark=L.marker([userLat,userLng],{icon:L.divIcon({
-      className:'',html:'<div class="user-dot"></div>',iconSize:[18,18],iconAnchor:[9,9]
-    })}).addTo(map);
-    map.flyTo([userLat,userLng],17,{duration:0.8});
-    locActive=true;
-    document.getElementById('tb-loc').classList.add('on-loc');
-  },()=>showToast('Kunne ikke hente posisjon – sjekk tillatelser'),{enableHighAccuracy:true,timeout:8000});
-}
+  if(!navigator.geolocation){showToast('GPS ikke tilgjengelig');locState=0;updateLocBtn();return;}
 
-// ── NEAREST ───────────────────────────────────────────────
-function doNearest(){
-  if(!navigator.geolocation){showToast('GPS ikke tilgjengelig');document.getElementById('tb-near').className='tbtn';tool='none';return;}
-  const run=()=>{
-    if(!allData.length){showToast('Ingen nøkkelbokser registrert');document.getElementById('tb-near').className='tbtn';tool='none';return;}
+  // State 1 or 2 – need user position
+  const getPos=()=>new Promise((res,rej)=>navigator.geolocation.getCurrentPosition(res,rej,{enableHighAccuracy:true,timeout:8000}));
+
+  if(locState===1){
+    clearNearVisuals();
+    showToast('Henter din posisjon...');
+    try{
+      const pos=await getPos();
+      userLat=pos.coords.latitude;userLng=pos.coords.longitude;
+      if(userMark)map.removeLayer(userMark);
+      userMark=L.marker([userLat,userLng],{icon:L.divIcon({className:'',html:'<div class="user-dot"></div>',iconSize:[18,18],iconAnchor:[9,9]})}).addTo(map);
+      map.flyTo([userLat,userLng],17,{duration:0.8});
+    }catch{showToast('Kunne ikke hente posisjon');locState=0;updateLocBtn();}
+    return;
+  }
+
+  if(locState===2){
+    // find nearest
+    if(!allData.length){showToast('Ingen nøkkelbokser registrert');locState=1;updateLocBtn();return;}
+    if(!userLat){
+      showToast('Henter posisjon...');
+      try{
+        const pos=await getPos();
+        userLat=pos.coords.latitude;userLng=pos.coords.longitude;
+        if(!userMark){
+          userMark=L.marker([userLat,userLng],{icon:L.divIcon({className:'',html:'<div class="user-dot"></div>',iconSize:[18,18],iconAnchor:[9,9]})}).addTo(map);
+        }
+      }catch{showToast('Kunne ikke hente posisjon');locState=1;updateLocBtn();return;}
+    }
     let near=null,minD=Infinity;
     allData.forEach(item=>{
       if(!item.breddegrad||!item.lengdegrad)return;
       const d=Math.hypot(item.breddegrad-userLat,item.lengdegrad-userLng);
       if(d<minD){minD=d;near=item;}
     });
-    if(!near){showToast('Ingen nøkkelbokser funnet');document.getElementById('tb-near').className='tbtn';tool='none';return;}
-    const m=Math.round(minD*111000);
-    document.getElementById('nb-val').textContent=`${near.adresse} – ${m<1000?m+' m':((m/1000).toFixed(1)+' km')} unna`;
-    document.getElementById('nb-banner').classList.add('v');
+    if(!near){showToast('Ingen nøkkelbokser funnet');locState=1;updateLocBtn();return;}
+    const dist=Math.round(minD*111000);
+    showToast(`${dist<1000?dist+' m':((dist/1000).toFixed(1)+' km')} til nærmeste`);
+    // highlight marker
+    const nearM=findMarker(near.id);
+    if(nearM)nearM.setIcon(keyPinIcon(false,true));
+    // pulsing near marker overlay
+    if(nearMark)map.removeLayer(nearMark);
+    nearMark=L.marker([near.breddegrad,near.lengdegrad],{
+      icon:L.divIcon({className:'',html:`<div class="near-pulse-wrap"><div class="near-pulse-ring"></div><div class="near-pulse-dot"></div></div>`,iconSize:[44,44],iconAnchor:[22,22]}),
+      zIndexOffset:2000,interactive:false
+    }).addTo(map);
+    // dashed line
+    if(nearLine)map.removeLayer(nearLine);
+    nearLine=L.polyline([[userLat,userLng],[near.breddegrad,near.lengdegrad]],{
+      color:'#1a56a0',weight:2,dashArray:'6 6',opacity:0.7
+    }).addTo(map);
     map.flyTo([near.breddegrad,near.lengdegrad],17,{duration:1});
-    document.getElementById('tb-near').className='tbtn';
-    tool='none';
-    setTimeout(()=>document.getElementById('nb-banner').classList.remove('v'),8000);
-  };
-  if(userLat&&userLng){run();}
-  else{
-    showToast('Henter posisjon...');
-    navigator.geolocation.getCurrentPosition(pos=>{
-      userLat=pos.coords.latitude;userLng=pos.coords.longitude;
-      if(!userMark){
-        userMark=L.marker([userLat,userLng],{icon:L.divIcon({className:'',html:'<div class="user-dot"></div>',iconSize:[18,18],iconAnchor:[9,9]})}).addTo(map);
-      }
-      run();
-    },()=>{showToast('Kunne ikke hente posisjon');document.getElementById('tb-near').className='tbtn';tool='none';},{enableHighAccuracy:true,timeout:8000});
+    // auto-clear line after 5s
+    nearLineTimer=setTimeout(()=>{
+      if(nearLine){map.removeLayer(nearLine);nearLine=null;}
+      if(nearMark){map.removeLayer(nearMark);nearMark=null;}
+    },5000);
   }
 }
 
@@ -728,28 +867,6 @@ function confirmPlace(){
   document.getElementById('a-adr').value=document.getElementById('conf-addr').textContent;
   document.getElementById('a-ok').classList.add('v');
   openSheet('add-sheet');setTool('none');
-}
-
-// ── PIN SHEET ─────────────────────────────────────────────
-function openPinSheet(item){
-  closeAllSheets();
-  currentPinId=item.id;
-  const iw=document.getElementById('ps-img-wrap');
-  if(item.bilde_url){
-    iw.innerHTML=`<img src="${item.bilde_url}" class="ps-img" onclick="openFS(this.src)" onerror="this.parentNode.innerHTML='<div class=ps-ph><svg viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; stroke-width=&quot;1.5&quot;><rect x=&quot;3&quot; y=&quot;3&quot; width=&quot;18&quot; height=&quot;18&quot; rx=&quot;2&quot;/><circle cx=&quot;8.5&quot; cy=&quot;8.5&quot; r=&quot;1.5&quot;/><polyline points=&quot;21 15 16 10 5 21&quot;/></svg><span>Ingen bilde</span></div>'">`;
-  } else {
-    iw.innerHTML=`<div class="ps-ph"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg><span>Ingen bilde</span></div>`;
-  }
-  document.getElementById('ps-title').textContent=item.adresse;
-  document.getElementById('ps-addr').textContent=item.adresse;
-  document.getElementById('ps-avd-val').textContent=item.avdeling||'—';
-  document.getElementById('ps-besk').textContent=item.beskrivelse||'—';
-  const mw=document.getElementById('ps-mw');
-  if(item.merknader){document.getElementById('ps-merk').textContent=item.merknader;mw.style.display='block';}
-  else mw.style.display='none';
-  document.getElementById('ps-avd').textContent=item.avdeling||'Ukjent';
-  document.getElementById('ps-date').textContent=new Date(item.created_at).toLocaleDateString('no');
-  openSheet('pin-sheet');
 }
 
 // ── ADD ───────────────────────────────────────────────────
@@ -787,20 +904,18 @@ async function submitAdd(){
 function openEdit(id){
   const item=allData.find(d=>d.id===id);if(!item)return;
   editId=id;editLat=item.breddegrad;editLng=item.lengdegrad;_eFile=null;
-  document.getElementById('e-adr').value=item.adresse||'';
   document.getElementById('e-avd').value=item.avdeling||'';
   document.getElementById('e-besk').value=item.beskrivelse||'';
   document.getElementById('e-merk').value=item.merknader||'';
-  document.getElementById('e-ok').classList.remove('v');
   document.getElementById('e-img-f').value='';
   const p=document.getElementById('e-img-p'),ph=document.getElementById('e-img-ph'),ch=document.getElementById('e-img-ch');
   if(item.bilde_url){p.src=item.bilde_url;p.style.display='block';ph.style.display='none';ch.classList.add('v');}
   else{p.style.display='none';ph.style.display='block';ch.classList.remove('v');}
-  closeSheet('pin-sheet');
+  closePopup();
   setTimeout(()=>openSheet('edit-sheet'),60);
 }
 function closeEditSheet(){
-  closeSheet('edit-sheet');editId=null;editLat=null;editLng=null;_eFile=null;
+  closeSheet('edit-sheet');editId=null;_eFile=null;
   document.getElementById('e-img-f').value='';
   document.getElementById('e-avd-list').classList.remove('v');
 }
@@ -808,11 +923,9 @@ async function submitEdit(){
   if(!editId)return;
   const btn=document.getElementById('e-sub');btn.disabled=true;btn.textContent='Lagrer...';
   const p={
-    adresse:document.getElementById('e-adr').value.trim(),
     avdeling:document.getElementById('e-avd').value.trim(),
     beskrivelse:document.getElementById('e-besk').value.trim(),
-    merknader:document.getElementById('e-merk').value.trim(),
-    breddegrad:editLat,lengdegrad:editLng
+    merknader:document.getElementById('e-merk').value.trim()
   };
   if(_eFile){try{p.bilde_url=await upImg(_eFile);}catch{showToast('Bilde feilet, lagrer uten');}}
   try{
@@ -830,7 +943,7 @@ function confirmDeletePin(id){
     try{
       await deleteRow(id);
       allData=allData.filter(d=>d.id!==id);
-      renderMarkers();closeSheet('pin-sheet');
+      renderMarkers();closeEditSheet();closePopup();
       showToast('Nøkkelboks slettet');
     }catch(e){showToast('Kunne ikke slette');console.error(e);}
   });
@@ -850,7 +963,7 @@ function showDlg(icon,title,text,danger,cb){
 function dlgCancel(){document.getElementById('dlg-ov').classList.remove('v');dlgCb=null;}
 function dlgConfirm(){document.getElementById('dlg-ov').classList.remove('v');if(dlgCb){dlgCb();dlgCb=null;}}
 
-// ── AVDELING AUTOCOMPLETE ─────────────────────────────────
+// ── AVDELING AC ───────────────────────────────────────────
 function doAvdAC(q,listId){
   const list=document.getElementById(listId);
   const matches=q.length===0?AVDS:AVDS.filter(a=>a.toLowerCase().includes(q.toLowerCase()));
@@ -864,15 +977,11 @@ function pickAvd(val,listId){
   document.getElementById(listId).classList.remove('v');
 }
 
-// ── ADDRESS AUTOCOMPLETE ──────────────────────────────────
+// ── ADDRESS AC ────────────────────────────────────────────
 let acT;
 async function doAC(q,listId,okId,prefix){
   const list=document.getElementById(listId);
-  if(q.length<3){
-    list.classList.remove('v');
-    if(prefix==='a'){addLat=null;addLng=null;}else{editLat=null;editLng=null;}
-    document.getElementById(okId).classList.remove('v');return;
-  }
+  if(q.length<3){list.classList.remove('v');if(prefix==='a'){addLat=null;addLng=null;}document.getElementById(okId).classList.remove('v');return;}
   clearTimeout(acT);
   acT=setTimeout(async()=>{
     const pl=await kv(q);if(!pl.length){list.classList.remove('v');return;}
@@ -885,7 +994,6 @@ async function doAC(q,listId,okId,prefix){
 }
 function pickAddr(navn,lat,lng,listId,okId,prefix){
   if(prefix==='a'){document.getElementById('a-adr').value=navn;addLat=parseFloat(lat);addLng=parseFloat(lng);}
-  else{document.getElementById('e-adr').value=navn;editLat=parseFloat(lat);editLng=parseFloat(lng);}
   document.getElementById(listId).classList.remove('v');
   document.getElementById(okId).classList.add('v');
 }
@@ -904,7 +1012,6 @@ function closeFS(){document.getElementById('fs').classList.remove('v');}
 // ── SHEETS ────────────────────────────────────────────────
 function openSheet(id){document.getElementById(id).classList.add('open');}
 function closeSheet(id){document.getElementById(id).classList.remove('open');}
-function closeAllSheets(){['pin-sheet','add-sheet','edit-sheet'].forEach(closeSheet);}
 
 // ── SEARCH ────────────────────────────────────────────────
 const siEl=document.getElementById('si'), srEl=document.getElementById('sresults'), scEl=document.getElementById('sclear');
@@ -919,8 +1026,8 @@ siEl.addEventListener('blur',()=>setTimeout(()=>srEl.classList.remove('v'),200))
 function clearSearch(){siEl.value='';scEl.classList.remove('v');srEl.classList.remove('v');if(searchMark){map.removeLayer(searchMark);searchMark=null;}}
 async function doSearch(q){
   const local=allData.filter(d=>(d.adresse||'').toLowerCase().includes(q.toLowerCase()));
-  let html=local.slice(0,3).map(item=>`<div class="sri" onclick="srEl.classList.remove('v');map.flyTo([${item.breddegrad},${item.lengdegrad}],17);openPinSheet(allData.find(d=>d.id===${item.id}))">
-    <div class="sri-ic"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><circle cx="7.5" cy="15.5" r="3.5"/><path d="M11 12l9-9"/><path d="M17 6l2 2"/><path d="M15 8l2 2"/></svg></div>
+  let html=local.slice(0,3).map(item=>`<div class="sri" onclick="srEl.classList.remove('v');map.flyTo([${item.breddegrad},${item.lengdegrad}],17);showPopup(allData.find(d=>d.id===${item.id}),findMarker(${item.id}))">
+    <div class="sri-ic"><svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2">${KEY_SVG.replace(/<\/?svg[^>]*>/g,'')}</svg></div>
     <div><div class="sri-a">${item.adresse}</div><div class="sri-b">${item.avdeling||''} · Nøkkelboks</div></div>
   </div>`).join('');
   const pl=await kv(q);
@@ -935,7 +1042,6 @@ async function doSearch(q){
 }
 function placeSearchPin(lat,lng,addr){
   if(searchMark)map.removeLayer(searchMark);
-  // Blue teardrop pin for address search results
   searchMark=L.marker([lat,lng],{icon:L.divIcon({
     className:'',
     html:`<div style="width:22px;height:22px;background:#1a56a0;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2.5px solid #fff;box-shadow:0 2px 8px rgba(26,86,160,0.4);"></div>`,
@@ -953,8 +1059,7 @@ function showOb(){
   document.getElementById('ob-ov').classList.add('v');
 }
 function obNext(){
-  document.getElementById(`ob-${obStep}`).classList.remove('on');
-  obStep++;
+  document.getElementById(`ob-${obStep}`).classList.remove('on');obStep++;
   if(obStep===4){
     const isIOS=/iphone|ipad|ipod/i.test(navigator.userAgent)&&!window.navigator.standalone;
     const isAndroid=/android/i.test(navigator.userAgent);
@@ -974,12 +1079,12 @@ window.addEventListener('online',()=>document.getElementById('offline').classLis
 window.addEventListener('offline',()=>document.getElementById('offline').classList.add('v'));
 if(!navigator.onLine)document.getElementById('offline').classList.add('v');
 
-// ── PWA ───────────────────────────────────────────────────
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 
 // ── INIT ──────────────────────────────────────────────────
 async function init(){
   initMap();
+  updateLocBtn();
   try{allData=await loadAll();}catch{showToast('Kunne ikke laste data – sjekk internettforbindelsen');allData=[];}
   document.getElementById('load').style.display='none';
   renderMarkers();
