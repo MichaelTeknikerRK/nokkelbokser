@@ -508,8 +508,8 @@ async function revGeo(lat,lng){try{const r=await fetch(`https://ws.geonorge.no/a
 
 // ── MAP ───────────────────────────────────────────────────
 function initMap(){
-  map=L.map('map',{zoomControl:false,attributionControl:false}).setView([66.3126,14.1434],14);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,detectRetina:true,tileSize:window.devicePixelRatio>1?512:256,zoomOffset:window.devicePixelRatio>1?-1:0}).addTo(map);
+  map=L.map('map',{zoomControl:false,attributionControl:false,maxZoom:21}).setView([66.3126,14.1434],14);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:21,detectRetina:true,tileSize:window.devicePixelRatio>1?512:256,zoomOffset:window.devicePixelRatio>1?-1:0}).addTo(map);
   L.control.attribution({position:'bottomleft',prefix:'© OpenStreetMap'}).addTo(map);
   map.on('click',onMapClick);
   map.on('click',()=>document.getElementById('sresults').classList.remove('v'));
@@ -831,19 +831,6 @@ if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(
 
 
 // ── INIT ──────────────────────────────────────────────────
-// Prevent iOS zoom on input focus without blocking map zoom
-if(/iphone|ipad|ipod/i.test(navigator.userAgent)){
-  document.addEventListener('touchstart',e=>{
-    if(e.touches.length>1)return;
-    const tag=e.target.tagName.toLowerCase();
-    if(['input','textarea','select'].includes(tag)){
-      const vp=document.querySelector('meta[name=viewport]');
-      vp.content='width=device-width,initial-scale=1.0,maximum-scale=1.0,interactive-widget=resizes-content';
-      setTimeout(()=>{vp.content='width=device-width,initial-scale=1.0,interactive-widget=resizes-content';},500);
-    }
-  },{passive:true});
-}
-
 async function init(){
   initMap();
   try{allData=await loadAll();}catch{showToast('Kunne ikke laste data – sjekk internettforbindelsen');allData=[];}
