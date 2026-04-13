@@ -518,7 +518,7 @@ async function revGeo(lat,lng){try{const r=await fetch(`https://ws.geonorge.no/a
 
 // ── MAP ───────────────────────────────────────────────────
 function initMap(){
-  map=L.map('map',{zoomControl:false,attributionControl:false,maxZoom:19}).setView([66.3126,14.1434],14);
+  map=L.map('map',{zoomControl:false,attributionControl:false,maxZoom:19,minZoom:8}).setView([66.3126,14.1434],14);
   // tile layer added via LAYERS object below
   L.control.attribution({position:'bottomleft',prefix:'© OpenStreetMap'}).addTo(map);
   map.on('click',onMapClick);
