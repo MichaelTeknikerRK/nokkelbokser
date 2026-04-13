@@ -518,7 +518,7 @@ async function revGeo(lat,lng){try{const r=await fetch(`https://ws.geonorge.no/a
 
 // ── MAP ───────────────────────────────────────────────────
 function initMap(){
-  map=L.map('map',{zoomControl:false,attributionControl:false,maxZoom:19,minZoom:8}).setView([66.3126,14.1434],14);
+  map=L.map('map',{zoomControl:false,attributionControl:false,maxZoom:19,minZoom:8,zoomSnap:1,zoomDelta:1}).setView([66.3126,14.1434],14);
   // tile layer added via LAYERS object below
   L.control.attribution({position:'bottomleft',prefix:'© OpenStreetMap'}).addTo(map);
   map.on('click',onMapClick);
@@ -526,8 +526,8 @@ function initMap(){
 }
 
 const LAYERS={
-  kart:L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,maxNativeZoom:19,detectRetina:true,tileSize:window.devicePixelRatio>1?512:256,zoomOffset:window.devicePixelRatio>1?-1:0,attribution:'© OpenStreetMap'}),
-  sat:L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,maxNativeZoom:19,attribution:'© Esri'})
+  kart:L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,maxNativeZoom:19,attribution:'© OpenStreetMap'}),
+  sat:L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,maxNativeZoom:19,attribution:'© Esri, DigitalGlobe'})
 };
 let activeLayer='kart';
 
