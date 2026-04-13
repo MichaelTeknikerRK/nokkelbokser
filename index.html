@@ -226,6 +226,10 @@ button{cursor:pointer;font-family:var(--font);touch-action:manipulation;}
 .load svg{width:46px;height:46px;stroke:#fff;}
 .load-spin{width:30px;height:30px;border:3px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite;}
 .load p{color:rgba(255,255,255,0.75);font-size:14px;font-weight:500;}
+.map-toggle{position:fixed;left:12px;bottom:calc(var(--sb) + 14px);z-index:500;background:var(--g0);border:none;border-radius:var(--r);box-shadow:var(--sm);padding:8px 12px;font-size:12px;font-weight:600;color:var(--g6);display:flex;align-items:center;gap:6px;}
+.map-toggle svg{width:14px;height:14px;stroke:var(--g6);}
+.map-toggle.sat{background:var(--g9);color:#fff;}
+.map-toggle.sat svg{stroke:#fff;}
 @keyframes spin{to{transform:rotate(360deg);}}
 
 /* PINS */
@@ -260,6 +264,12 @@ button{cursor:pointer;font-family:var(--font);touch-action:manipulation;}
     <svg viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16" stroke-width="3"/></svg>
   </button>
 </div>
+
+<!-- MAP LAYER TOGGLE -->
+<button class="map-toggle" id="map-toggle" onclick="toggleLayer()">
+  <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><path d="M2 12h20M12 2v20"/></svg>
+  Kart
+</button>
 
 <!-- TOOLBAR -->
 <div class="toolbar">
@@ -508,11 +518,28 @@ async function revGeo(lat,lng){try{const r=await fetch(`https://ws.geonorge.no/a
 
 // ── MAP ───────────────────────────────────────────────────
 function initMap(){
-  map=L.map('map',{zoomControl:false,attributionControl:false,maxZoom:21}).setView([66.3126,14.1434],14);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:21,detectRetina:true,tileSize:window.devicePixelRatio>1?512:256,zoomOffset:window.devicePixelRatio>1?-1:0}).addTo(map);
+  map=L.map('map',{zoomControl:false,attributionControl:false,maxZoom:19}).setView([66.3126,14.1434],14);
+  // tile layer added via LAYERS object below
   L.control.attribution({position:'bottomleft',prefix:'© OpenStreetMap'}).addTo(map);
   map.on('click',onMapClick);
   map.on('click',()=>document.getElementById('sresults').classList.remove('v'));
+}
+
+const LAYERS={
+  kart:L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,maxNativeZoom:19,detectRetina:true,tileSize:window.devicePixelRatio>1?512:256,zoomOffset:window.devicePixelRatio>1?-1:0,attribution:'© OpenStreetMap'}),
+  sat:L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,maxNativeZoom:19,attribution:'© Esri'})
+};
+let activeLayer='kart';
+
+function toggleLayer(){
+  map.removeLayer(LAYERS[activeLayer]);
+  activeLayer=activeLayer==='kart'?'sat':'kart';
+  LAYERS[activeLayer].addTo(map);
+  map.eachLayer(l=>{if(l instanceof L.TileLayer&&l!==LAYERS[activeLayer])map.removeLayer(l);});
+  LAYERS[activeLayer].bringToBack();
+  const btn=document.getElementById('map-toggle');
+  if(activeLayer==='sat'){btn.className='map-toggle sat';btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><path d="M2 12h20M12 2v20"/></svg> Satellitt';}
+  else{btn.className='map-toggle';btn.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><path d="M2 12h20M12 2v20"/></svg> Kart';}
 }
 
 function pinIcon(color){return L.divIcon({className:'',html:`<div style="width:28px;height:28px;background:${color};border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,0.28);"></div>`,iconSize:[28,28],iconAnchor:[14,14],popupAnchor:[0,-17]});}
@@ -835,6 +862,7 @@ async function init(){
   initMap();
   try{allData=await loadAll();}catch{showToast('Kunne ikke laste data – sjekk internettforbindelsen');allData=[];}
   document.getElementById('load').style.display='none';
+  LAYERS.kart.addTo(map);
   renderMarkers();
   if(!localStorage.getItem('nb_ob'))setTimeout(showOb,700);
 }
